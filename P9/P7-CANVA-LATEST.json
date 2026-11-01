@@ -1,0 +1,71 @@
+{
+  "source": "https://www.canva.com/design/DAHXaK2zQ38/3Sd-YVMVB1DkWuToNWdsRQ/edit",
+  "checkedAt": "2026-11-02",
+  "pageCount": 382,
+  "diagrams": [
+    {
+      "page": 270,
+      "raw": "Employee\n- employeeId : String- name : String- role : Role\n+ Employee(employeeId : String, name : String, role : Role)+ authenticateRole(requiredRole : Role) : boolean+ assignStationDuty(station : String) : void"
+    },
+    {
+      "page": 271,
+      "raw": "Customer\n- customerId : String- member : Member\n+ Customer(customerId : String)+ checkCustomerStatus() : boolean"
+    },
+    {
+      "page": 272,
+      "raw": "Member\n- memberId : String- name : String- phone : String- points : int- bahtPerPoint : int {static}- pointValue : double {static}- minRedeem : int {static}- transactions : List<PointTransaction>\n+ Member(memberId : String, name : String, phone : String)+ earnPoints(amount : double) : int+ redeemPoints(points : int) : void+ setRule(b : int, v : double, m : int) : void {static}+ validateRedeem(points : int, amount : double) : boolean {static}"
+    },
+    {
+      "page": 273,
+      "raw": "Table\n- tableId : String- qrCode : String\n+ Table(tableId : String, qrCode : String)+ scanTableQRCode() : void+ identifyTableNumber() : String"
+    },
+    {
+      "page": 274,
+      "raw": "Order\n- orderId : String- status : OrderStatus- totalAmount : double- createdAt : LocalDateTime- items : List<OrderItem>- table : Table- customer : Customer- payment : Payment\n+ Order(orderId : String, table : Table)+ addItem(menu : Menu, qty : int, spice : String, note : String) : OrderItem+ removeItem(item : OrderItem) : void+ attachMember(member : Member) : void+ calculateTotal() : double+ confirm() : void+ cancel() : void+ changeStatus(s : OrderStatus) : void"
+    },
+    {
+      "page": 276,
+      "raw": "OrderItem\n- orderItemId : String- qty : int- price : double- spiceLevel : String- note : String- status : ItemStatus- startTime : LocalDateTime- endTime : LocalDateTime- requestType : RequestType- requestReason : String- requestStatus : RequestStatus- decisionReason : String- decidedBy : String- requestedAt : LocalDateTime- menu : Menu- option : String- recipe : Recipe- handledBy : Employee\n+ OrderItem(orderItemId : String, menu : Menu, qty : int, recipe : Recipe)+ startCooking(cook : Employee) : void+ markReady() : void+ serve(by : Employee) : void+ cancel() : void+ compareTime() : int+ changeStatus(s : ItemStatus) : void+ requestChange(type : RequestType, reason : String) : void+ approve(by : Employee) : void+ reject(by : Employee, why : String) : void"
+    },
+    {
+      "page": 278,
+      "raw": "Menu\n- menuId : String- name : String- price : double- category : String- station : String- spiceSelectable : boolean- status : SaleStatus- recipes : List<Recipe>- options : Map<String, Double>\n+ Menu(menuId : String, name : String, price : double)+ update(name : String, price : double, category : String, station : String) : void+ openSale() : void+ closeSale() : void+ isDeletable() : boolean"
+    },
+    {
+      "page": 279,
+      "raw": "Recipe\n- recipeId : String- version : int- status : RecipeStatus- ingredients : Map<Ingredient, Double>\n+ Recipe(recipeId : String, version : int)+ addItem(ingredient : Ingredient, qty : double) : void+ changeQty(ingredient : Ingredient, qty : double) : void+ complete() : void+ createNewVersion() : Recipe"
+    },
+    {
+      "page": 280,
+      "raw": "SOP\n- sopId : String- name : String- status : SopStatus- menu : Menu- steps : List<SOPStep>\n+ SOP(sopId : String, name : String, menu : Menu)+ update(name : String) : void+ publish() : void+ disable() : void+ enable() : void+ isDeletable() : boolean+ getTotalMinutes() : double"
+    },
+    {
+      "page": 282,
+      "raw": "SOPStep\n- sopStepId : String- no : int- description : String- standardMinutes : double\n+ SOPStep(sopStepId : String, no : int, description : String, minutes : double)"
+    },
+    {
+      "page": 283,
+      "raw": "Ingredient\n- ingredientId : String- name : String- unit : String- stockQty : double- minQty : double- movements : List<StockMovement>\n+ Ingredient(ingredientId : String, name : String, unit : String, minQty : double)+ hasEnough(qty : double) : boolean+ deduct(qty : double, ref : String) : void+ restore(qty : double, ref : String) : void+ increaseStock(qty : double, ref : String) : void+ adjustStock(newQty : double, reason : String, by : Employee) : void+ update(name : String, unit : String, minQty : double) : void"
+    },
+    {
+      "page": 285,
+      "raw": "StockMovement\n- stockMovementId : String- time : LocalDateTime- type : MovementType- qty : double- balance : double- reference : String- reason : String- doneBy : Employee\n+ StockMovement(stockMovementId : String, type : MovementType, qty : double, balance : double, ref : String, reason : String, by : Employee)+ recordStockMovement(type : MovementType, qty : double, balance : double, ref : String, reason : String, by : Employee) : void"
+    },
+    {
+      "page": 286,
+      "raw": "PurchaseOrder\n- poId : String- status : PoStatus- createdAt : LocalDateTime- orderedQty : Map<Ingredient, Double>- receivedQty : Map<Ingredient, Double>- supplier : Supplier- createdBy : Employee\n+ PurchaseOrder(poId : String, supplier : Supplier, by : Employee)+ addItem(ingredient : Ingredient, qty : double) : void+ markOrdered() : void+ receive(qtys : Map<Ingredient, Double>) : void"
+    },
+    {
+      "page": 287,
+      "raw": "Supplier\n- supplierId : String- name : String- suppliedIngredients : List<Ingredient>\n+ Supplier(supplierId : String, name : String)+ addIngredient(ingredient : Ingredient) : void+ supplies(ingredient : Ingredient) : boolean"
+    },
+    {
+      "page": 288,
+      "raw": "Payment\n- paymentId : String- method : PayMethod- received : double- change : double- discount : double- receiptNo : String- time : LocalDateTime- receivedBy : Employee\n+ Payment(paymentId : String, order : Order, by : Employee)+ calculateDiscount(points : int) : double+ calculateChange() : double+ pay(method : PayMethod, received : double) : void+ confirm() : void+ printReceipt() : String"
+    },
+    {
+      "page": 289,
+      "raw": "PointTransaction\n- pointTransactionId : String- date : LocalDateTime- type : PointType- points : int- balance : int- payment : Payment\n+ PointTransaction(pointTransactionId : String, type : PointType, points : int, balance : int)+ recordPointTransaction(type : PointType, points : int, balance : int, payment : Payment) : void"
+    }
+  ]
+}

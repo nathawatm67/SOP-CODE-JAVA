@@ -2,53 +2,85 @@ package model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 // ออเดอร์เป็นเจ้าของ OrderItem และอ้างถึงโต๊ะ ลูกค้า และการชำระเงิน
 public class Order {
+    public enum OrderStatus { CART, CONFIRMED, COOKING, READY, SERVED, PAID, CANCELLED }
+    // Order เป็นเจ้าของรายการอาหาร แต่เพียงอ้างถึง Table, Customer และ Payment
     private String orderId;
+    // has-a (Association): ออเดอร์อ้างถึงโต๊ะ ลูกค้า และใบชำระเงิน
+    // object เหล่านี้ยังมีชีวิตได้ แม้ออเดอร์นี้ถูกลบ
     private Table table;
     private Customer customer;
     private Payment payment;
-    private String status;
+    private OrderStatus status;
+    private double totalAmount;
     private LocalDateTime createdAt;
-    private ArrayList<OrderItem> items;
+    // has-a (Composition): Order เป็นเจ้าของ OrderItem หลายรายการ
+    // destroy() ของ Order จะเรียก destroy() ของแต่ละ OrderItem
+    private List<OrderItem> items;
     private int itemNumber;
     private boolean destroyed;
 
-    public Order(String id, Table table, Customer customer) {
-        this.orderId = id;
+    // สร้างออเดอร์ในสถานะตะกร้า และจดเวลาที่สร้าง
+    public Order(String orderId, Table table) {
+        this(orderId, table, new Customer("CUSTOMER-" + orderId));
+    }
+
+    // สร้างออเดอร์ในสถานะตะกร้า และจดเวลาที่สร้าง
+    public Order(String orderId, Table table, Customer customer) {
+        this.orderId = orderId;
         this.table = table;
         this.customer = customer;
-        this.status = "ตะกร้า";
+        this.status = OrderStatus.CART;
         this.createdAt = LocalDateTime.now();
         this.items = new ArrayList<OrderItem>();
     }
 
-    public OrderItem addItem(Menu menu, int quantity, String spice, String note) {
-        if (!status.equals("ตะกร้า"))
+    // เพิ่ม OrderItem เมื่อเมนูเปิดขายและออเดอร์ยังเป็นตะกร้า
+    public OrderItem addItem(Menu menu, int qty, String spice, String note) {
+        if (status != OrderStatus.CART)
             throw new IllegalStateException("เพิ่มอาหารได้เฉพาะในตะกร้า");
-        if (!menu.getStatus().equals("เปิดขาย"))
+        if (!menu.statusText().equals("เปิดขาย"))
             throw new IllegalArgumentException("เมนูปิดขาย");
         itemNumber++;
-        OrderItem item = new OrderItem(orderId + "-ITEM-" + itemNumber, menu, quantity, spice, note);
+        OrderItem item = new OrderItem(orderId + "-ITEM-" + itemNumber, menu, qty, spice, note);
         items.add(item);
         return item;
     }
 
+    // ลบรายการจากตะกร้าก่อนยืนยัน
     public void removeItem(int index) {
-        if (!status.equals("ตะกร้า"))
+        if (status != OrderStatus.CART)
             throw new IllegalStateException("ลบได้เฉพาะตะกร้า");
         items.get(index).destroy();
         items.remove(index);
     }
 
+    // ลบรายการจากตะกร้าก่อนยืนยัน
+    public void removeItem(OrderItem item) {
+        int index = items.indexOf(item);
+        if (index < 0) throw new IllegalArgumentException("ไม่พบรายการในออเดอร์");
+        removeItem(index);
+    }
+
+    // ผูกสมาชิกกับลูกค้าในออเดอร์ก่อนยืนยัน
+    public void attachMember(Member member) {
+        if (status != OrderStatus.CART) throw new IllegalStateException("แนบสมาชิกได้ก่อนยืนยันเท่านั้น");
+        customer.linkMember(member);
+    }
+
+    // รวมราคาของรายการที่ยังไม่ยกเลิก
     public double calculateTotal() {
         double total = 0;
+        // รายการที่ยกเลิกไม่อยู่ในยอดบิล แม้ยังเก็บไว้เพื่อดูประวัติ
         for (int i = 0; i < items.size(); i++) {
-            if (!items.get(i).getStatus().equals("ยกเลิก"))
-                total += items.get(i).getPrice();
+            if (!items.get(i).statusText().equals("ยกเลิก"))
+                total += items.get(i).price();
         }
-        return total;
+        totalAmount = total;
+        return totalAmount;
     }
 
     // รวบรวมชื่อวัตถุดิบโดยไม่ซ้ำ เพื่อให้ตรวจยอดรวมของหลายจานได้
@@ -56,9 +88,9 @@ public class Order {
         ArrayList<Ingredient> result = new ArrayList<Ingredient>();
         for (int i = 0; i < items.size(); i++) {
             OrderItem item = items.get(i);
-            if (!item.getStatus().equals("ยกเลิก")) {
-                for (int j = 0; j < item.getIngredients().size(); j++) {
-                    Ingredient ingredient = item.getIngredients().get(j);
+            if (!item.statusText().equals("ยกเลิก")) {
+                for (int j = 0; j < item.ingredients().size(); j++) {
+                    Ingredient ingredient = item.ingredients().get(j);
                     if (!result.contains(ingredient))
                         result.add(ingredient);
                 }
@@ -67,19 +99,21 @@ public class Order {
         return result;
     }
 
+    // คำนวณจำนวนวัตถุดิบรวมของทุกรายการในออเดอร์
     private double requiredQuantity(Ingredient ingredient) {
         double total = 0;
         for (int i = 0; i < items.size(); i++) {
             OrderItem item = items.get(i);
-            if (!item.getStatus().equals("ยกเลิก")) {
-                total += item.amountPerDish(ingredient) * item.getQuantity();
+            if (!item.statusText().equals("ยกเลิก")) {
+                total += item.amountPerDish(ingredient) * item.quantity();
             }
         }
         return total;
     }
 
+    // ตรวจวัตถุดิบทุกชนิดให้พอครบก่อนตัดสต็อกและส่งครัว
     public void confirm() {
-        if (!status.equals("ตะกร้า") || items.isEmpty())
+        if (status != OrderStatus.CART || items.isEmpty())
             throw new IllegalStateException("ตะกร้าต้องมีอาหารและยังไม่ยืนยัน");
         ArrayList<Ingredient> ingredients = allIngredients();
         // ตรวจให้ครบทุกชนิดก่อน แล้วค่อยตัด
@@ -87,35 +121,38 @@ public class Order {
         for (int i = 0; i < ingredients.size(); i++) {
             Ingredient ingredient = ingredients.get(i);
             if (!ingredient.hasEnough(requiredQuantity(ingredient))) {
-                throw new IllegalArgumentException("วัตถุดิบไม่พอ: " + ingredient.getName());
+                throw new IllegalArgumentException("วัตถุดิบไม่พอ: " + ingredient.name());
             }
         }
         for (int i = 0; i < ingredients.size(); i++) {
             Ingredient ingredient = ingredients.get(i);
             ingredient.deduct(requiredQuantity(ingredient), orderId);
         }
+        // หลังตัดครบแล้วจึงเปลี่ยนรายการเป็นงานของครัว
         for (int i = 0; i < items.size(); i++)
             items.get(i).markConfirmed();
-        status = "ยืนยันแล้ว";
-        table.setStatus("ใช้งาน");
+        status = OrderStatus.CONFIRMED;
+        table.changeTableStatus("ใช้งาน");
     }
 
+    // แก้จำนวนอาหารและตัดหรือคืนสต็อกเฉพาะส่วนต่าง
     public void changeQuantity(int index, int newQuantity) {
         OrderItem item = items.get(index);
-        if (newQuantity <= 0 || !item.getStatus().equals("รอปรุง") || payment != null) {
+        if (newQuantity <= 0 || !item.statusText().equals("รอปรุง") || payment != null) {
             throw new IllegalArgumentException("แก้ได้เฉพาะรายการรอปรุงที่ยังไม่ชำระ และจำนวนต้องมากกว่า 0");
         }
-        if (status.equals("ตะกร้า")) {
+        if (status == OrderStatus.CART) {
             item.changeQuantity(newQuantity);
             return;
         }
-        int difference = newQuantity - item.getQuantity();
+        int difference = newQuantity - item.quantity();
+        // เพิ่มจานต้องเช็กสต็อกส่วนต่าง; ลดจานจะคืนเฉพาะส่วนต่าง
         ArrayList<Ingredient> ingredients = allIngredients();
         if (difference > 0) {
             for (int i = 0; i < ingredients.size(); i++) {
                 Ingredient ingredient = ingredients.get(i);
                 if (!ingredient.hasEnough(item.amountPerDish(ingredient) * difference)) {
-                    throw new IllegalArgumentException("วัตถุดิบไม่พอ: " + ingredient.getName());
+                    throw new IllegalArgumentException("วัตถุดิบไม่พอ: " + ingredient.name());
                 }
             }
         }
@@ -130,6 +167,7 @@ public class Order {
         item.changeQuantity(newQuantity);
     }
 
+    // ยกเลิกรายการที่ยังไม่ชำระ แล้วอัปเดตสถานะออเดอร์
     public void cancelItem(int index) {
         if (payment != null)
             throw new IllegalStateException("ชำระแล้ว แก้รายการไม่ได้");
@@ -137,10 +175,11 @@ public class Order {
         refreshStatus();
     }
 
+    // คืน true เมื่อรายการที่ไม่ถูกยกเลิกเสิร์ฟครบทุกจาน
     public boolean isServed() {
         boolean hasFood = false;
         for (int i = 0; i < items.size(); i++) {
-            String itemStatus = items.get(i).getStatus();
+            String itemStatus = items.get(i).statusText();
             if (!itemStatus.equals("ยกเลิก")) {
                 hasFood = true;
                 if (!itemStatus.equals("เสิร์ฟแล้ว"))
@@ -152,14 +191,14 @@ public class Order {
 
     // สถานะออเดอร์สรุปจากอาหารที่ยังไม่ยกเลิกทั้งหมด
     public void refreshStatus() {
-        if (status.equals("ตะกร้า") || status.equals("ชำระแล้ว"))
+        if (status == OrderStatus.CART || status == OrderStatus.PAID)
             return;
         int active = 0;
         int ready = 0;
         int served = 0;
         boolean cooking = false;
         for (int i = 0; i < items.size(); i++) {
-            String value = items.get(i).getStatus();
+            String value = items.get(i).statusText();
             if (!value.equals("ยกเลิก"))
                 active++;
             if (value.equals("กำลังปรุง"))
@@ -170,20 +209,39 @@ public class Order {
                 served++;
         }
         if (active == 0)
-            status = "ยกเลิก";
+            status = OrderStatus.CANCELLED;
         else if (served == active)
-            status = "เสิร์ฟแล้ว";
+            status = OrderStatus.SERVED;
         else if (ready + served == active)
-            status = "พร้อมเสิร์ฟ";
+            status = OrderStatus.READY;
         else if (cooking)
-            status = "กำลังปรุง";
+            status = OrderStatus.COOKING;
         else
-            status = "ยืนยันแล้ว";
+            status = OrderStatus.CONFIRMED;
     }
 
+    // ผูก Payment ที่ยืนยันแล้วและเปลี่ยนสถานะเป็นชำระแล้ว
     void markPaid(Payment payment) {
         this.payment = payment;
-        status = "ชำระแล้ว";
+        status = OrderStatus.PAID;
+    }
+
+    // ยกเลิกทั้งออเดอร์เมื่อยังไม่มีรายการเริ่มปรุง
+    public void cancel() {
+        if (payment != null) throw new IllegalStateException("ชำระแล้ว ยกเลิกไม่ได้");
+        for (OrderItem item : items) {
+            if (!item.statusText().equals("รอปรุง") && !item.statusText().equals("ยกเลิก"))
+                throw new IllegalStateException("มีรายการเริ่มปรุงแล้ว ให้ส่งคำขอผู้จัดการ");
+        }
+        for (OrderItem item : items) if (!item.statusText().equals("ยกเลิก")) item.cancel();
+        status = OrderStatus.CANCELLED;
+    }
+
+    // จำกัดการเปลี่ยนสถานะให้ผ่านขั้นตอนที่มีกฎรองรับ
+    public void changeStatus(OrderStatus s) {
+        if (s == OrderStatus.CANCELLED) { cancel(); return; }
+        if (s == status) return;
+        throw new IllegalStateException("สถานะเปลี่ยนผ่านขั้นตอนของรายการอาหารและการชำระเงิน");
     }
 
     public void destroy() {
@@ -196,35 +254,46 @@ public class Order {
         destroyed = true;
     }
 
-    public String getOrderId() {
+    // เมธอดอ่านออเดอร์; statusText() แปลง enum เป็นข้อความที่ผู้ใช้เห็น
+    public String orderId() {
         return orderId;
     }
 
-    public Table getTable() {
+    public Table table() {
         return table;
     }
 
-    public Customer getCustomer() {
+    public Customer customer() {
         return customer;
     }
 
-    public Member getMember() {
-        return customer.getMember();
+    public Member linkedMember() {
+        return customer.linkedMember();
     }
 
-    public Payment getPayment() {
+    public Payment payment() {
         return payment;
     }
 
-    public String getStatus() {
-        return status;
+    public String statusText() {
+        switch (status) {
+            case CART: return "ตะกร้า";
+            case CONFIRMED: return "ยืนยันแล้ว";
+            case COOKING: return "กำลังปรุง";
+            case READY: return "พร้อมเสิร์ฟ";
+            case SERVED: return "เสิร์ฟแล้ว";
+            case PAID: return "ชำระแล้ว";
+            default: return "ยกเลิก";
+        }
     }
 
-    public LocalDateTime getCreatedAt() {
+    // อ่านยอดรวมล่าสุดโดยคำนวณใหม่ก่อนคืนค่า
+
+    public LocalDateTime createdAt() {
         return createdAt;
     }
 
-    public ArrayList<OrderItem> getItems() {
+    public List<OrderItem> items() {
         return items;
     }
 

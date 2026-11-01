@@ -2,15 +2,17 @@ package model;
 
 // หนึ่งขั้นตอน เช่น เตรียมปลา ใช้เวลา 2 นาที
 public class SOPStep {
+    // หนึ่ง object คือหนึ่งขั้นตอน; no เริ่มจาก 1 ตามลำดับที่เห็นบนหน้าจอ
     private String sopStepId;
-    private int number;
+    private int no;
     private String description;
     private double standardMinutes;
     private boolean destroyed;
 
-    public SOPStep(String id, int number, String description, double minutes) {
-        this.sopStepId = id;
-        this.number = number;
+    // สร้างขั้นตอนหนึ่งลำดับพร้อมเวลาเป้าหมาย
+    public SOPStep(String sopStepId, int no, String description, double minutes) {
+        this.sopStepId = sopStepId;
+        this.no = no;
         update(description, minutes);
     }
 
@@ -25,19 +27,17 @@ public class SOPStep {
         destroyed = true;
     }
 
-    public String getSopStepId() {
-        return sopStepId;
+    // เมธอดอ่านลำดับ คำอธิบาย และเวลามาตรฐานของขั้นตอน
+
+    public int number() {
+        return no;
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public String getDescription() {
+    public String description() {
         return description;
     }
 
-    public double getStandardMinutes() {
+    public double standardMinutes() {
         return standardMinutes;
     }
 

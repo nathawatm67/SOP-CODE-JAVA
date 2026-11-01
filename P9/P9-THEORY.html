@@ -1,0 +1,1925 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P9: ทฤษฎี Java OOP, Composition & Text Mode Terminal — ร้านข้าวต้มอารมณ์ดี</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Noto+Sans+Thai:wght@300;400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #120d09;
+      --bg-slide: #1a140f;
+      --bg-cream: #fbf7ee;
+      --card-dark: #221a14;
+      --card-border: #3d2e24;
+      --terminal-bg: #0d1117;
+      --terminal-border: #30363d;
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --amber: #d97706;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-cyan: #38bdf8;
+      --accent-green: #34d399;
+      --accent-red: #f87171;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    header.top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(18, 13, 9, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-badge {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+    }
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fed7aa;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .view-mode-btn {
+      background: #2a2018;
+      color: #e5e7eb;
+      border: 1px solid var(--card-border);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .view-mode-btn.active, .view-mode-btn:hover {
+      background: var(--gold);
+      color: #1a140f;
+      border-color: var(--gold-light);
+    }
+
+    .filter-btn {
+      background: transparent;
+      color: #d1d5db;
+      border: 1px solid #4b3628;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: #3b2a1e;
+      color: var(--gold-light);
+      border-color: var(--gold);
+    }
+
+    /* Presentation Navigation Bar */
+    .slide-pager {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #231b14;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+    }
+    .pager-btn {
+      background: #38291e;
+      color: #fff;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    .pager-btn:hover { background: var(--gold); color: #000; }
+    .pager-counter {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #fed7aa;
+      min-width: 65px;
+      text-align: center;
+    }
+
+    /* Container */
+    main.deck-container {
+      max-width: 1360px;
+      width: 100%;
+      margin: 24px auto;
+      padding: 0 20px 60px;
+      flex-grow: 1;
+    }
+
+    /* Slide Card */
+    .canva-slide-card {
+      width: 100%;
+      background: var(--bg-slide);
+      border: 2px solid var(--card-border);
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(245, 158, 11, 0.05);
+      margin-bottom: 38px;
+      padding: 34px 40px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .canva-slide-card:hover {
+      border-color: #5c4433;
+    }
+
+    /* Presentation Mode Active Slide */
+    body.presentation-mode .canva-slide-card {
+      display: none;
+      min-height: 680px;
+    }
+    body.presentation-mode .canva-slide-card.active-slide {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Top Slide Header */
+    .slide-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+      padding-bottom: 14px;
+    }
+    .slide-badge-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .slide-fr-badge {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--gold-light);
+      background: #2a1f16;
+      padding: 2px 14px;
+      border-radius: 8px;
+      border: 1px solid #d97706;
+      letter-spacing: 0.5px;
+    }
+    .slide-main-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .slide-number-circle {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #1a140f;
+      background: #fcd34d;
+      padding: 2px 18px;
+      border-radius: 50px;
+      box-shadow: 0 2px 8px rgba(252, 211, 77, 0.3);
+    }
+
+    /* Slide 339 Special Theme (Theory Slide Cream Theme) */
+    .canva-slide-card.theme-cream {
+      background: var(--bg-cream);
+      color: #261c14;
+      border-color: #d1b89d;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.25);
+    }
+    .canva-slide-card.theme-cream .slide-top-bar {
+      border-bottom-color: #e2cbb2;
+    }
+    .canva-slide-card.theme-cream .slide-main-title {
+      color: #7c2d12;
+      font-size: 32px;
+      font-weight: 900;
+      text-shadow: 2px 2px 0px #fed7aa;
+    }
+    .canva-slide-card.theme-cream .slide-number-circle {
+      background: #7c2d12;
+      color: #fff;
+    }
+
+    /* Theory Rules Box */
+    .theory-box {
+      font-size: 14.5px;
+      line-height: 1.7;
+      margin-bottom: 22px;
+      color: #3e2e21;
+    }
+    .theory-box p { margin-bottom: 10px; }
+    .theory-box strong { color: #9a3412; font-weight: 700; }
+    .theory-rules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .theory-rule-item {
+      background: #fff;
+      border: 1px solid #dec8b2;
+      border-left: 4px solid #b45309;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    /* Terminal Window Styling (Matching Pizza PDF Slides) */
+    .terminal-window {
+      background: var(--terminal-bg);
+      border: 1.5px solid var(--terminal-border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .terminal-header {
+      background: #161b22;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--terminal-border);
+    }
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+    .terminal-title {
+      font-family: 'Fira Code', 'Noto Sans Thai', monospace;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #8b949e;
+      margin-left: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .terminal-body {
+      padding: 16px 18px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #e6edf3;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      max-height: 480px;
+      flex-grow: 1;
+    }
+    .terminal-caption {
+      margin-top: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--gold-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .terminal-caption span.step-num {
+      background: var(--gold);
+      color: #120d09;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    /* Grid for side-by-side terminal windows */
+    .grid-2-terminals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) {
+      .grid-2-terminals { grid-template-columns: 1fr; }
+    }
+
+    /* Code Box Styling */
+    .code-box-wrap {
+      background: #111827;
+      border: 1.5px solid #d97706;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .code-box-header {
+      background: #1f2937;
+      border-bottom: 1px solid #374151;
+      padding: 7px 14px;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--gold-light);
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .code-box-body {
+      padding: 14px 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #f3f4f6;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    /* Composition Slide Layout (Slide 384 Style) */
+    .composition-slide-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+    @media (max-width: 960px) {
+      .composition-slide-grid { grid-template-columns: 1fr; }
+    }
+
+    .proof-panel {
+      background: #231b14;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .proof-item {
+      border-bottom: 1px dashed rgba(245, 158, 11, 0.2);
+      padding-bottom: 12px;
+    }
+    .proof-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .proof-label {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .proof-desc {
+      font-size: 14px;
+      color: #e5e7eb;
+      line-height: 1.5;
+    }
+    .proof-code-snip {
+      background: #16120d;
+      border: 1px solid #3d2f23;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      color: #67e8f9;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    /* Copy Actions */
+    .copy-btn {
+      background: #2d2117;
+      color: #fed7aa;
+      border: 1px solid #78350f;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--gold);
+      color: #120d09;
+      border-color: var(--gold-light);
+    }
+    .slide-copy-all {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+      transition: 0.2s;
+    }
+    .slide-copy-all:hover {
+      background: #1d4ed8;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.5);
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 1000;
+      animation: popToast 0.3s ease;
+    }
+    @keyframes popToast {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Footer */
+    footer.page-footer {
+      text-align: center;
+      padding: 24px;
+      color: #78716c;
+      font-size: 13px;
+      border-top: 1px solid var(--card-border);
+    }
+  </style>
+</head>
+<body class="presentation-mode">
+
+  <!-- TOP NAV BAR -->
+  <header class="top-nav">
+    <div class="brand-wrap">
+      <div class="brand-badge">P9</div>
+      <div>
+        <div class="brand-title">Java OOP & Text Mode Terminal — ร้านข้าวต้มอารมณ์ดี</div>
+        <div class="brand-sub">สถาปัตยกรรม 16 คลาสทางการ · Composition 5 คู่แท้ · ผลรันจริงจาก Main.java</div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <!-- Pager -->
+      <div class="slide-pager">
+        <button class="pager-btn" id="prevBtn" title="สไลด์ก่อนหน้า (Arrow Left)">◀</button>
+        <div class="pager-counter" id="slideCounter">1 / 15</div>
+        <button class="pager-btn" id="nextBtn" title="สไลด์ถัดไป (Arrow Right)">▶</button>
+      </div>
+
+      <!-- View Mode Buttons -->
+      <button class="view-mode-btn active" id="btnModePresent" onclick="setViewMode('present')">🖥️ โหมดนำเสนอทีละสไลด์</button>
+      <button class="view-mode-btn" id="btnModeAll" onclick="setViewMode('all')">📑 โหมดแสดงทั้งหมด</button>
+
+      <!-- Category Filter -->
+      <div style="display:flex; gap:6px; margin-left:6px;">
+        <button class="filter-btn active" onclick="filterCategory('all', this)">ทั้งหมด</button>
+        <button class="filter-btn" onclick="filterCategory('theory', this)">ทฤษฎี (339)</button>
+        <button class="filter-btn" onclick="filterCategory('fr', this)">FR1–FR8 Text Mode</button>
+        <button class="filter-btn" onclick="filterCategory('composition', this)">พิสูจน์ Composition</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="deck-container" id="deckContainer">
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 339: ทฤษฎีการเขียน code แบบ composition (Cream Slide Theme) -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card theme-cream active-slide" data-category="theory" data-slide-num="339">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-main-title">ทฤษฎีการเขียน code แบบ composition</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกทั้งสไลด์ 339 ไปวาง Canva</button>
+          <div class="slide-number-circle">339</div>
+        </div>
+      </div>
+
+      <div class="theory-box">
+        <p><strong>Composition</strong> คือ ความสัมพันธ์ระหว่างคลาสแบบ <code>"has a"</code> (ประกอบด้วย) ที่มีคุณสมบัติ <strong>"ความเป็นเจ้าของ (ownership)"</strong> คลาสเจ้าของเรียกว่า <em>owning object</em> ส่วนคลาสที่ถูกประกอบเรียกว่า <em>contained object</em> โดย <strong>"เมื่อไม่มี owning object จะไม่มี contained object"</strong> เช่น a Document has many Pages ถ้าไม่มี Document ก็ไม่มี Page</p>
+        
+        <p><strong>สัญลักษณ์ข้าวหลามตัดทึบ (◆)</strong> เส้นที่หัวข้างหนึ่งเป็นสี่เหลี่ยมข้าวหลามตัดทึบ อยู่ฝั่งคลาสเจ้าของ หมายถึงคลาสนั้นประกอบขึ้นด้วยคลาสที่อยู่ปลายอีกข้าง</p>
+        
+        <p><strong>วิธีหา Composition</strong> รวบรวม Use Case / User Story → หาประโยค "has a" → ทดสอบว่าถ้าไม่มีเจ้าของ ส่วนประกอบยังอยู่ไหม → ทำซ้ำจนครบ → รวมทุก Association ไว้ในไดอะแกรมเดียว</p>
+
+        <p><strong>เขียนเป็น code อย่างไร (หลักปฏิบัติ 4 ข้อ)</strong></p>
+        <div class="theory-rules-grid">
+          <div class="theory-rule-item"><b>1.</b> เก็บส่วนประกอบเป็น <code>field private</code> ในคลาสเจ้าของ</div>
+          <div class="theory-rule-item"><b>2.</b> เจ้าของสร้างส่วนประกอบเองด้วย <code>new</code></div>
+          <div class="theory-rule-item"><b>3.</b> คลาสอื่นไม่ถือส่วนประกอบไว้โดยตรง</div>
+          <div class="theory-rule-item"><b>4.</b> เมื่อเจ้าของถูกลบ/ยกเลิก ส่วนประกอบหายไปด้วย</div>
+        </div>
+        <div style="font-size:12px; color:#78350f; font-weight:700;">อ้างอิง: เอกสาร OOAD & OMG UML 2.5.1</div>
+      </div>
+
+      <!-- Two Side-by-Side Code Windows -->
+      <div class="grid-2-terminals">
+        <!-- Left: Document has Pages -->
+        <div>
+          <div style="font-size:14px; font-weight:800; color:#78350f; margin-bottom:8px;">ตัวอย่าง (จากเอกสาร: Document has many Pages)</div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">class Document & class Page</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อปโค้ด</button>
+            </div>
+            <div class="terminal-body"><code>class Document {
+    private List&lt;Page&gt; pages = new ArrayList&lt;&gt;(); // has many Pages
+
+    public void addPage(String text) {
+        pages.add(new Page(text)); // Document สร้าง Page เอง
+    }
+}
+
+class Page {
+    private String text;
+    Page(String text) { this.text = text; } // ไม่ใส่ public
+}</code></div>
+          </div>
+          <div style="font-size:12.5px; color:#78350f; font-weight:600; margin-top:8px; text-align:center;">
+            Page ถูกสร้างและเก็บไว้ใน Document ที่เดียว — ไม่มี Document ก็ไม่มี Page
+          </div>
+        </div>
+
+        <!-- Right: Our System (Order & OrderItem) -->
+        <div>
+          <div style="font-size:14px; font-weight:800; color:#78350f; margin-bottom:8px;">ตัวอย่างของระบบเรา (src/model/Order.java)</div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">Order ◆ OrderItem (ข้าวต้มอารมณ์ดี)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อปโค้ด</button>
+            </div>
+            <div class="terminal-body"><code>public class Order {
+    private ArrayList&lt;OrderItem&gt; items; // Composition (ลูกตายตามแม่)
+    private Table table;                // Association (โต๊ะยังคงอยู่)
+
+    public OrderItem addItem(Menu menu, int qty, String spice, String note) {
+        OrderItem item = new OrderItem(orderId + "-ITM-" + itemNum, menu, qty, spice, note);
+        items.add(item); // ส่วนประกอบเกิดในเจ้าของ
+        return item;
+    }
+
+    public void destroy() {
+        for (int i = 0; i &lt; items.size(); i++)
+            items.get(i).destroy(); // สั่งทำลาย OrderItem ทั้งหมด
+        items.clear();
+        table = null;               // โต๊ะไม่ถูกทำลาย (ยังคงอยู่รับลูกค้าใหม่)
+        destroyed = true;
+    }
+}</code></div>
+          </div>
+          <div style="font-size:12.5px; color:#78350f; font-weight:600; margin-top:8px; text-align:center;">
+            Order ◆ OrderItem : ยกเลิก/ลบออเดอร์แล้ว OrderItem หายไปพร้อมกัน แต่ Table ยังคงอยู่
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 340: คั่นหมวด Text Mode Demonstration -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="340" style="text-align:center; padding:90px 40px;">
+      <div style="max-width:800px; margin:0 auto;">
+        <div style="font-family:'Outfit',sans-serif; font-size:46px; font-weight:900; color:var(--gold-light); margin-bottom:12px; letter-spacing:1px;">
+          ตัวอย่าง Code และขั้นตอนการทำงาน
+        </div>
+        <div style="font-size:22px; color:#fed7aa; margin-bottom:24px; font-weight:700;">
+          Java OOP Text Mode Simulator — ร้านข้าวต้มอารมณ์ดี (FR1–FR8)
+        </div>
+        <p style="font-size:16px; color:var(--text-muted); line-height:1.8; margin-bottom:30px;">
+          แสดงผลลัพธ์การรันจริงแบบ Command-Line Terminal Interface สอดคล้องกับ Use Case (P3), Text Mode (P4) และ Domain Model (P7/P8) ครบ 16 คลาสทางการ พร้อมปุ่มคัดลอกลงสไลด์ Canva ทุกหน้าจอ
+        </p>
+        <div class="slide-number-circle" style="display:inline-block; margin:0 auto;">340</div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 341-342: FR1 จัดการคิวสั่งอาหารผ่าน QR Code -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="341">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-fr-badge">FR1</div>
+          <div class="slide-main-title">สั่งอาหารผ่าน QR Code (Customer, Table, Order, OrderItem)</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 341 ไปวาง Canva</button>
+          <div class="slide-number-circle">341</div>
+        </div>
+      </div>
+
+      <div class="grid-2-terminals">
+        <!-- Terminal 1 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">สแกน QR Code ประจำโต๊ะ (Table QR Scan)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== ข้าวต้มอารมณ์ดี - สั่งอาหารผ่าน QR Code ====
+------------------------------------------------------------------------
+บทบาท: ลูกค้า (Customer)
+------------------------------------------------------------------------
+[1] สแกน QR Code และสั่งอาหารใหม่
+[2] ติดตามสถานะและจัดการออเดอร์
+[0] ย้อนกลับหน้าหลัก
+เลือกงานสั่งอาหาร > 1
+
+[1] TBL-001 - ว่าง
+[2] TBL-002 - ว่าง
+[3] TBL-003 - ว่าง
+[4] TBL-004 - ว่าง (โต๊ะ 4 ที่นั่ง)
+เลือก QR ของโต๊ะ > 4
+ระบบระบุโต๊ะ TBL-004 จาก Token: QR-TBL-004
+
+==== สิทธิพิเศษสมาชิกและสะสมแต้ม ====
+เบอร์สมาชิก (Enter ข้าม) > 0999999999
+ระบบผูกเบอร์ 0999999999 (MBR-0001 คุณสมชาย) กับออเดอร์เพื่อสะสมแต้ม
+สร้างตะกร้า CRT-20261101-0001 ให้อัตโนมัติ</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">1</span> สแกน QR ประจำโต๊ะ และเชื่อมโยงสมาชิกสะสมแต้ม
+          </div>
+        </div>
+
+        <!-- Terminal 2 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ตรวจสอบตะกร้าและเลือกเมนู (Cart & Menu)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== ตรวจสอบตะกร้าอาหาร (Cart) ====
+------------------------------------------------------------------------
+โต๊ะ: TBL-004 - ตะกร้า: CRT-20261101-0001
+[1] เลือกหมวดและเพิ่มอาหาร  [2] แก้จำนวนจาน  [4] ยืนยันส่งครัว
+เลือกตัวเลือกในตะกร้า > 1
+
+==== หมวดอาหาร: [5] ผัด ====
+[1] MNU-018 หมูกระเทียม - 120.00 บาท - [พร้อมขาย]
+[2] MNU-029 ผัดกะเพราปลา - 69.00 บาท - [พร้อมขาย]
+เลือกเมนู > 2 (ผัดกะเพราปลา)
+จำนวนจานที่สั่ง > 2
+
+==== ปรับแต่งเมนูอาหาร ====
+เลือกระดับความเผ็ด [1 เผ็ดน้อย / 2 ปานกลาง / 3 เผ็ดมาก] > 3
+ตัวเลือกเสริม: [1] เพิ่มไข่ดาว (+15.00 บาท) > 1
+หมายเหตุเพิ่มเติม > ไม่ใส่น้ำตาล
+เพิ่ม ผัดกะเพราปลา x2 ลงตะกร้าแล้ว (รวม 168.00 บาท)</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">2</span> เลือกเมนู ปรับแต่งระดับเผ็ด และเพิ่มตัวเลือกเสริม
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 343-344: FR1 ยืนยันส่งครัวและติดตามสถานะ -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="342">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-fr-badge">FR1</div>
+          <div class="slide-main-title">ยืนยันคำสั่งซื้อ ตัดสต็อกอัตโนมัติ และติดตามสถานะ</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 342 ไปวาง Canva</button>
+          <div class="slide-number-circle">342</div>
+        </div>
+      </div>
+
+      <div class="grid-2-terminals">
+        <!-- Terminal 1 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ยืนยันสั่งอาหารและตัดสต็อก (Order Confirmation)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== ยืนยันการสั่งอาหารเข้าครัว ====
+------------------------------------------------------------------------
+โต๊ะ: TBL-004 - ตะกร้า: CRT-20261101-0001
+1. ผัดกะเพราปลา x2 (เผ็ดมาก / เพิ่มไข่ดาว) - 168.00 บาท
+2. ยำหมูยอ/แหนม x1 (เผ็ดปานกลาง)          - 65.00 บาท
+------------------------------------------------------------------------
+ราคารวมทั้งสิ้น: 233.00 บาท (ไม่รวมรายการยกเลิก)
+[1] ยืนยันสั่งอาหารเข้าครัว  [0] กลับไปแก้ไข
+เลือก > 1
+
+ตรวจสอบสต็อกตามสูตร Recipe:
+- เนื้อปลา คงเหลือ 5.000 กก. (เพียงพอ)
+- ไข่ไก่   คงเหลือ 20 ฟอง     (เพียงพอ)
+- หมูยอ    คงเหลือ 3.000 กก. (เพียงพอ)
+ตัดสต็อกอัตโนมัติเรียบร้อย!
+ส่งครัวสำเร็จ รหัสออเดอร์: ORD-20261101-0001</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">3</span> ตรวจสต็อกตาม Recipe ตัดสต็อก และยืนยันส่งครัว
+          </div>
+        </div>
+
+        <!-- Terminal 2 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ติดตามสถานะการปรุงอาหาร (Order Status Tracker)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== ติดตามสถานะการปรุงในครัว ====
+------------------------------------------------------------------------
+ออเดอร์: ORD-20261101-0001 | โต๊ะ: TBL-004
+เวลาสั่ง: 20:05 น. | สมาชิก: MBR-0001 คุณสมชาย
+สถานะออเดอร์: รับออเดอร์แล้ว (กำลังรอคิวเข้าครัว)
+------------------------------------------------------------------------
+รายการอาหารในบิล:
+[1] ITM-0001 ผัดกะเพราปลา x1 -> สถานะ: รอปรุง (ครัวร้อน)
+[2] ITM-0002 ผัดกะเพราปลา x1 -> สถานะ: รอปรุง (ครัวร้อน)
+[3] ITM-0003 ยำหมูยอ/แหนม x1 -> สถานะ: รอปรุง (ครัวเย็น)
+------------------------------------------------------------------------
+เวลามาตรฐานตาม SOP รวม: 8.0 นาที
+[1] รีเฟรชสถานะ  [2] ขอแก้/ยกเลิกรายการ  [0] กลับเมนูหลัก</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">4</span> ติดตามสถานะแต่ละจานและเวลารอตามคู่มือ SOP
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 345: FR2 จัดการคู่มือ SOP -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="345">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-fr-badge">FR2</div>
+          <div class="slide-main-title">จัดการคู่มือขั้นตอนมาตรฐานการปรุง (SOP & SOPStep)</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 345 ไปวาง Canva</button>
+          <div class="slide-number-circle">345</div>
+        </div>
+      </div>
+
+      <div class="grid-2-terminals">
+        <!-- Terminal 1 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">รายการคู่มือ SOP (SOP Management)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== ข้าวต้มอารมณ์ดี - จัดการ SOP (Standard Operating Procedure) ====
+------------------------------------------------------------------------
+บทบาท: ผู้จัดการ (Manager - EMP-1)
+------------------------------------------------------------------------
+[1] SOP-001 ข้าวต้มปลา  - [เผยแพร่] (เวลามาตรฐานรวม 7.0 นาที)
+[2] SOP-002 ยำรวมมิตร   - [เผยแพร่] (เวลามาตรฐานรวม 5.0 นาที)
+[3] SOP-003 ผัดกะเพราปลา - [เผยแพร่] (เวลามาตรฐานรวม 6.0 นาที)
+[4] SOP-004 ชาใหม่      - [ร่าง]    (เวลามาตรฐานรวม 2.0 นาที)
+------------------------------------------------------------------------
+[1] ดูและแก้ไขขั้นตอนย่อย SOPStep
+[2] เผยแพร่คู่มือ SOP (Publish)
+[3] ปิดใช้งานคู่มือ SOP (Disable)
+[0] กลับเมนูหลัก
+เลือกคำสั่ง > 1 (เลือก SOP-004 ชาใหม่)</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">1</span> แสดงรายการคู่มือ SOP และสถานะการเผยแพร่
+          </div>
+        </div>
+
+        <!-- Terminal 2 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">กำหนดขั้นตอนย่อย SOPStep (Step Definition)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== รายละเอียดคู่มือขั้นตอนการปรุงอาหาร ====
+------------------------------------------------------------------------
+SOP: ชาใหม่ (SOP-004) | เมนู: ชาใหม่ (MNU-031)
+สถานะ: ร่าง (Draft) | เวลามาตรฐานรวม: 2.0 นาที
+------------------------------------------------------------------------
+ขั้นตอนการทำ (SOPStep Composition):
+1. ต้มน้ำร้อน 95°C และแช่ใบชา - 1.5 นาที
+2. ผสมน้ำเชื่อม/นม และเทใส่น้ำแข็ง - 0.5 นาที
+------------------------------------------------------------------------
+[1] เพิ่มขั้นตอนย่อยใหม่ (addStep)
+[2] เผยแพร่คู่มือนี้ทันที (Publish)
+[0] ย้อนกลับ
+เลือก > 2
+สถานะ SOP-004 เปลี่ยนเป็น: [เผยแพร่] เรียบร้อย!
+พ่อครัวสามารถเรียกดูสูตรมาตรฐานขณะปรุงได้ทันที</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">2</span> กำหนดขั้นตอนย่อย SOPStep และเผยแพร่มาตรฐาน
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 347: FR3 ปรุงอาหารตาม SOP และงานเสิร์ฟ -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="347">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-fr-badge">FR3</div>
+          <div class="slide-main-title">ปรุงอาหารตาม SOP และงานเสิร์ฟ (KDS ครัวร้อน/เย็น)</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 347 ไปวาง Canva</button>
+          <div class="slide-number-circle">347</div>
+        </div>
+      </div>
+
+      <div class="grid-2-terminals">
+        <!-- Terminal 1 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">จอครัว KDS - ครัวร้อน (Hot Kitchen Station)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== จอครัว KDS - ครัวร้อน ====
+------------------------------------------------------------------------
+ผู้ปฏิบัติงาน: นายสมชาย ใจดี (คนครัว - EMP-3)
+------------------------------------------------------------------------
+ลำดับ  ออเดอร์           โต๊ะ     รายการอาหาร         สถานะ
+[1]   ORD-20261101-0001 TBL-001 ข้าวต้มปลา x1      รับออเดอร์
+[2]   ORD-20261101-0001 TBL-004 ผัดกะเพราปลา x2    รับออเดอร์
+------------------------------------------------------------------------
+เลือกรายการเพื่อลงมือทำ > 1
+คู่มือ SOP ข้าวต้มปลา [เผยแพร่] (มาตรฐานรวม 7.0 นาที):
+  1. เตรียมปลาและตักข้าวต้ม - 2.0 นาที
+  2. ปรุงน้ำซุปเดือดและจัดชาม - 5.0 นาที
+[1] เริ่มลงมือปรุง (Start Cooking)  [0] กลับ
+เลือก > 1 -> เริ่มต้นจับเวลาปรุงอาหาร...</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">1</span> คนครัวรับคิว KDS เปิดดู SOP และเริ่มจับเวลาปรุง
+          </div>
+        </div>
+
+        <!-- Terminal 2 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ปรุงเสร็จและพนักงานเสิร์ฟ (Ready & Serve)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== รายการอาหารพร้อมเสิร์ฟ ====
+------------------------------------------------------------------------
+ออเดอร์: ORD-20261101-0001 | โต๊ะ: TBL-001
+รายการ: ข้าวต้มปลา x1
+เวลาเริ่มปรุง: 20:05 น. | เวลาปรุงเสร็จ: 20:11 น.
+เวลาที่ใช้จริง: 6.0 นาที (เวลามาตรฐาน SOP: 7.0 นาที) -> [ตรงเวลา ✅]
+สถานะปัจจุบัน: พร้อมเสิร์ฟ (Ready to Serve)
+------------------------------------------------------------------------
+ผู้ปฏิบัติงาน: แคชเชียร์/พนักงานเสิร์ฟ (EMP-2)
+[1] ยืนยันการเสิร์ฟถึงโต๊ะแล้ว (Serve)
+เลือก > 1
+สถานะออเดอร์: ORD-20261101-0001 - โต๊ะ TBL-001 - เสิร์ฟแล้ว!
+ส่งต่อสถานะไปยังเคาน์เตอร์ POS พร้อมเรียกเช็คบิล</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">2</span> บันทึกเวลาปรุงจริงเทียบ SOP และยืนยันการเสิร์ฟ
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 349: FR4 จุดชำระเงิน POS และออกใบเสร็จ -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="349">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-fr-badge">FR4</div>
+          <div class="slide-main-title">ชำระเงิน คิดแต้มสะสม และพิมพ์ใบเสร็จ (Payment & Member)</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 349 ไปวาง Canva</button>
+          <div class="slide-number-circle">349</div>
+        </div>
+      </div>
+
+      <div class="grid-2-terminals">
+        <!-- Terminal 1 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">จุดชำระเงิน POS และแลกแต้ม (POS & Points)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== เคาน์เตอร์แคชเชียร์: เรียกดูโต๊ะรอชำระเงิน ====
+------------------------------------------------------------------------
+[1] TBL-001 - ออเดอร์ ORD-20261101-0001 (เสิร์ฟครบแล้ว)
+เลือกโต๊ะ > 1
+
+==== รายละเอียดบิลค่าอาหาร ====
+1. ข้าวต้มปลา x1 = 80.00 บาท
+ราคารวม: 80.00 บาท
+ผูกสมาชิก: MBR-0001 (คุณสมชาย) - มีแต้มสะสม: 14 แต้ม
+อัตราแต้ม: 10 แต้ม = ส่วนลด 10.00 บาท
+แลกแต้มสะสม (ระบุจำนวนแต้ม, 0 ข้าม) > 10
+ส่วนลดแต้ม: -10.00 บาท | ยอดสุทธิที่ต้องชำระ: 70.00 บาท
+
+==== เลือกช่องทางการชำระเงิน ====
+1 เงินสด / 2 QR Payment / 0 ยกเลิก
+เลือกช่องทาง > 1 (เงินสด)
+รับเงินจากลูกค้า (บาท) > 100.00
+เงินทอน: 30.00 บาท</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">1</span> ตรวจสอบบิลโต๊ะอาหาร แลกแต้มส่วนลด และรับชำระเงิน
+          </div>
+        </div>
+
+        <!-- Terminal 2 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">พิมพ์ใบเสร็จรับเงิน (Official Receipt)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>****************** ใบเสร็จรับเงิน (RECEIPT) ******************
+ร้านข้าวต้มอารมณ์ดี (สาขาหลัก)
+เลขที่ใบเสร็จ: RCT-PAY-20261101-0001
+โต๊ะ: TBL-001 | วันที่/เวลา: 01/11/2026 20:15 น.
+แคชเชียร์: นางสาวสมศรี (EMP-2)
+--------------------------------------------------------------
+รายการอาหาร:
+1. ข้าวต้มปลา x1                             80.00 บาท
+--------------------------------------------------------------
+ยอดรวมก่อนลด:                                 80.00 บาท
+ส่วนลดสมาชิก (แลก 10 แต้ม):                  -10.00 บาท
+ยอดชำระสุทธิ:                                 70.00 บาท
+ช่องทางชำระ: เงินสด (รับมา 100.00 บาท / ทอน 30.00 บาท)
+แต้มสะสมที่ได้รับเพิ่ม: 1 แต้ม (คงเหลือรวม: 5 แต้ม)
+******************* ขอบคุณที่ใช้บริการ *******************</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">2</span> พิมพ์ใบเสร็จ คำนวณเงินทอน และสะสมแต้มสมาชิกใหม่
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 351: FR5 คลังวัตถุดิบและจัดซื้อ -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="351">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-fr-badge">FR5</div>
+          <div class="slide-main-title">คลังวัตถุดิบ ใบสั่งซื้อ และตัดสต็อก (Ingredient, PO, Supplier)</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 351 ไปวาง Canva</button>
+          <div class="slide-number-circle">351</div>
+        </div>
+      </div>
+
+      <div class="grid-2-terminals">
+        <!-- Terminal 1 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ตารางสต็อกและแจ้งเตือน (Inventory Alert)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== ตารางสต็อกวัตถุดิบคงคลัง ====
+------------------------------------------------------------------------
+[1] ING-1 - เนื้อปลา   - 1.300 กก. (จุดสั่งซื้อ 2.000) - [ต่ำกว่าเกณฑ์!]
+[2] ING-2 - ข้าวสวย    - 8.000 กก. (จุดสั่งซื้อ 3.000) - ปกติ
+[3] ING-3 - ไข่ไก่     - 15.000 ฟอง (จุดสั่งซื้อ 5.000) - ปกติ
+------------------------------------------------------------------------
+* แจ้งเตือน: วัตถุดิบต่ำกว่าเกณฑ์ 1 รายการ
+[1] สร้างใบสั่งซื้อ PO ใหม่
+[2] ตรวจรับสินค้าจากใบสั่งซื้อ
+[3] ปรับปรุงยอดสต็อกหลังตรวจนับ
+เลือกคำสั่ง > 1 (สร้าง PO)
+ซัพพลายเออร์: [1] ร้านวัตถุดิบชุมชน (SUP-1)
+ระบุปริมาณที่สั่งซื้อ (เนื้อปลา กก.) > 2.0
+ออกใบสั่งซื้อ PO-21 สำเร็จ สถานะ: สั่งซื้อแล้ว (ORDERED)</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">1</span> ตรวจสอบสต็อก แจ้งเตือน และออกใบสั่งซื้อ PO
+          </div>
+        </div>
+
+        <!-- Terminal 2 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ตรวจรับของและปรับยอด (Goods Receipt & Adjust)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== ตรวจรับสินค้าจากใบสั่งซื้อ PO-21 ====
+------------------------------------------------------------------------
+ซัพพลายเออร์: ร้านวัตถุดิบชุมชน
+รายการ: เนื้อปลา (สั่งไว้ 2.0 กก.)
+ระบุยอดรับของจริง (กก.) > 2.0
+ยอดสต็อกเดิม 5.3 กก. + รับเข้า 2.0 กก. = 7.3 กก. [ปกติ]
+สถานะ PO-21: รับของเรียบร้อย (RECEIVED)
+บันทึกประวัติสต็อก: StockMovement (RECEIVE, +2.0 กก.)
+
+==== ปรับปรุงยอดหลังการตรวจนับจริง ====
+ผู้จัดการตรวจนับเนื้อปลาจริงในตู้แช่ พบ 6.0 กก. (ของเสีย 1.3 กก.)
+ระบุยอดจริงหลังตรวจนับ (กก.) > 6.0
+บันทึกประวัติสต็อก: StockMovement (ADJUST, -1.3 กก.)</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">2</span> ตรวจรับสินค้าเข้าคลัง และบันทึก Audit Log การปรับยอด
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 353: FR6 ภาพรวมและรายงานยอดขาย -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="353">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-fr-badge">FR6</div>
+          <div class="slide-main-title">ภาพรวมร้านและรายงานยอดขาย (Sales Dashboard & Reports)</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 353 ไปวาง Canva</button>
+          <div class="slide-number-circle">353</div>
+        </div>
+      </div>
+
+      <div class="grid-2-terminals">
+        <!-- Terminal 1 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">แดชบอร์ดภาพรวมยอดขาย (Sales Dashboard)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== ผู้จัดการ: แผงควบคุมภาพรวมร้าน ====
+------------------------------------------------------------------------
+วันที่สรุปผล: 01/11/2026 | ผู้จัดการ: EMP-1
+- ออเดอร์ที่สร้างทั้งหมด : 1 บิล
+- ออเดอร์ที่กำลังปรุง    : 0 บิล
+- ออเดอร์ที่ชำระเงินเสร็จ : 1 บิล
+------------------------------------------------------------------------
+ยอดขายรวมสุทธิ: 70.00 บาท
+- ยอดชำระเงินสด (CASH)     : 70.00 บาท (100.0%)
+- ยอดชำระ QR Code Payment :  0.00 บาท (0.0%)
+- ยอดส่วนลดจากการแลกแต้ม  : 10.00 บาท (1 บิล)
+สถานะภาพรวมร้าน: ปกติ เรียบร้อยดี</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">1</span> สรุปยอดขายรวม จำแนกช่องทางเงินสด/QR และการใช้แต้ม
+          </div>
+        </div>
+
+        <!-- Terminal 2 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">อันดับอาหารขายดีและสถิติ (Best Sellers)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== อันดับอาหารขายดีประจำวัน (Top Ranking) ====
+------------------------------------------------------------------------
+อันดับ  ชื่ออาหาร            หมวดหมู่      จำนวนจานที่ขายได้
+ 1.    ข้าวต้มปลา          ต้ม/นึ่ง       1 จาน
+ 2.    ผัดกะเพราปลา        ผัด           0 จาน
+ 3.    ยำหมูยอ/แหนม        ยำ            0 จาน
+------------------------------------------------------------------------
+สถิติการปรุงอาหารตาม SOP:
+- จำนวนจานที่เสิร์ฟตรงเวลา: 1/1 จาน (100.0%)
+- เวลาปรุงเฉลี่ยจริง      : 6.0 นาที (เป้าหมาย 7.0 นาที)
+- ผลประเมินเวลาครัวร้อน   : ดีเยี่ยม (เร็วกว่ามาตรฐาน 1.0 นาที)</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">2</span> รายงานอันดับอาหารขายดี และสถิติความเร็วปรุงตาม SOP
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 355: FR7 เมนู/สูตรอาหาร & FR8 สมาชิก/แต้ม -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="fr" data-slide-num="355">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-fr-badge">FR7+FR8</div>
+          <div class="slide-main-title">จัดการสูตรอาหารหลายเวอร์ชัน และระบบสมาชิก (Menu, Recipe, Member)</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 355 ไปวาง Canva</button>
+          <div class="slide-number-circle">355</div>
+        </div>
+      </div>
+
+      <div class="grid-2-terminals">
+        <!-- Terminal 1 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">จัดการเมนูและสูตรอาหาร (Menu & Recipe)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== จัดการเมนูและสูตรอาหาร ====
+------------------------------------------------------------------------
+[6] ชาใหม่ - เครื่องดื่ม - 25.00 บาท - [ปิดขาย]
+> กำหนดสูตรอาหาร (Recipe Definition):
+  - ใบชาแห้ง   : 0.05 กก.
+  - น้ำตาลทราย : 0.02 กก.
+> กดยืนยันสูตรสมบูรณ์ (complete)
+ระบบเปลี่ยนสถานะเป็น: [6] ชาใหม่ - [เปิดขาย] สำเร็จ!
+(กฎ: เมนูจะเปิดขายได้เมื่อมีสูตรอาหารที่สมบูรณ์เท่านั้น)
+
+> สร้างสูตรเวอร์ชันใหม่ (Recipe Version 2)
+ออเดอร์เก่าจะยังคงจำลองสูตร Version 1 โดยอัตโนมัติ</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">1</span> สร้างเมนู กำหนดสูตร และเปิดขายเมื่อสูตรสมบูรณ์
+          </div>
+        </div>
+
+        <!-- Terminal 2 -->
+        <div>
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">จัดการสมาชิกและนโยบายแต้ม (Member & Rules)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>========================================================================
+==== สมาชิกและระบบสะสมแต้ม (Loyalty Program) ====
+------------------------------------------------------------------------
+สมัครสมาชิกใหม่: MBR-21 - สมาชิกใหม่ - 0899999999 - 0 แต้ม
+แก้ไขข้อมูล:    MBR-21 - คุณสมหมาย - 0899999999 - 0 แต้ม
+
+==== ผู้จัดการ: กำหนดเงื่อนไขแต้มสะสมกลางร้าน (setRule) ====
+นโยบายแต้มเดิม : ทุก 50 บาท = 1 แต้ม (1 แต้ม = 1.0 บาท)
+> กำหนดกฎแต้มใหม่สำหรับการชำระเงินครั้งต่อไป:
+กฎใหม่: ทุก 100 บาท = 1 แต้ม | 1 แต้ม = 2.0 บาท | ขั้นต่ำ 5 แต้ม
+บันทึกเงื่อนไขใหม่เรียบร้อย!</code></div>
+          </div>
+          <div class="terminal-caption">
+            <span class="step-num">2</span> สมัครสมาชิก แก้ไขข้อมูล และตั้งกฎแต้มร้าน (Static)
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 383: หัวข้อคั่นหมวด พิสูจน์ Composition 5 คู่ -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="composition" data-slide-num="383" style="text-align:center; padding:80px 40px;">
+      <div style="max-width:800px; margin:0 auto;">
+        <div style="font-family:'Outfit',sans-serif; font-size:44px; font-weight:900; color:var(--gold-light); margin-bottom:12px;">
+          ตัวอย่าง Composition 5 คู่แท้
+        </div>
+        <div style="font-size:22px; color:#fed7aa; margin-bottom:20px; font-weight:700;">
+          การพิสูจน์ "แม่ตาย ลูกตายตาม" ในโค้ด Java ร้านข้าวต้มอารมณ์ดี
+        </div>
+        <p style="font-size:15px; color:var(--text-muted); line-height:1.7; margin-bottom:26px;">
+          สไลด์หน้า 384–388 พิสูจน์ตามหลักการของอาจารย์และตัวอย่างใน PDF ร้านพิซซ่าหน้า 384: เมื่อออบเจกต์แม่ถูกทำลาย (destroy/cancel) ออบเจกต์ลูกต้องถูกทำลายทิ้งทันที โดยคลาสอื่นที่เชื่อมโยงแบบ Association ยังคงอยู่ในระบบตามเดิม
+        </p>
+        <div class="slide-number-circle" style="display:inline-block; margin:0 auto;">383</div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 384: Composition 1: Order ◆ OrderItem (Slide 384 Style) -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="composition" data-slide-num="384">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-main-title">Composition ① Order ◆ OrderItem ยกเลิกออเดอร์แล้วรายการหายด้วย</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 384 ไปวาง Canva</button>
+          <div class="slide-number-circle">384</div>
+        </div>
+      </div>
+
+      <div class="composition-slide-grid">
+        <!-- Left: Terminal + Real Code -->
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ค้นหาออเดอร์ + ยกเลิก (Composition)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>กรอกเลขออเดอร์ เช่น ORD-001 : ORD-001
+ประเภท : [DINE-IN] รับประทานที่ร้าน | โต๊ะ : TBL-004
+ชื่อลูกค้า : คุณสมชาย (MBR-0001) | เวลาสั่ง : 20:05 น.
+รายการอาหาร :
+1. ข้าวต้มปลา x1   80.00 บาท [รอปรุง]
+2. ผัดกะเพราปลา x1 69.00 บาท [รอปรุง]
+ยอดรวม : 149.00 บาท
+----------------------------------------------------------
+[1] ยกเลิก/ทำลายออเดอร์นี้ (destroy)  [0] กลับ
+เลือก : 1
+ยกเลิกออเดอร์ ORD-001 สำเร็จ
+จำนวนรายการอาหารในออเดอร์: 2 -> 0 รายการ (OrderItem ถูกลบตามหลัก Composition)</code></div>
+          </div>
+
+          <!-- Code Box -->
+          <div class="code-box-wrap">
+            <div class="code-box-header">
+              <span>โค้ดจริง · src/model/Order.java</span>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อปโค้ด</button>
+            </div>
+            <div class="code-box-body"><code>public void destroy() {
+    // 1. สั่งทำลายส่วนประกอบลูก (OrderItem) ทั้งหมดตามหลัก Composition
+    for (int i = 0; i &lt; items.size(); i++)
+        items.get(i).destroy();
+    items.clear();
+    
+    // 2. เคลียร์ความสัมพันธ์แบบ Association (โต๊ะและลูกค้ายังคงอยู่ในระบบ)
+    table = null;
+    customer = null;
+    payment = null;
+    destroyed = true;
+}</code></div>
+          </div>
+        </div>
+
+        <!-- Right: Proof Explanation Panel -->
+        <div class="proof-panel">
+          <div class="proof-item">
+            <div class="proof-label">คู่ที่พิสูจน์</div>
+            <div class="proof-desc"><strong>Order</strong> (เจ้าของ) ประกอบด้วย <strong>OrderItem</strong> (ส่วนย่อย)</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ก่อนยกเลิก</div>
+            <div class="proof-desc">ออเดอร์ <code>ORD-001</code> ถือ <code>OrderItem</code> จำนวน 2 รายการ</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">โค้ดที่ทำงาน</div>
+            <div class="proof-desc">
+              <span class="proof-code-snip">order.destroy() → item.destroy() และ items.clear()</span>
+            </div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">หลังยกเลิก</div>
+            <div class="proof-desc">เหลือ <strong>0 รายการ</strong> = ส่วนประกอบย่อยหายไปพร้อมเจ้าของทันที</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ส่วน Table และ Customer</div>
+            <div class="proof-desc">ยังอยู่ครบในระบบ เพราะความสัมพันธ์เป็นแค่ Association "อ้างถึง"</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 385: Composition 2: Menu ◆ Recipe -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="composition" data-slide-num="385">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-main-title">Composition ② Menu ◆ Recipe เมนูเป็นเจ้าของสูตรอาหาร</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 385 ไปวาง Canva</button>
+          <div class="slide-number-circle">385</div>
+        </div>
+      </div>
+
+      <div class="composition-slide-grid">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ค้นหาเมนู + ลบเมนู (Composition)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>ค้นหาเมนูอาหาร : MNU-001 ข้าวต้มปลา
+สูตรอาหารในเมนู (Recipe):
+  - Recipe Version 1: เนื้อปลา 0.15 กก., ข้าว 0.10 กก.
+  - Recipe Version 2: เนื้อปลา 0.18 กก., ข้าว 0.10 กก.
+----------------------------------------------------------
+[1] ทำลายเมนูอาหารนี้ (destroy)  [0] กลับ
+เลือก : 1
+เมนู MNU-001 ถูกทำลายเรียบร้อย
+จำนวนสูตรอาหารในเมนู: 2 -> 0 สูตร (Recipe ทุกเวอร์ชันถูกทำลายตาม Menu)</code></div>
+          </div>
+
+          <div class="code-box-wrap">
+            <div class="code-box-header">
+              <span>โค้ดจริง · src/model/Menu.java</span>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อปโค้ด</button>
+            </div>
+            <div class="code-box-body"><code>public void destroy() {
+    // สูตรอาหารทุกเวอร์ชันที่ผูกกับเมนูนี้จะถูกทำลายตามทั้งหมด
+    for (int i = 0; i &lt; recipes.size(); i++)
+        recipes.get(i).destroy();
+    recipes.clear();
+    optionNames.clear();
+    destroyed = true;
+}</code></div>
+          </div>
+        </div>
+
+        <div class="proof-panel">
+          <div class="proof-item">
+            <div class="proof-label">คู่ที่พิสูจน์</div>
+            <div class="proof-desc"><strong>Menu</strong> (เจ้าของ) ประกอบด้วย <strong>Recipe</strong> (ส่วนย่อย)</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ก่อนลบ</div>
+            <div class="proof-desc">เมนูข้าวต้มปลาถือสูตรอาหาร 2 เวอร์ชัน (V.1 และ V.2)</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">โค้ดที่ทำงาน</div>
+            <div class="proof-desc">
+              <span class="proof-code-snip">menu.destroy() → recipe.destroy() และ recipes.clear()</span>
+            </div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">หลังลบ</div>
+            <div class="proof-desc">เหลือ <strong>0 สูตร</strong> = สูตรอาหารตายตามเมนู</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ส่วน Ingredient (วัตถุดิบ)</div>
+            <div class="proof-desc">ยังคงอยู่ในคลังตามเดิม เพราะ Recipe อ้างถึง Ingredient แบบ Association</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 386: Composition 3: SOP ◆ SOPStep -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="composition" data-slide-num="386">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-main-title">Composition ③ SOP ◆ SOPStep คู่มือเป็นเจ้าของขั้นตอนมาตรฐาน</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 386 ไปวาง Canva</button>
+          <div class="slide-number-circle">386</div>
+        </div>
+      </div>
+
+      <div class="composition-slide-grid">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ค้นหาคู่มือ SOP + ลบคู่มือ (Composition)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>ค้นหาคู่มือ SOP : SOP-001 ข้าวต้มปลา
+ขั้นตอนมาตรฐานการปรุง (SOPStep):
+  - ขั้นตอนที่ 1: เตรียมปลาและข้าว (2.0 นาที)
+  - ขั้นตอนที่ 2: ต้มซุปและจัดชาม (5.0 นาที)
+----------------------------------------------------------
+[1] ทำลายคู่มือ SOP นี้ (destroy)  [0] กลับ
+เลือก : 1
+คู่มือ SOP-001 ถูกทำลายเรียบร้อย
+จำนวนขั้นตอนย่อย: 2 -> 0 ขั้นตอน (SOPStep ถูกทำลายตามคู่มือแม่)</code></div>
+          </div>
+
+          <div class="code-box-wrap">
+            <div class="code-box-header">
+              <span>โค้ดจริง · src/model/SOP.java</span>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อปโค้ด</button>
+            </div>
+            <div class="code-box-body"><code>public void destroy() {
+    // ขั้นตอนย่อย 1..N ทั้งหมดจะถูกทำลายพร้อมคู่มือ SOP
+    for (int i = 0; i &lt; steps.size(); i++)
+        steps.get(i).destroy();
+    steps.clear();
+    menu = null; // Menu ยังคงอยู่
+    destroyed = true;
+}</code></div>
+          </div>
+        </div>
+
+        <div class="proof-panel">
+          <div class="proof-item">
+            <div class="proof-label">คู่ที่พิสูจน์</div>
+            <div class="proof-desc"><strong>SOP</strong> (เจ้าของ) ประกอบด้วย <strong>SOPStep</strong> (ส่วนย่อย)</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ก่อนลบ</div>
+            <div class="proof-desc">SOP-001 มีขั้นตอนย่อยจำนวน 2 ขั้นตอน (รวมเวลา 7.0 นาที)</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">โค้ดที่ทำงาน</div>
+            <div class="proof-desc">
+              <span class="proof-code-snip">sop.destroy() → step.destroy() และ steps.clear()</span>
+            </div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">หลังลบ</div>
+            <div class="proof-desc">เหลือ <strong>0 ขั้นตอน</strong> = ขั้นตอนย่อยหายไปพร้อมคู่มือ SOP</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ส่วน Menu (เมนูอาหาร)</div>
+            <div class="proof-desc">ยังคงอยู่ในระบบ เพราะความสัมพันธ์ระหว่าง Menu กับ SOP เป็น Association</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 387: Composition 4: Ingredient ◆ StockMovement -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="composition" data-slide-num="387">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-main-title">Composition ④ Ingredient ◆ StockMovement วัตถุดิบเป็นเจ้าของประวัติสต็อก</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 387 ไปวาง Canva</button>
+          <div class="slide-number-circle">387</div>
+        </div>
+      </div>
+
+      <div class="composition-slide-grid">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ค้นหาวัตถุดิบ + ลบวัตถุดิบ (Composition)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>ค้นหาวัตถุดิบ : ING-1 เนื้อปลา (คงเหลือ 6.000 กก.)
+ประวัติความเคลื่อนไหวสต็อก (StockMovement Audit Log):
+  - 01/11/2026 10:00 [RECEIVE] รับเข้าจาก PO-21 (+2.000 กก.)
+  - 01/11/2026 20:05 [SALE]    ตัดสต็อกขายบิล ORD-001 (-0.180 กก.)
+  - 01/11/2026 22:00 [ADJUST]  ปรับยอดตรวจนับจริง (-1.300 กก.)
+----------------------------------------------------------
+[1] ทำลายวัตถุดิบนี้ (destroy)  [0] กลับ
+เลือก : 1
+วัตถุดิบ ING-1 ถูกทำลายเรียบร้อย
+จำนวนประวัติสต็อกเฉพาะวัตถุดิบนี้: 3 -> 0 รายการ (StockMovement ถูกลบตาม)</code></div>
+          </div>
+
+          <div class="code-box-wrap">
+            <div class="code-box-header">
+              <span>โค้ดจริง · src/model/Ingredient.java</span>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อปโค้ด</button>
+            </div>
+            <div class="code-box-body"><code>public void destroy() {
+    // ประวัติการเคลื่อนไหวสต็อกเฉพาะของวัตถุดิบนี้จะถูกลบตามทั้งหมด
+    for (int i = 0; i &lt; movements.size(); i++)
+        movements.get(i).destroy();
+    movements.clear();
+    destroyed = true;
+}</code></div>
+          </div>
+        </div>
+
+        <div class="proof-panel">
+          <div class="proof-item">
+            <div class="proof-label">คู่ที่พิสูจน์</div>
+            <div class="proof-desc"><strong>Ingredient</strong> (เจ้าของ) ประกอบด้วย <strong>StockMovement</strong> (ส่วนย่อย)</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ก่อนลบ</div>
+            <div class="proof-desc">วัตถุดิบเนื้อปลามีประวัติ StockMovement Audit Log จำนวน 3 รายการ</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">โค้ดที่ทำงาน</div>
+            <div class="proof-desc">
+              <span class="proof-code-snip">ingredient.destroy() → movement.destroy() และ movements.clear()</span>
+            </div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">หลังลบ</div>
+            <div class="proof-desc">เหลือ <strong>0 บันทึก</strong> = ประวัติสต็อกเฉพาะวัตถุดิบนั้นถูกทำลายทิ้ง</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ส่วน Employee (ผู้ทำรายการ)</div>
+            <div class="proof-desc">พนักงานยังคงอยู่ในระบบตามเดิม เพราะผูกเป็น Association</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- SLIDE 388: Composition 5: Member ◆ PointTransaction -->
+    <!-- ========================================================================= -->
+    <section class="canva-slide-card" data-category="composition" data-slide-num="388">
+      <div class="slide-top-bar">
+        <div class="slide-badge-title">
+          <div class="slide-main-title">Composition ⑤ Member ◆ PointTransaction สมาชิกเป็นเจ้าของประวัติแต้ม</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="slide-copy-all" onclick="copySlideContent(this)">📋 คัดลอกสไลด์ 388 ไปวาง Canva</button>
+          <div class="slide-number-circle">388</div>
+        </div>
+      </div>
+
+      <div class="composition-slide-grid">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">ค้นหาสมาชิก + ลบบัญชี (Composition)</span>
+              </div>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อป Terminal</button>
+            </div>
+            <div class="terminal-body"><code>ค้นหาสมาชิก : MBR-0001 (คุณสมชาย, เบอร์ 0999999999)
+แต้มสะสมปัจจุบัน : 14 แต้ม
+ประวัติการทำรายการแต้ม (PointTransaction):
+  - 01/11/2026 12:00 [สะสมแต้ม] +10 แต้ม (ยอดบิล 500 บาท)
+  - 01/11/2026 20:15 [แลกแต้ม]  -10 แต้ม (ส่วนลด 10 บาท บิล ORD-001)
+  - 01/11/2026 20:15 [สะสมแต้ม]  +1 แต้ม (ยอดสุทธิ 70 บาท)
+----------------------------------------------------------
+[1] ทำลายบัญชีสมาชิกนี้ (destroy)  [0] กลับ
+เลือก : 1
+สมาชิก MBR-0001 ถูกทำลายเรียบร้อย
+จำนวนประวัติแต้มสะสม: 3 -> 0 รายการ (PointTransaction ถูกทำลายตาม Member)</code></div>
+          </div>
+
+          <div class="code-box-wrap">
+            <div class="code-box-header">
+              <span>โค้ดจริง · src/model/Member.java</span>
+              <button class="copy-btn" onclick="copyBox(this)">📋 ก๊อปโค้ด</button>
+            </div>
+            <div class="code-box-body"><code>public void destroy() {
+    // ประวัติแต้มสะสมทั้งหมดของสมาชิกคนนี้จะถูกทำลายตามทั้งหมด
+    for (int i = 0; i &lt; transactions.size(); i++)
+        transactions.get(i).destroy();
+    transactions.clear();
+    points = 0;
+    destroyed = true;
+}</code></div>
+          </div>
+        </div>
+
+        <div class="proof-panel">
+          <div class="proof-item">
+            <div class="proof-label">คู่ที่พิสูจน์</div>
+            <div class="proof-desc"><strong>Member</strong> (เจ้าของ) ประกอบด้วย <strong>PointTransaction</strong> (ส่วนย่อย)</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ก่อนลบ</div>
+            <div class="proof-desc">สมาชิกมีบันทึกประวัติแต้มสะสม PointTransaction จำนวน 3 รายการ</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">โค้ดที่ทำงาน</div>
+            <div class="proof-desc">
+              <span class="proof-code-snip">member.destroy() → transaction.destroy() และ transactions.clear()</span>
+            </div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">หลังลบ</div>
+            <div class="proof-desc">เหลือ <strong>0 บันทึก</strong> = ประวัติแต้มสะสมหายไปพร้อมบัญชีสมาชิก</div>
+          </div>
+          <div class="proof-item">
+            <div class="proof-label">ส่วน Customer & Payment</div>
+            <div class="proof-desc">ลูกค้าและการเงินในอดีตยังคงอยู่ในระบบบัญชี เพราะเป็น Association</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast">คัดลอกสำเร็จ! ✅</div>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    ร้านข้าวต้มอารมณ์ดี (SOP-based Restaurant Management System) · ออกแบบตามสถาปัตยกรรม SDLC & OOAD 16 คลาสทางการ
+  </footer>
+
+  <!-- SCRIPT -->
+  <script>
+    let currentSlideIndex = 0;
+    let slides = [];
+
+    function initDeck() {
+      slides = Array.from(document.querySelectorAll('.canva-slide-card'));
+      updateSlideDisplay();
+    }
+
+    function updateSlideDisplay() {
+      const visibleSlides = slides.filter(s => s.style.display !== 'none' && !s.classList.contains('filtered-out'));
+      if (visibleSlides.length === 0) return;
+
+      if (currentSlideIndex >= visibleSlides.length) currentSlideIndex = visibleSlides.length - 1;
+      if (currentSlideIndex < 0) currentSlideIndex = 0;
+
+      slides.forEach(s => s.classList.remove('active-slide'));
+      if (visibleSlides[currentSlideIndex]) {
+        visibleSlides[currentSlideIndex].classList.add('active-slide');
+        const num = visibleSlides[currentSlideIndex].getAttribute('data-slide-num') || (currentSlideIndex + 1);
+        document.getElementById('slideCounter').textContent = `${currentSlideIndex + 1} / ${visibleSlides.length} (หน้า ${num})`;
+      }
+    }
+
+    function prevSlide() {
+      const visibleSlides = slides.filter(s => !s.classList.contains('filtered-out'));
+      if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        updateSlideDisplay();
+      }
+    }
+
+    function nextSlide() {
+      const visibleSlides = slides.filter(s => !s.classList.contains('filtered-out'));
+      if (currentSlideIndex < visibleSlides.length - 1) {
+        currentSlideIndex++;
+        updateSlideDisplay();
+      }
+    }
+
+    document.getElementById('prevBtn').onclick = prevSlide;
+    document.getElementById('nextBtn').onclick = nextSlide;
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') nextSlide();
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+    });
+
+    function setViewMode(mode) {
+      if (mode === 'present') {
+        document.body.classList.add('presentation-mode');
+        document.getElementById('btnModePresent').classList.add('active');
+        document.getElementById('btnModeAll').classList.remove('active');
+      } else {
+        document.body.classList.remove('presentation-mode');
+        document.getElementById('btnModePresent').classList.remove('active');
+        document.getElementById('btnModeAll').classList.add('active');
+      }
+      updateSlideDisplay();
+    }
+
+    function filterCategory(cat, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      slides.forEach(slide => {
+        const slideCat = slide.getAttribute('data-category');
+        if (cat === 'all' || slideCat === cat) {
+          slide.classList.remove('filtered-out');
+        } else {
+          slide.classList.add('filtered-out');
+        }
+      });
+      currentSlideIndex = 0;
+      updateSlideDisplay();
+    }
+
+    function showToast(msg = 'คัดลอกสำเร็จ! ✅') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2200);
+    }
+
+    function copyBox(btn) {
+      const parent = btn.closest('.terminal-window') || btn.closest('.code-box-wrap');
+      if (!parent) return;
+      const code = parent.querySelector('code');
+      if (code) {
+        navigator.clipboard.writeText(code.innerText).then(() => {
+          showToast('คัดลอกข้อความในกล่องแล้ว! 📋');
+        });
+      }
+    }
+
+    function copySlideContent(btn) {
+      const slide = btn.closest('.canva-slide-card');
+      if (!slide) return;
+      let text = '=== ' + (slide.querySelector('.slide-main-title')?.innerText || 'SLIDE') + ' ===\n\n';
+      
+      const terminals = slide.querySelectorAll('.terminal-window, .code-box-wrap');
+      terminals.forEach((term, idx) => {
+        const title = term.querySelector('.terminal-title, .code-box-header span')?.innerText || '';
+        const body = term.querySelector('code')?.innerText || '';
+        const cap = term.parentElement?.querySelector('.terminal-caption')?.innerText || '';
+        text += `[${idx + 1}] ${title}\n${body}\n${cap}\n\n`;
+      });
+
+      const proof = slide.querySelector('.proof-panel');
+      if (proof) {
+        text += `--- สรุปการพิสูจน์ Composition ---\n${proof.innerText}\n\n`;
+      }
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('คัดลอกข้อมูลทั้งสไลด์แล้ว! พร้อมวางใน Canva 🎨');
+      });
+    }
+
+    window.onload = initDeck;
+  </script>
+</body>
+</html>

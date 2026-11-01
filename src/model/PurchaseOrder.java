@@ -1,89 +1,92 @@
 package model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 // ใบสั่งซื้อเปลี่ยนสถานะจาก ร่าง → สั่งแล้ว → รับแล้ว
 public class PurchaseOrder {
-    private String poId;
-    private Supplier supplier;
-    private Employee employee;
-    private String status;
-    private ArrayList<Ingredient> ingredients;
-    private ArrayList<Double> orderedQty;
-    private ArrayList<Double> receivedQty;
+    public enum PoStatus { DRAFT, ORDERED, RECEIVED }
 
-    public PurchaseOrder(String poId, Supplier supplier, Employee employee) {
+    // List ทั้งสามชุดใช้ index เดียวกัน: วัตถุดิบที่ 0 / สั่งที่ 0 / รับที่ 0
+    private String poId;
+    private PoStatus status;
+    private LocalDateTime createdAt;
+    // has-a (Association): PO อ้างถึง Ingredient, Supplier และ Employee ในระบบ
+    private List<Ingredient> ingredients;
+    private List<Double> orderedQty;
+    private List<Double> receivedQty;
+    private Supplier supplier;
+    private Employee createdBy;
+
+    // สร้างใบสั่งซื้อฉบับร่างพร้อมผู้จำหน่ายและผู้สร้าง
+    public PurchaseOrder(String poId, Supplier supplier, Employee by) {
         this.poId = poId;
         this.supplier = supplier;
-        this.employee = employee;
-        this.status = "ร่าง";
+        this.createdBy = by;
+        this.status = PoStatus.DRAFT;
+        this.createdAt = LocalDateTime.now();
         this.ingredients = new ArrayList<Ingredient>();
         this.orderedQty = new ArrayList<Double>();
         this.receivedQty = new ArrayList<Double>();
     }
 
-    public void addItem(Ingredient ingredient, double quantity) {
-        if (!status.equals("ร่าง"))
+    // เพิ่มจำนวนสั่งของวัตถุดิบที่ผู้จำหน่ายรายนี้ส่งได้
+    public void addItem(Ingredient ingredient, double qty) {
+        if (status != PoStatus.DRAFT)
             throw new IllegalStateException("แก้ได้เฉพาะใบสั่งซื้อร่าง");
         if (!supplier.supplies(ingredient))
             throw new IllegalArgumentException("ผู้จำหน่ายไม่ส่งวัตถุดิบนี้");
-        if (!Double.isFinite(quantity) || quantity <= 0)
+        if (!Double.isFinite(qty) || qty <= 0)
             throw new IllegalArgumentException("จำนวนต้องมากกว่า 0");
         int index = ingredients.indexOf(ingredient);
-        if (index == -1) {
+        if (index >= 0)
+            orderedQty.set(index, orderedQty.get(index) + qty);
+        else {
             ingredients.add(ingredient);
-            orderedQty.add(quantity);
+            orderedQty.add(qty);
             receivedQty.add(0.0);
-        } else {
-            orderedQty.set(index, orderedQty.get(index) + quantity);
         }
     }
 
+    // เปลี่ยนจากร่างเป็นสั่งแล้วเมื่อมีรายการ
     public void markOrdered() {
-        if (!status.equals("ร่าง") || ingredients.isEmpty())
+        if (status != PoStatus.DRAFT || orderedQty.isEmpty())
             throw new IllegalStateException("ใบสั่งซื้อต้องเป็นร่างและมีรายการ");
-        status = "สั่งแล้ว";
+        status = PoStatus.ORDERED;
     }
 
-    public void receive(ArrayList<Double> quantities) {
-        if (!status.equals("สั่งแล้ว"))
+    // ตรวจจำนวนรับให้ครบก่อนเพิ่มยอดวัตถุดิบจริง
+    public void receive(List<Double> qtys) {
+        if (status != PoStatus.ORDERED)
             throw new IllegalStateException("รับของซ้ำไม่ได้");
-        if (quantities.size() != ingredients.size())
+        if (qtys == null || qtys.size() != ingredients.size())
             throw new IllegalArgumentException("ต้องระบุครบทุกวัตถุดิบ");
-        // ตรวจให้ครบก่อนเปลี่ยนยอด เพื่อไม่ให้เกิดการรับเพียงบางรายการเมื่อกรอกผิด
-        for (int i = 0; i < quantities.size(); i++) {
-            if (quantities.get(i) < 0 || !Double.isFinite(quantities.get(i))) {
-                throw new IllegalArgumentException("จำนวนรับต้องเป็นตัวเลขไม่ติดลบ");
-            }
-        }
+        // ตรวจให้ครบก่อนเปลี่ยนยอด เพื่อไม่ให้รับเข้าบางรายการเมื่อข้อมูลผิด
         for (int i = 0; i < ingredients.size(); i++) {
-            receivedQty.set(i, quantities.get(i));
-            ingredients.get(i).receive(quantities.get(i), poId, employee);
+            Double qty = qtys.get(i);
+            if (qty == null || qty < 0 || !Double.isFinite(qty))
+                throw new IllegalArgumentException("จำนวนรับต้องเป็นตัวเลขไม่ติดลบ");
         }
-        status = "รับแล้ว";
+        // ข้อมูลทุกแถวผ่านแล้วจึงรับเข้าคลังทีละชนิด
+        for (int i = 0; i < ingredients.size(); i++) {
+            double qty = qtys.get(i);
+            receivedQty.set(i, qty);
+            ingredients.get(i).receive(qty, poId, createdBy);
+        }
+        status = PoStatus.RECEIVED;
     }
 
-    public String getPoId() {
-        return poId;
+    // เมธอดอ่านใบสั่งซื้อ; รายการที่คืนออกไปเป็นสำเนาเพื่อกันการแก้ตรง ๆ
+    public String poId() { return poId; }
+    public Supplier supplier() { return supplier; }
+    public String statusText() {
+        if (status == PoStatus.DRAFT) return "ร่าง";
+        if (status == PoStatus.ORDERED) return "สั่งแล้ว";
+        return "รับแล้ว";
     }
-
-    public Supplier getSupplier() {
-        return supplier;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public ArrayList<Ingredient> getIngredients() {
-        return ingredients;
-    }
-
-    public double getOrderedQty(int index) {
-        return orderedQty.get(index);
-    }
-
-    public double getReceivedQty(int index) {
-        return receivedQty.get(index);
-    }
+    public LocalDateTime createdAt() { return createdAt; }
+    public ArrayList<Ingredient> ingredients() { return new ArrayList<Ingredient>(ingredients); }
+    public double orderedQty(int index) { return orderedQty.get(index); }
+    public double receivedQty(int index) { return receivedQty.get(index); }
 }

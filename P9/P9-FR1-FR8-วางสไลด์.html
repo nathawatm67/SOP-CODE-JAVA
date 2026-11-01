@@ -1,0 +1,146 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>P9 · FR1–FR8 Java Text Mode</title><style>
+:root{font-family:Arial,"Noto Sans Thai",sans-serif;color:#101827;background:#d8dce3}
+*{box-sizing:border-box}body{margin:0}nav{position:fixed;z-index:10;top:12px;right:16px;background:#101827;color:white;padding:9px 14px;border-radius:8px;font-size:14px}nav button{background:#eab308;border:0;border-radius:5px;padding:4px 10px;margin-left:5px;cursor:pointer;font-weight:bold}
+.slide{width:min(94vw,1280px);aspect-ratio:16/9;min-height:720px;margin:28px auto;padding:48px 58px 38px;background:#fbfaf7;box-shadow:0 8px 32px #11182722;position:relative;overflow:hidden;display:none}
+.slide.active{display:block}.kicker{font-size:15px;letter-spacing:.18em;color:#697386;font-weight:700}.kicker span{float:right}h1{font-size:34px;margin:18px 0 9px;color:#111827}.rule{width:210px;height:5px;background:#eab308;border-radius:8px;margin-bottom:25px}.content{font-size:20px;line-height:1.55}.content p{margin:0 0 14px}.content ul,.content ol{margin:0 0 15px;padding-left:28px}.content li{margin:4px 0}.content code:not(pre code){font-size:.9em;background:#eef0f3;padding:1px 4px;border-radius:4px}.content pre{background:#101827;color:#eef2ff;padding:18px 22px;border-radius:10px;font-size:18px;line-height:1.42;white-space:pre-wrap;max-height:340px;overflow:auto;margin:14px 0}.content table{border-collapse:collapse;width:100%;font-size:17px;margin:13px 0}.content th,.content td{border-bottom:1px solid #d7dce3;text-align:left;padding:6px 10px;vertical-align:top}.content th{background:#ece8db}.content a{color:#1d4ed8;text-decoration:none}.content a:hover{text-decoration:underline}.footer{position:absolute;left:58px;right:58px;bottom:22px;border-top:1px solid #d9dde3;padding-top:7px;font-size:12px;color:#7c8594}
+#slide-12 .content,#slide-13 .content{font-size:18px}#slide-12 pre,#slide-13 pre{font-size:15px;max-height:500px}#slide-11 .content,#slide-15 .content{font-size:18px}#slide-11 table{font-size:15px}#slide-15 li{margin-bottom:9px}
+@media(max-width:800px){.slide{width:100vw;min-height:100vh;aspect-ratio:auto;padding:70px 22px 45px;overflow:auto}.content{font-size:17px}.content pre{font-size:14px}.footer{left:22px;right:22px;position:static;margin-top:20px}h1{font-size:26px}}
+@media print{body{background:white}nav{display:none}.slide,.slide.active{display:block;width:100%;height:100vh;min-height:0;margin:0;box-shadow:none;break-after:page;page-break-after:always}.content pre{overflow:hidden} @page{size:16in 9in;margin:0}}
+</style></head><body><nav><span id="count"></span><button id="prev">◀</button><button id="next">▶</button></nav><section class="slide" id="slide-1" aria-label="สไลด์ 1 — ชื่อและขอบเขต"><div class="kicker">P9 · JAVA OOP <span>01 / 15</span></div><h1>สไลด์ 1 — ชื่อและขอบเขต</h1><div class="rule"></div><div class="content"><p><strong>P9: Java OOP ระบบร้านข้าวต้มอารมณ์ดี</strong></p>
+<p>ฉบับผลรันของโค้ดปัจจุบัน — ตรวจชื่อ operation กับ Class Diagram P7 จาก Canva ฉบับที่ยืนยันแล้ว</p>
+<ul><li><code>Main.java</code> รับคำตอบและแสดงหน้าจอ Text Mode</li><li><code>model</code> มี 16 คลาส แทนสิ่งในร้านและกฎการทำงาน</li><li>FR1–FR8 เชื่อมกับเมนู 1–8 ตามลำดับ</li><li>ข้อมูลอยู่ในหน่วยความจำ; QR/การชำระ QR เป็นการจำลอง</li></ul>
+<p>คำอธิบายพูด: “สไลด์ต่อไปแสดงผลที่โปรแกรม Java พิมพ์จริง และชี้ว่ากฎนั้นอยู่ในคลาสใด”</p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-2" aria-label="สไลด์ 2 — ทฤษฎี: FR และการตามรอย"><div class="kicker">P9 · JAVA OOP <span>02 / 15</span></div><h1>สไลด์ 2 — ทฤษฎี: FR และการตามรอย</h1><div class="rule"></div><div class="content"><p><strong>Functional Requirement (FR)</strong> คือข้อกำหนดว่าระบบต้องให้ผลหรือพฤติกรรมใดแก่ผู้ใช้ ตามคำจำกัดความของ <a href="https://cpre.ireb.org/en/downloads-and-resources/glossary?exam-relevant=true&amp;amp;first-letter=F">IREB CPRE Glossary</a></p>
+<table><thead><tr><th>เอกสาร</th><th>คำถามที่ตอบ</th></tr></thead><tbody><tr><td>P2</td><td>ระบบต้องทำอะไร (FR1–FR8)</td></tr><tr><td>P3/P4</td><td>ผู้ใช้เห็นขั้นตอนและ Text Mode อย่างไร</td></tr><tr><td>P7</td><td>ข้อมูลและ operation อยู่ในคลาสใด</td></tr><tr><td>P9</td><td>Java เรียกเมธอดจริงและแสดงผลอย่างไร</td></tr></tbody></table>
+<p>การจับคู่ FR → เมนู → ผลรัน → เมธอด ทำให้ผู้ฟังตามรอยจากข้อกำหนดไปถึงหลักฐานการทำงานได้</p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-3" aria-label="สไลด์ 3 — FR1 สั่งอาหารผ่าน QR"><div class="kicker">P9 · JAVA OOP <span>03 / 15</span></div><h1>สไลด์ 3 — FR1 สั่งอาหารผ่าน QR</h1><div class="rule"></div><div class="content"><p><strong>หน้าที่:</strong> ลูกค้าเลือกโต๊ะ ผูกสมาชิก เลือกอาหาร และยืนยันส่งครัว</p>
+<p><strong>เมธอดหลัก:</strong> <code>Main.uc01()</code> → <code>Table.scanTableQRCode()</code> → <code>Order.addItem()</code> → <code>Order.confirm()</code> → <code>Ingredient.deduct()</code></p>
+<pre class="text"><code>โต๊ะ: TBL-004 - ตะกร้า: CRT-20261101-0001
+1. ผัดกะเพราปลา x2 - 168.00 บาท
+2. ยำหมูยอ/แหนม x1 - 65.00 บาท
+ราคารวม: 233.00 บาท (ไม่นับรายการยกเลิก)
+วัตถุดิบเพียงพอ - ส่งครัวแล้ว ORD-20261101-0001
+เนื้อปลา = 5.000 กก.
+ไข่ไก่ = 1.000 ฟอง</code></pre>
+<p>อธิบาย: สองจานแรก 2 × (69 + 15) = 168 บาท; ยำ 65 บาท; รวม 233 บาท ตรวจสต็อกทุกชนิดก่อนตัดจริง</p>
+<p>หลักฐาน: <a href="evidence/FR1-P4-ตัวอย่าง-output.txt"><code>FR1-P4-ตัวอย่าง-output.txt</code></a> และคำตอบที่ป้อน <a href="evidence/FR1-P4-ตัวอย่าง-input.txt"><code>input.txt</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-4" aria-label="สไลด์ 4 — FR2 จัดการ SOP"><div class="kicker">P9 · JAVA OOP <span>04 / 15</span></div><h1>สไลด์ 4 — FR2 จัดการ SOP</h1><div class="rule"></div><div class="content"><p><strong>หน้าที่:</strong> ผู้จัดการสร้างขั้นตอน เผยแพร่ ปิดใช้ และเปิดใช้อีกครั้ง</p>
+<p><strong>เมธอดหลัก:</strong> <code>Main.uc02()</code> → <code>SOP.addStep()</code> → <code>SOP.publish()</code> / <code>disable()</code> / <code>enable()</code> → <code>SOP.getTotalMinutes()</code></p>
+<pre class="text"><code>SOP ชาใหม่ - เผยแพร่
+1. ต้มชา - 2.0 นาที
+รวม 2.0 นาที
+...
+SOP ชาใหม่ - ปิดใช้
+1. ต้มชา - 2.0 นาที
+รวม 2.0 นาที</code></pre>
+<p>หลักฐาน: <a href="evidence/FR2-FR7-คู่มือและสูตร-output.txt"><code>FR2-FR7-คู่มือและสูตร-output.txt</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-5" aria-label="สไลด์ 5 — FR3 ปรุงและเสิร์ฟตาม SOP"><div class="kicker">P9 · JAVA OOP <span>05 / 15</span></div><h1>สไลด์ 5 — FR3 ปรุงและเสิร์ฟตาม SOP</h1><div class="rule"></div><div class="content"><p><strong>หน้าที่:</strong> คนครัวดูคิว เริ่มปรุง เทียบเวลา ทำเสร็จ; แคชเชียร์เสิร์ฟ</p>
+<p><strong>เมธอดหลัก:</strong> <code>Main.uc03()</code> → <code>OrderItem.startCooking()</code> → <code>markReady()</code> → <code>serve()</code>; เวลา SOP จาก <code>SOP.getTotalMinutes()</code></p>
+<pre class="text"><code>==== จอครัว KDS - ครัวร้อน ====
+[1] ORD-20261101-0001 - ข้าวต้มปลา x1 - รับออเดอร์
+SOP ข้าวต้มปลา - เผยแพร่
+1. เตรียมปลาและข้าว - 2.0 นาที
+2. ต้มและจัดชาม - 5.0 นาที
+รวม 7.0 นาที
+...
+สถานะออเดอร์: ORD-20261101-0001 - โต๊ะ TBL-001 - พร้อมเสิร์ฟ
+...
+สถานะออเดอร์: ORD-20261101-0001 - โต๊ะ TBL-001 - เสิร์ฟแล้ว</code></pre>
+<p>หลักฐาน: <a href="evidence/FR1-FR3-FR4-FR6-เส้นทางครบ-output.txt"><code>FR1-FR3-FR4-FR6-เส้นทางครบ-output.txt</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-6" aria-label="สไลด์ 6 — FR4 ชำระเงิน"><div class="kicker">P9 · JAVA OOP <span>06 / 15</span></div><h1>สไลด์ 6 — FR4 ชำระเงิน</h1><div class="rule"></div><div class="content"><p><strong>หน้าที่:</strong> เลือกบิลที่เสิร์ฟครบ ใช้แต้ม เลือกเงินสดหรือ QR และออกใบเสร็จ</p>
+<p><strong>เมธอดหลัก:</strong> <code>Main.uc04()</code> → <code>Payment.pay()</code> → <code>Payment.confirm()</code> → <code>Member.redeemPoints()</code> / <code>earnPoints()</code></p>
+<pre class="text"><code>==== เลือกช่องทางการชำระเงิน ====
+1 เงินสด / 2 QR (จำลอง) / 0 ยกเลิก
+&gt; สุทธิ 70.00 / ส่วนลด 10.00 / เงินทอน 30.00
+ส่วนลด 10.00 / สุทธิ 70.00 บาท
+ช่องทาง เงินสด / รับ 100.00 / ทอน 30.00
+ใช้ 10 แต้ม / ได้ 1 แต้ม</code></pre>
+<p>อธิบาย: ข้าวต้มปลา 80 บาท − ส่วนลด 10 บาท = สุทธิ 70 บาท; รับ 100 บาท ทอน 30 บาท</p>
+<p>หลักฐาน: <a href="evidence/FR1-FR3-FR4-FR6-เส้นทางครบ-output.txt"><code>FR1-FR3-FR4-FR6-เส้นทางครบ-output.txt</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-7" aria-label="สไลด์ 7 — FR5 สต็อกและใบสั่งซื้อ"><div class="kicker">P9 · JAVA OOP <span>07 / 15</span></div><h1>สไลด์ 7 — FR5 สต็อกและใบสั่งซื้อ</h1><div class="rule"></div><div class="content"><p><strong>หน้าที่:</strong> ผู้จัดการดูวัตถุดิบต่ำ ออก PO รับของจริง และปรับยอดเมื่อผลนับต่าง</p>
+<p><strong>เมธอดหลัก:</strong> <code>Main.uc05()</code> → <code>PurchaseOrder.addItem()</code> → <code>markOrdered()</code> → <code>receive()</code> → <code>Ingredient.receive()</code> / <code>adjustStock()</code></p>
+<pre class="text"><code>==== ตรวจรับสินค้าจากใบสั่งซื้อ ====
+[1] PO-21 - ร้านวัตถุดิบชุมชน
+&gt; เนื้อปลา สั่ง 2.0 กก.
+&gt; รับแล้ว PO-21
+[1] ING-1 - เนื้อปลา - 7.300 - 2.000 - กก. - ปกติ
+...
+[1] ING-1 - เนื้อปลา - 6.000 - 2.000 - กก. - ปกติ</code></pre>
+<p>อธิบาย: ปลาเริ่ม 5.3 กก. รับเพิ่ม 2 กก. เป็น 7.3 กก. แล้วผู้จัดการตรวจนับและปรับเป็น 6 กก.; <code>StockMovement</code> เก็บประวัติทั้งสองเหตุการณ์</p>
+<p>หลักฐาน: <a href="evidence/FR5-สต็อกและใบสั่งซื้อ-output.txt"><code>FR5-สต็อกและใบสั่งซื้อ-output.txt</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-8" aria-label="สไลด์ 8 — FR6 ภาพรวมและรายงาน"><div class="kicker">P9 · JAVA OOP <span>08 / 15</span></div><h1>สไลด์ 8 — FR6 ภาพรวมและรายงาน</h1><div class="rule"></div><div class="content"><p><strong>หน้าที่:</strong> ผู้จัดการเลือกวันและดูยอดจากบิลที่ชำระจริง แยกช่องทางและอันดับอาหาร</p>
+<p><strong>เมธอดหลัก:</strong> <code>Main.uc06()</code> → <code>printSales()</code> วนอ่าน <code>Order</code> และ <code>Payment</code></p>
+<pre class="text"><code>==== ผู้จัดการ: แผงควบคุมภาพรวมร้าน ====
+ออเดอร์ที่สร้าง 1 / กำลังปรุง 0 / ชำระในช่วงนี้ 1
+ยอดสุทธิ 70.00 - เงินสด 70.00 - QR 0.00 บาท
+อันดับขายดี (จำนวนจาน)
+1 ข้าวต้มปลา = 1</code></pre>
+<p>หลักฐาน: <a href="evidence/FR1-FR3-FR4-FR6-เส้นทางครบ-output.txt"><code>FR1-FR3-FR4-FR6-เส้นทางครบ-output.txt</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-9" aria-label="สไลด์ 9 — FR7 เมนูและสูตร"><div class="kicker">P9 · JAVA OOP <span>09 / 15</span></div><h1>สไลด์ 9 — FR7 เมนูและสูตร</h1><div class="rule"></div><div class="content"><p><strong>หน้าที่:</strong> ผู้จัดการเพิ่มเมนู กำหนดสูตรหลายเวอร์ชัน และเปิดขายเมื่อสูตรสมบูรณ์</p>
+<p><strong>เมธอดหลัก:</strong> <code>Main.uc07()</code> → <code>Menu.update()</code> / <code>openSale()</code> → <code>Recipe.addItem()</code> / <code>complete()</code> / <code>createNewVersion()</code></p>
+<pre class="text"><code>[6] ชาใหม่ - เครื่องดื่ม - 25.00 บาท - ปิดขาย
+...
+[6] ชาใหม่ - เครื่องดื่ม - 25.00 บาท - เปิดขาย</code></pre>
+<p>อธิบาย: สร้างเมนูแล้วเริ่มปิดขาย ทำสูตรให้สมบูรณ์ก่อนจึงเปิดขายได้</p>
+<p>หลักฐาน: <a href="evidence/FR2-FR7-คู่มือและสูตร-output.txt"><code>FR2-FR7-คู่มือและสูตร-output.txt</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-10" aria-label="สไลด์ 10 — FR8 สมาชิกและแต้ม"><div class="kicker">P9 · JAVA OOP <span>10 / 15</span></div><h1>สไลด์ 10 — FR8 สมาชิกและแต้ม</h1><div class="rule"></div><div class="content"><p><strong>หน้าที่:</strong> สมัคร/ค้น/แก้สมาชิก ดูประวัติแต้ม และตั้งกฎแต้มกลางร้าน</p>
+<p><strong>เมธอดหลัก:</strong> <code>Main.uc08()</code> → <code>Member.changePhone()</code> / <code>rename()</code> / <code>setRule()</code>; การจ่ายจริงใช้ <code>earnPoints()</code> และ <code>redeemPoints()</code> ใน FR4</p>
+<pre class="text"><code>&gt; สมัครสมาชิกสำเร็จ
+MBR-21 - สมาชิกใหม่ - 0899999999 - 0 แต้ม
+&gt; แก้ข้อมูลแล้ว
+MBR-21 - แก้ชื่อ - 0899999999 - 0 แต้ม
+&gt; เปลี่ยนกฎสำหรับการชำระครั้งต่อไปแล้ว
+กฎ: ทุก 100 บาท = 1 แต้ม - 1 แต้ม = 2.0 บาท - ขั้นต่ำ 5</code></pre>
+<p>หลักฐาน: <a href="evidence/FR8-สมาชิกและแต้ม-output.txt"><code>FR8-สมาชิกและแต้ม-output.txt</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-11" aria-label="สไลด์ 11 — ทฤษฎี OOP และ Composition"><div class="kicker">P9 · JAVA OOP <span>11 / 15</span></div><h1>สไลด์ 11 — ทฤษฎี OOP และ Composition</h1><div class="rule"></div><div class="content"><p>ตามโครงทฤษฎีใน PDF ตัวอย่าง หน้า 2 (สไลด์ 339): <strong>Class</strong> เป็นแบบพิมพ์, <strong>Object</strong> คือสิ่งที่สร้างจาก class, <strong>field</strong> เก็บข้อมูล, <strong>constructor</strong> ตั้งค่าแรก และ <strong>method</strong> ทำงานเมื่อถูกเรียก ดู <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/summaryclasses.html">Oracle Java: Classes and Objects</a></p>
+<p><strong>Composition</strong> คือความสัมพันธ์ has-a แบบเจ้าของกับส่วนย่อย: <code>Order ◆ OrderItem</code> และเพชรทึบอยู่ฝั่ง <code>Order</code> ส่วนย่อยหนึ่งอยู่ใน composite ได้ไม่เกินหนึ่งตัว ณ เวลาหนึ่ง ตาม <a href="https://www.omg.org/spec/UML/2.5.1/PDF">OMG UML 2.5.1 §11.2.3</a> วิธีหา: อ่าน Use Case → หา “A มี B” → ถามว่า B ยังมีความหมายไหมเมื่อไม่มี A → ดู field และการสร้าง/ทำลายในโค้ด</p>
+<table><thead><tr><th>ตัวหลัก</th><th>ส่วนย่อย</th><th>จุดที่เห็นในโค้ด</th></tr></thead><tbody><tr><td><code>Order</code></td><td><code>OrderItem</code></td><td><code>Order.destroy()</code> วนเรียก <code>item.destroy()</code></td></tr><tr><td><code>Menu</code></td><td><code>Recipe</code></td><td><code>Menu.destroy()</code> วนเรียก <code>recipe.destroy()</code></td></tr><tr><td><code>SOP</code></td><td><code>SOPStep</code></td><td><code>SOP.destroy()</code> วนเรียก <code>step.destroy()</code></td></tr><tr><td><code>Ingredient</code></td><td><code>StockMovement</code></td><td><code>Ingredient.destroy()</code> วนเรียก <code>movement.destroy()</code></td></tr><tr><td><code>Member</code></td><td><code>PointTransaction</code></td><td><code>Member.destroy()</code> วนเรียก <code>transaction.destroy()</code></td></tr></tbody></table>
+<p>โค้ดนี้จำลองการสิ้นสุดส่วนย่อยด้วย <code>destroy()</code>; Java จัดการหน่วยความจำภายหลัง อ่านคำอธิบายทีละขั้นและตัวอย่าง Association ที่ต่างกันได้ใน <a href="P9-THEORY.md"><code>P9-THEORY.md</code></a></p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-12" aria-label="สไลด์ 12 — โค้ด Composition: Order และ Menu"><div class="kicker">P9 · JAVA OOP <span>12 / 15</span></div><h1>สไลด์ 12 — โค้ด Composition: Order และ Menu</h1><div class="rule"></div><div class="content"><p>โค้ดจริงจาก <code>src/model/Order.java</code> และ <code>src/model/Menu.java</code>:</p>
+<pre class="java"><code>// Order เป็นเจ้าของ OrderItem
+public void destroy() {
+    for (int i = 0; i &lt; items.size(); i++)
+        items.get(i).destroy();
+    items.clear();
+    table = null;
+    customer = null;
+    payment = null;
+    destroyed = true;
+}
+
+// Menu เป็นเจ้าของ Recipe
+public void destroy() {
+    for (int i = 0; i &lt; recipes.size(); i++)
+        recipes.get(i).destroy();
+    recipes.clear();
+    optionNames.clear();
+    optionPrices.clear();
+    extraOptionIndexes.clear();
+    extraIngredients.clear();
+    extraQuantities.clear();
+    destroyed = true;
+}</code></pre>
+<p><code>table = null</code> เป็นเพียงการเลิกอ้างถึงโต๊ะ ไม่ใช่ Composition; โต๊ะยังอยู่ในรายการของร้าน</p></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-13" aria-label="สไลด์ 13 — โค้ด Composition: อีกสามคู่"><div class="kicker">P9 · JAVA OOP <span>13 / 15</span></div><h1>สไลด์ 13 — โค้ด Composition: อีกสามคู่</h1><div class="rule"></div><div class="content"><p>โค้ดจริงจาก <code>SOP</code>, <code>Ingredient</code> และ <code>Member</code> ย่อเฉพาะส่วนที่แสดงการเป็นเจ้าของ:</p>
+<pre class="java"><code>// SOP → SOPStep
+for (int i = 0; i &lt; steps.size(); i++)
+    steps.get(i).destroy();
+steps.clear();
+
+// Ingredient → StockMovement
+for (int i = 0; i &lt; movements.size(); i++)
+    movements.get(i).destroy();
+movements.clear();
+
+// Member → PointTransaction
+for (int i = 0; i &lt; transactions.size(); i++)
+    transactions.get(i).destroy();
+transactions.clear();</code></pre></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-14" aria-label="สไลด์ 14 — หลักฐานและขอบเขตที่ต้องบอกตรง ๆ"><div class="kicker">P9 · JAVA OOP <span>14 / 15</span></div><h1>สไลด์ 14 — หลักฐานและขอบเขตที่ต้องบอกตรง ๆ</h1><div class="rule"></div><div class="content"><ul><li>ผล Text Mode ในสไลด์เป็น <strong>บรรทัดคัดจาก stdout ที่รันจริง</strong>; ไฟล์เต็มและคำตอบที่ป้อนอยู่ใน <code>P9/evidence/</code></li><li>รันซ้ำได้ด้วย <code>python3 P9/generate_evidence.py</code> และตรวจ 8 งานด้วย <code>python3 tests/run_tests.py</code></li><li>วันที่ เวลา และเลขลำดับบางส่วนขึ้นกับเวลาที่รัน จึงไม่ควรอ้างว่าตรง P3/P4 ทุกบรรทัด</li><li>QR โต๊ะและ QR Payment เป็นการจำลอง; ข้อมูลไม่เก็บถาวร</li><li><code>Customer.checkCustomerStatus()</code> มีใน P7 และ Java แล้ว; ชื่อ operation 73 รายการของ P7 มีใน Java ครบ ลายเซ็นตรง 72 รายการ; <code>PurchaseOrder.receive()</code> ใช้ List ตามข้อกำหนดก่อนหน้าแทน Map ใน P7 และจำนวน field/method ยังไม่เท่าทุกตัว ดู <a href="P7-STRICT-AUDIT.md"><code>P7-STRICT-AUDIT.md</code></a></li></ul></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section>
+<section class="slide" id="slide-15" aria-label="สไลด์ 15 — แหล่งอ้างอิง"><div class="kicker">P9 · JAVA OOP <span>15 / 15</span></div><h1>สไลด์ 15 — แหล่งอ้างอิง</h1><div class="rule"></div><div class="content"><ol><li>IREB CPRE, <a href="https://cpre.ireb.org/en/downloads-and-resources/glossary?exam-relevant=true&amp;amp;first-letter=F">Online Glossary: Functional requirement</a> — นิยาม FR</li><li>Object Management Group, <a href="https://www.omg.org/spec/UML/2.5.1/PDF">Unified Modeling Language 2.5.1</a>, §11.2.3 — ความหมายของ Composition</li><li>Oracle, <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/summaryclasses.html">Classes and Objects</a> — field, constructor และ method</li><li>Oracle, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html">Java SE 21 List Interface</a> — ลำดับและ index ของ List</li><li><a href="https://www.canva.com/design/DAHXaK2zQ38/3Sd-YVMVB1DkWuToNWdsRQ/edit">Canva P7 ฉบับที่ยืนยัน</a>, หน้า 270–289; โค้ดและผลรันในโฟลเดอร์นี้</li><li>PDF ตัวอย่าง <code>ระบบจัดการpizza9.pdf</code>, หน้า 2 (เลขสไลด์ 339): โครงหัวข้อทฤษฎี Composition; ปรับตัวอย่างให้ตรงกับโค้ดร้านข้าวต้มใน <a href="P9-THEORY.md"><code>P9-THEORY.md</code></a></li></ol></div><div class="footer">ร้านข้าวต้มอารมณ์ดี · ผลจากการรัน Java จริง</div></section><script>
+let current=0;const slides=[...document.querySelectorAll('.slide')];
+function show(n){current=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>s.classList.toggle('active',i===current));document.getElementById('count').textContent=(current+1)+' / '+slides.length);location.hash='slide-'+(current+1)}
+document.getElementById('prev').onclick=()=>show(current-1);document.getElementById('next').onclick=()=>show(current+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='PageDown')show(current+1);if(e.key==='ArrowLeft'||e.key==='PageUp')show(current-1)});
+const first=Number((location.hash.match(/slide-(\d+)/)||[])[1]||1);show(first-1);
+</script></body></html>
