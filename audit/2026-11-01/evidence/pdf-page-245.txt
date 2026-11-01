@@ -1,0 +1,36 @@
+                                   Verb คำทีคัดมา 69 คํา                                                                                           9
+1. สแกน QR Code ประจำโตะ - Scan Table QR Code                         36. เพิ่มวัตถุดิบลงในสูตรอาหาร - Add Ingredient to Recipe
+2. ระบุหมายเลขโตะอาหาร - Identify Table Number                        37. ปรับสัดสวนวัตถุดิบในสูตรอาหาร - Change Recipe Ingredient Quantity
+3. ตรวจสอบสถานะลูกคา - Check Customer Status                          38. ยืนยันสูตรอาหารสมบูรณ 100% - Complete Recipe
+4. สมัครสมาชิกใหม - Register Member                                   39. สร้างสูตรอาหารเวอรชันใหม - Create New Recipe Version
+5. ตรวจสอบเบอร์โทรสมาชิก - Check Member Phone                          40. สร้างมาตรฐานการปรุง SOP - Create SOP
+6. สะสมแต้มสมาชิก - Earn Member Points                                 41. แก้ไขขอมูลมาตรฐาน SOP - Update SOP Details
+7. แลกแต้มสมาชิกเป็ นสวนลด - Redeem Member Points                     42. เผยแพร่ SOP ขึ ้นจอครัว - Publish SOP to Kitchen
+8. กำหนดเกณฑแตมสมาชิก - Set Member Point Rule                        43. เปิ ดใชงานมาตรฐาน SOP - Enable SOP
+9. บันทึกประวัติแตมสมาชิก - Record Point Transaction                  44. ปิ ดใชงานมาตรฐาน SOP - Disable SOP
+10. สร้างออเดอรใหม - Create Order                                    45. คำนวณเวลารวมมาตรฐาน SOP - Calculate Total SOP Time
+11. เพิ่มรายการลงในออเดอร - Add Item to Order                         46. ตรวจสอบเงื่อนไขลบมาตรฐาน SOP - Check SOP Deletable
+12. ปรับจํานวนรายการในออเดอร - Adjust Order Item Quantity             47. กำหนดรายละเอียดขั ้นตอน SOP - Set SOP Step Details
+13. ลบรายการออกจากออเดอร์ - Remove Item from Order                     48. กำหนดลําดับขั ้นตอน SOP - Set SOP Step Order Number
+14. ผูกสมาชิกเขากับออเดอร - Attach Member to Order                   49. กำหนดเวลามาตรฐานขั ้นตอน SOP - Set SOP Step Standard Minutes
+15. คำนวณยอดรวมออเดอร - Calculate Order Total                         50. ตรวจสอบสต็อกวัตถุดิบเพียงพอ - Check Enough Ingredient Stock
+16. ยืนยันการสั ่งออเดอร - Confirm Order                              51. ตัดสต็อกวัตถุดิบตามสูตรอาหาร - Deduct Ingredient Stock by Recipe
+17. เปลี่ยนสถานะออเดอร - Change Order Status                          52. คืนสต็อกวัตถุดิบเมื่อยกเลิก - Restore Ingredient Stock on Cancel
+18. ยกเลิกบิลออเดอร - Cancel Order                                    53. ปรับยอดสต็อกวัตถุดิบพรอมเหตุผล - Adjust Ingredient Stock with Reason
+19. สร้างรายการในออเดอร - Create Order Item                           54. เพิ่มสต็อกวัตถุดิบเมื่อรับของ - Increase Ingredient Stock on Receive
+20. เริ่มปรุงรายการอาหาร - Start Cooking Order Item                    55. แจ้งเตือนสต็อกวัตถุดิบตํ่ากวาเกณฑ - Alert Minimum Ingredient Stock
+21. เทียบเวลาปรุงรายการกับ SOP - Compare Order Item Cooking Time       56. บันทึกประวัติการเคลื่อนไหวสต็อก - Record Stock Movement
+22. รายการอาหารปรุงเสร็จพรอมเสิรฟ - Mark Order Item Ready to Serve   57. สร้างใบสั่งซื ้อ PO - Create Purchase Order
+23. เสิรฟรายการอาหารลงโตะ - Serve Order Item to Table                58. เพิ่มรายการวัตถุดิบในใบสั่งซื ้อ PO - Add Item to Purchase Order
+24. ส่งคําขอแกไข/ยกเลิกรายการ - Request Order Item Change or Cancel   59. ส่งใบสั่งซื ้อ PO ใหซัพพลายเออร - Mark Purchase Order Ordered
+25. อนุมัติคําขอแกไขรายการ - Approve Order Item Change                60. ตรวจรับวัตถุดิบเขาคลังตาม PO - Receive Ingredients by PO
+26. ปฏิเสธคําขอแกไขรายการ - Reject Order Item Change                  61. ผูกวัตถุดิบของซัพพลายเออร - Add Supplier Ingredient
+27. ยกเลิกรายการในออเดอร - Cancel Order Item                          62. ตรวจสอบรายการจัดสงของซัพพลายเออร - Check Supplier Deliveries
+28. สร้างเมนูอาหาร - Create Menu                                       63. บันทึกการชําระเงิน - Process Payment (Cash or QR)
+29. แก้ไขขอมูลเมนูอาหาร - Update Menu Details                         64. คำนวณเงินทอนการชําระเงิน - Calculate Payment Change
+30. ตรวจสอบสถานะขายเมนู - Check Menu Sale Status                       65. คำนวณสวนลดแตมในการชําระเงิน - Calculate Payment Point Discount
+31. เปิดการขายเมนูอาหาร - Open Menu Sale                               66. พิมพใบเสร็จรับเงินการชําระ - Print Payment Receipt
+32. ปิดการขายเมนูอาหาร - Close Menu Sale                               67. ยืนยันการชําระเงินเสร็จสมบูรณ - Confirm Payment Completed
+33. ตรวจสอบเงื่อนไขลบเมนู - Check Menu Deletable                       68. ตรวจสอบสิทธิ์และบทบาทพนั กงาน - Authenticate Employee Role
+34. กำหนดตัวเลือกเพิ่มเติมของเมนู - Set Menu Option                    69. มอบหมายหน้าที่สถานี แกพนั กงาน - Assign Employee Station Duty
+35. สร้างสูตรอาหารประจําเมนู - Create Recipe

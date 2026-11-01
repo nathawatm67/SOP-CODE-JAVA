@@ -1,0 +1,3169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P4 · Text Mode CLI บนกระดานดำ (56 หน้าจอเทอร์มินัลจริง) · ร้านข้าวต้มอารมณ์ดี</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --chalk-bg: #1c232a;
+  --chalk-board: #202932;
+  --chalk-border: #3b4856;
+  --chalk-frame: #543d2b;
+  --chalk-frame-shadow: #2c1f15;
+  --chalk-text: #f1f5f9;
+  --chalk-dim: #94a3b8;
+  --chalk-yellow: #fde047;
+  --chalk-cyan: #67e8f9;
+  --chalk-pink: #f472b6;
+  --chalk-green: #4ade80;
+  --bg-primary: #0a0e14;
+  --card-bg: rgba(28, 35, 42, 0.98);
+  --accent-gold: #fbbf24;
+  --font-thai: 'Noto Sans Thai', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --font-title: 'Chakra Petch', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--bg-primary);
+  background-image: radial-gradient(circle at 50% 0%, #1a2332 0%, #0a0e14 70%);
+  color: var(--chalk-text);
+  font-family: var(--font-thai);
+  padding: 24px;
+  line-height: 1.6;
+}
+
+header {
+  max-width: 1300px;
+  margin: 0 auto 28px;
+  background: rgba(24, 32, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px 32px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: var(--accent-gold);
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-family: var(--font-title);
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.subtitle {
+  color: var(--chalk-dim);
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.stat-item {
+  background: rgba(0,0,0,0.25);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border-left: 3px solid var(--chalk-yellow);
+}
+.stat-val { font-size: 22px; font-weight: 700; color: #fff; font-family: var(--font-mono); }
+.stat-lbl { font-size: 13px; color: var(--chalk-dim); }
+
+.controls-bar {
+  max-width: 1300px;
+  margin: 0 auto 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn-filter {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--chalk-text);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-thai);
+}
+.btn-filter:hover, .btn-filter.active {
+  background: var(--accent-gold);
+  color: #000;
+  font-weight: 600;
+  border-color: var(--accent-gold);
+}
+
+.search-input {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 280px;
+  outline: none;
+  font-family: var(--font-thai);
+}
+.search-input:focus {
+  border-color: var(--chalk-yellow);
+}
+
+.main-content {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* Blackboard Card Styling */
+.blackboard-card {
+  margin-bottom: 36px;
+  background: var(--chalk-board);
+  border: 10px solid var(--chalk-frame);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6), inset 0 0 80px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-topbar {
+  background: rgba(10, 15, 20, 0.6);
+  border-bottom: 2px solid var(--chalk-border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.slide-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slide-num-badge {
+  background: var(--chalk-yellow);
+  color: #000;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+}
+
+.slide-meta-title {
+  font-family: var(--font-title);
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.slide-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.slide-tag {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--chalk-cyan);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.actor-badge {
+  color: var(--chalk-pink);
+  border-color: rgba(244, 114, 182, 0.3);
+}
+
+.copy-btn {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: var(--accent-gold);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  font-family: var(--font-thai);
+}
+.copy-btn:hover {
+  background: var(--accent-gold);
+  color: #000;
+}
+.copy-btn.copied {
+  background: var(--chalk-green);
+  color: #000;
+  border-color: var(--chalk-green);
+}
+
+.chalk-surface {
+  padding: 24px 28px;
+  background-image: 
+    radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-size: 20px 20px, 40px 40px;
+  background-position: 0 0, 10px 10px;
+}
+
+.chalk-text-box {
+  background: transparent;
+  color: #e2e8f0;
+  font-family: var(--font-mono);
+  font-size: 14.5px;
+  line-height: 1.65;
+  white-space: pre;
+  user-select: text;
+  overflow-x: auto;
+}
+
+.chalk-tray {
+  background: var(--chalk-frame);
+  border-top: 3px solid var(--chalk-frame-shadow);
+  padding: 6px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chalk-sticks {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.chalk-stick {
+  width: 44px;
+  height: 9px;
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+.chalk-white { background: #f8fafc; }
+.chalk-pink { background: #f472b6; }
+.chalk-blue { background: #67e8f9; }
+.chalk-yellow { background: #fde047; }
+.chalk-info {
+  font-size: 12px;
+  color: #d1d5db;
+  font-style: italic;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #10b981;
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  display: none;
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+}
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">🖤 P4 · TEXT MODE CLI กระดานดำฉบับสมบูรณ์</div>
+  <h1>จำลอง Text Mode CLI บนกระดานดำ (56 หน้าจอเทอร์มินัลจริง)</h1>
+  <div class="subtitle">ทีละ 1 หน้าจอเทอร์มินัลจริง (Box UI) ครอบคลุมครบ 8 Use Cases · ลบข้อความ Step ทิ้งทั้งหมด 100% · พร้อมก๊อปปี้ไปวาง Canva ทีละแผ่นในคลิกเดียว</div>
+  
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-val">56 หน้าจอ</div>
+      <div class="stat-lbl">1 หน้าจอ = 1 หน้า Text Mode (พร้อมก๊อป Canva)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">8 Use Cases + 1 เมนูหลัก</div>
+      <div class="stat-lbl">ครอบคลุมกระบวนการร้านอาหารครบวงจร</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">16 คลาส</div>
+      <div class="stat-lbl">สถาปัตยกรรม SDLC & 5 Compositions</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">0 ข้อความ Step</div>
+      <div class="stat-lbl">ลบข้อความ Step ทิ้งสะอาด เรียบร้อย 100%</div>
+    </div>
+  </div>
+</header>
+
+<div class="controls-bar">
+  <div class="filter-group">
+    <button class="btn-filter active" onclick="filterUC('ALL', this)">ทั้งหมด (56 หน้าจอ)</button>
+    <button class="btn-filter" onclick="filterUC('MENU', this)">เมนูหลัก (Main Menu)</button>
+    <button class="btn-filter" onclick="filterUC('UC-01', this)">UC-01 (สั่งอาหาร QR · 13)</button>
+    <button class="btn-filter" onclick="filterUC('UC-02', this)">UC-02 (จัดการ SOP · 8)</button>
+    <button class="btn-filter" onclick="filterUC('UC-03', this)">UC-03 (ครัวตาม SOP · 5)</button>
+    <button class="btn-filter" onclick="filterUC('UC-04', this)">UC-04 (ชำระเงิน POS · 5)</button>
+    <button class="btn-filter" onclick="filterUC('UC-05', this)">UC-05 (สต็อก & PO · 7)</button>
+    <button class="btn-filter" onclick="filterUC('UC-06', this)">UC-06 (รายงานยอดขาย · 3)</button>
+    <button class="btn-filter" onclick="filterUC('UC-07', this)">UC-07 (เมนู & สูตร · 9)</button>
+    <button class="btn-filter" onclick="filterUC('UC-08', this)">UC-08 (สมาชิก & แต้ม · 5)</button>
+  </div>
+  
+  <div>
+    <input type="text" class="search-input" placeholder="🔍 ค้นหาคำ เช่น TBL-004, SOP-001..." oninput="handleSearch(this.value)">
+  </div>
+</div>
+
+<main class="main-content" id="slidesContainer">
+  <div class="blackboard-card screen-card" data-uc="MENU" id="screen-1">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #1</span>
+        <span class="slide-meta-title">เมนูหลัก (Main Menu) · ข้าวต้มอารมณ์ดี</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้ใช้ทั่วไป / ผู้ดูแลระบบ</span>
+        <span class="slide-tag">หน้าหลัก</span>
+        <span class="slide-tag">CLI Menu</span>
+        <span class="slide-tag">8 Use Cases</span>
+        <span class="slide-tag">Java Edition</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-1')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-1-text">+==========================================================================+
+| ==== ข้าวต้มอารมณ์ดี · เมนูหลัก ====                                     |
++--------------------------------------------------------------------------+
+| ข้าวต้มอารมณ์ดี · SOP-based Restaurant Management                         |
+| ระบบบริหารจัดการร้านอาหารตามมาตรฐาน SOP (Java Edition)                   |
++--------------------------------------------------------------------------+
+|  [1] UC-01 สั่งอาหารผ่าน QR Code               (ลูกค้า)                 |
+|  [2] UC-02 จัดการ SOP                          (ผู้จัดการ)              |
+|  [3] UC-03 ปรุงอาหารตาม SOP                    (คนครัว · แคชเชียร์)     |
+|  [4] UC-04 ชำระเงิน                            (แคชเชียร์)              |
+|  [5] UC-05 จัดการสต็อกและสั่งซื้อวัตถุดิบ      (ผู้จัดการ)              |
+|  [6] UC-06 ดูภาพรวมและรายงานยอดขาย             (ผู้จัดการ)              |
+|  [7] UC-07 จัดการเมนูและสูตรอาหาร              (ผู้จัดการ)              |
+|  [8] UC-08 จัดการสมาชิกและแต้ม                 (แคชเชียร์ · ผู้จัดการ)  |
++--------------------------------------------------------------------------+
+|  [9] ทดสอบระบบสถาปัตยกรรม (Architecture Test Suite)                      |
+|  [0] ออกจากโปรแกรม (Exit)                                                |
++==========================================================================+
+เลือก Use Case [1-8] หรือ 9 ทดสอบระบบ (0 = ออก)
+[ ] &gt; 1</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 1 : หน้าเมนูหลักสำหรับเลือกเข้าใช้งาน Use Case 1–8 หรือรันชุดทดสอบสถาปัตยกรรม</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-2">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #2</span>
+        <span class="slide-meta-title">UC-01 · สแกน QR Code ประจำโต๊ะ 4 (TBL-004)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.1</span>
+        <span class="slide-tag">TBL-004</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-2')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-2-text">+==========================================================================+
+| ==== ข้าวต้มอารมณ์ดี · สั่งอาหารผ่าน QR Code ====                        |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| ลูกค้านั่งที่โต๊ะ 4 และใช้สมาร์ตโฟนสแกน QR Code ประจำโต๊ะ                |
++--------------------------------------------------------------------------+
+|  [1] สแกน QR Code ประจำโต๊ะ 4 (TBL-004)                                  |
+|  [0] ยกเลิก / ออกจากโปรแกรม                                              |
++==========================================================================+
+เลือก
+[ลูกค้า] (Enter = 1) &gt; 1
+✔ ระบบระบุโต๊ะ TBL-004 · สร้างตะกร้า CRT-20260802-0001 ให้อัตโนมัติ</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 2 : ลูกค้านั่งที่โต๊ะ 4 ใช้สมาร์ตโฟนสแกน QR Code ประจำโต๊ะ</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-3">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #3</span>
+        <span class="slide-meta-title">UC-01 · สิทธิพิเศษสมาชิกและสะสมแต้ม (ไม่บังคับ)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.2</span>
+        <span class="slide-tag">สมาชิก &amp; แต้ม</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-3')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-3-text">+==========================================================================+
+| ==== สิทธิพิเศษสมาชิกและสะสมแต้ม ====                                    |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| โต๊ะ TBL-004 · ตะกร้า CRT-20260802-0001                                  |
+| ระบบสะสมแต้ม: ทุก 50 บาท = 1 แต้ม (1 แต้ม = 1 บาท)                      |
++--------------------------------------------------------------------------+
+| กรอกเบอร์โทรสมาชิก 10 หลัก (เช่น 0999999999) หรือพิมพ์ 0 เพื่อข้ามไปสั่งอาหาร |
+|  [0] ข้าม / ไม่ระบุสมาชิก                                                |
++==========================================================================+
+เบอร์โทรสมาชิก เพื่อสะสมแต้ม (ไม่บังคับ · พิมพ์ 0 หรือ - ถ้าไม่ระบุ)
+[ลูกค้า] (Enter = 0999999999) &gt; 0999999999
+✔ ระบบผูกเบอร์ 0999999999 (Human) กับออเดอร์ เพื่อสะสมแต้มตอนชำระเงิน
+· ระบบตรวจสต็อกวัตถุดิบอัตโนมัติตามสูตรของแต่ละเมนู</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 3 : ลูกค้าระบุเบอร์สมาชิกเพื่อสะสมแต้ม หรือกด 0 เพื่อข้าม</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-4">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #4</span>
+        <span class="slide-meta-title">UC-01 · เลือกหมวดหมู่อาหาร (11 หมวด)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.3</span>
+        <span class="slide-tag">11 หมวดอาหาร</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-4')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-4-text">+==========================================================================+
+| ==== เลือกหมวดหมู่อาหาร ====                                             |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| หมวดหมู่อาหารและเครื่องดื่มทั้งหมด (11 หมวด):                            |
++--------------------------------------------------------------------------+
+|  [1] ต้ม/นึ่ง     [2] ยำ         [3] ปลา        [4] ทอด                  |
+|  [5] ผัด          [6] ทานเล่น    [7] น้ำสมุนไพร [8] อิตาเลียนโซดา       |
+|  [9] น้ำผลไม้     [10] น้ำปั่น   [11] เครื่องดื่ม                        |
++--------------------------------------------------------------------------+
+|  [C] ตะกร้าอาหาร (0 รายการ)                                              |
+|  [0] ย้อนกลับ                                                            |
++==========================================================================+
+เลือกหมวด (1-11) หรือ C = ดูตะกร้า (0 = ย้อนกลับ)
+[ลูกค้า] (Enter = 5) &gt; 5</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 4 : ลูกค้าเลือกหมวดหมู่อาหารและเครื่องดื่ม 11 หมวด (เลือกหมวด 5 ผัด)</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-5">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #5</span>
+        <span class="slide-meta-title">UC-01 · เลือกเมนูอาหารในหมวด ผัด</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.3</span>
+        <span class="slide-tag">หมวด ผัด</span>
+        <span class="slide-tag">ตรวจสต็อก</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-5')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-5-text">+==========================================================================+
+| ==== หมวด ผัด ====                                                       |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| รายการอาหารในหมวด ผัด (2 เมนู):                                          |
++--------------------------------------------------------------------------+
+|  [1] MNU-018 หมูกระเทียม            120.00 บ.  [พร้อมขาย]                 |
+|  [2] MNU-029 ผัดกะเพราปลา            69.00 บ.  [พร้อมขาย]                 |
++--------------------------------------------------------------------------+
+|  [0] ย้อนกลับไปเลือกหมวดหมู่                                             |
++==========================================================================+
+เลือกเมนู (0 = กลับ)
+[ลูกค้า] (Enter = 2) &gt; 2
+ลูกค้าเลือกเมนู ผัดกะเพราปลา</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 5 : ลูกค้าดูรายการเมนูในหมวดผัดที่พร้อมขาย และเลือกผัดกะเพราปลา</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-6">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #6</span>
+        <span class="slide-meta-title">UC-01 · ปรับแต่งเมนูอาหาร (ผัดกะเพราปลา)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.4</span>
+        <span class="slide-tag">ระดับเผ็ด</span>
+        <span class="slide-tag">ท็อปปิ้ง</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-6')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-6-text">+==========================================================================+
+| ==== ปรับแต่งเมนูอาหาร ====                                              |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| MNU-029 ผัดกะเพราปลา · ครัวร้อน · ราคา 69.00 บาท                          |
++--------------------------------------------------------------------------+
+| ระดับความเผ็ด: [1] ไม่เผ็ด  [2] เผ็ดน้อย  [3] เผ็ดปกติ  [4] เผ็ดมาก       |
+| ตัวเลือกเพิ่มเติม: [1] เพิ่มไข่ดาว +15  [2] เพิ่มข้าว +10  [3] ไม่ใส่ผัก (ฟรี) |
++--------------------------------------------------------------------------+
+| เลือกปรับแต่งระดับความเผ็ด ท็อปปิ้ง และระบุหมายเหตุเฉพาะ                 |
++==========================================================================+
+จำนวนจาน
+[ลูกค้า] (Enter = 2) &gt; 2
+ระดับความเผ็ด [1-4]
+[ลูกค้า] (Enter = 2) &gt; 2
+ตัวเลือกเพิ่มเติม (พิมพ์เลข หลายอันคั่นด้วย , หรือ 0 = ไม่เลือก)
+[ลูกค้า] (Enter = 1) &gt; 1
+หมายเหตุเฉพาะเมนู (Enter = ไม่มี)
+[ลูกค้า] (Enter = ไข่ดาวไม่สุก) &gt; ไข่ดาวไม่สุก
+ราคารายการ: (69 + 15) × 2 = 168.00 บาท
+[1] ใส่ตะกร้า   [0] ยกเลิก
+[ลูกค้า] (Enter = 1) &gt; 1
+✔ เพิ่มลงตะกร้าแล้ว (1 รายการ)
+· เลือกเมนูอื่นต่อได้ หรือพิมพ์ C เพื่อดูตะกร้า (ตัวอย่าง: หมวด ยำ → ยำหมูยอ/แหนม)</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 6 : ลูกค้าเลือกระดับความเผ็ด ตัวเลือกไข่ดาว หมายเหตุ และใส่ตะกร้า</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-7">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #7</span>
+        <span class="slide-meta-title">UC-01 · เลือกหมวดหมู่อาหาร (รอบที่ 2: หมวด ยำ)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.3</span>
+        <span class="slide-tag">หมวด ยำ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-7')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-7-text">+==========================================================================+
+| ==== เลือกหมวดหมู่อาหาร ====                                             |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| หมวดหมู่อาหารและเครื่องดื่มทั้งหมด (11 หมวด):                            |
++--------------------------------------------------------------------------+
+|  [1] ต้ม/นึ่ง     [2] ยำ         [3] ปลา        [4] ทอด                  |
+|  [5] ผัด          [6] ทานเล่น    [7] น้ำสมุนไพร [8] อิตาเลียนโซดา       |
+|  [9] น้ำผลไม้     [10] น้ำปั่น   [11] เครื่องดื่ม                        |
++--------------------------------------------------------------------------+
+|  [C] ตะกร้าอาหาร (1 รายการ)                                              |
+|  [0] ย้อนกลับ                                                            |
++==========================================================================+
+เลือกหมวด (1-11) หรือ C = ดูตะกร้า (0 = ย้อนกลับ)
+[ลูกค้า] (Enter = 2) &gt; 2</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 7 : ลูกค้ากลับมาเลือกหมวดหมู่อาหารรอบที่สอง (เลือกหมวด 2 ยำ)</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-8">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #8</span>
+        <span class="slide-meta-title">UC-01 · เลือกเมนูอาหารในหมวด ยำ</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.3</span>
+        <span class="slide-tag">หมวด ยำ</span>
+        <span class="slide-tag">ยำหมูยอ/แหนม</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-8')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-8-text">+==========================================================================+
+| ==== หมวด ยำ ====                                                        |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| รายการอาหารในหมวด ยำ (1 เมนู):                                           |
++--------------------------------------------------------------------------+
+|  [1] MNU-007 ยำหมูยอ/แหนม            65.00 บ.  [พร้อมขาย]                |
++--------------------------------------------------------------------------+
+|  [0] ย้อนกลับไปเลือกหมวดหมู่                                             |
++==========================================================================+
+เลือกเมนู (0 = กลับ)
+[ลูกค้า] (Enter = 1) &gt; 1
+ลูกค้าเลือกเมนู ยำหมูยอ/แหนม</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 8 : ลูกค้าเลือกเมนูยำหมูยอ/แหนม ราคา 65 บาท จากครัวเย็น</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-9">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #9</span>
+        <span class="slide-meta-title">UC-01 · ปรับแต่งเมนูอาหาร (ยำหมูยอ/แหนม)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.4</span>
+        <span class="slide-tag">ยำหมูยอ/แหนม</span>
+        <span class="slide-tag">ครัวเย็น</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-9')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-9-text">+==========================================================================+
+| ==== ปรับแต่งเมนูอาหาร ====                                              |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| MNU-007 ยำหมูยอ/แหนม · ครัวเย็น · ราคา 65.00 บาท                         |
++--------------------------------------------------------------------------+
+| ระดับความเผ็ด: [1] ไม่เผ็ด  [2] เผ็ดน้อย  [3] เผ็ดปกติ  [4] เผ็ดมาก       |
++--------------------------------------------------------------------------+
+| เลือกปรับแต่งระดับความเผ็ด ท็อปปิ้ง และระบุหมายเหตุเฉพาะ                 |
++==========================================================================+
+จำนวนจาน
+[ลูกค้า] (Enter = 1) &gt; 1
+ระดับความเผ็ด [1-4]
+[ลูกค้า] (Enter = 3) &gt; 3
+หมายเหตุเฉพาะเมนู (Enter = ไม่มี)
+[ลูกค้า] &gt; 
+ราคารายการ: 65.00 × 1 = 65.00 บาท
+[1] ใส่ตะกร้า   [0] ยกเลิก
+[ลูกค้า] (Enter = 1) &gt; 1
+✔ เพิ่มลงตะกร้าแล้ว (2 รายการ)</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 9 : ลูกค้าระบุความเผ็ดระดับ 3 (เผ็ดปกติ) และใส่ตะกร้าอาหาร</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-10">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #10</span>
+        <span class="slide-meta-title">UC-01 · ตรวจสอบตะกร้าอาหาร (Cart)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.5</span>
+        <span class="slide-tag">ตะกร้าอาหาร</span>
+        <span class="slide-tag">ยอดรวม</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-10')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-10-text">+==========================================================================+
+| ==== ตรวจสอบตะกร้าอาหาร (Cart) ====                                      |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| โต๊ะ: 4 (TBL-004) · ตะกร้า: CRT-20260802-0001                            |
++--------------------------------------------------------------------------+
+|  1. ผัดกะเพราปลา       × 2  (เผ็ดน้อย · เพิ่มไข่ดาว +15 · “ไข่ดาวไม่สุก”)   168.00 บ. |
+|  2. ยำหมูยอ/แหนม       × 1  (เผ็ดปกติ)                                65.00 บ. |
++--------------------------------------------------------------------------+
+| ยอดรวมทั้งสิ้น: 233.00 บาท                                               |
++--------------------------------------------------------------------------+
+|  [1] แก้จำนวน   [2] ลบรายการ   [3] ยืนยันและส่งออเดอร์   [4] เลือกเมนูเพิ่ม |
+|  [0] ย้อนกลับ                                                            |
++==========================================================================+
+เลือกตัวเลือกในตะกร้า [1-4] (0 = ย้อนกลับ)
+[ลูกค้า] (Enter = 3) &gt; 3</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 10 : ตรวจสอบรายการในตะกร้า 2 รายการ ยอดรวม 233 บาท และเลือกส่งออเดอร์</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-11">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #11</span>
+        <span class="slide-meta-title">UC-01 · ยืนยันการสั่งอาหารเข้าครัว และตรวจสต็อก</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า · ระบบ</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.6</span>
+        <span class="slide-tag">ตรวจสต็อก</span>
+        <span class="slide-tag">ตัดสต็อก</span>
+        <span class="slide-tag">KDS</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-11')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-11-text">+==========================================================================+
+| ==== ยืนยันการสั่งอาหารเข้าครัว ====                                     |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| สรุปรายการ: 2 รายการ รวม 233.00 บาท                                      |
+| หมายเหตุ: แก้ไขหรือยกเลิกเองได้เฉพาะรายการที่ครัวยังไม่เริ่มปรุง         |
++--------------------------------------------------------------------------+
+|  [1] ยืนยันส่งออเดอร์                                                    |
+|  [0] กลับไปแก้ไขตะกร้า                                                   |
++==========================================================================+
+[1] ยืนยันส่งออเดอร์   [0] กลับ
+[ลูกค้า] (Enter = 1) &gt; 1
+ตรวจวัตถุดิบตามสูตรของทุกรายการ: เนื้อปลา 0.3 กก. · ใบกะเพรา 0.4 กำ · ข้าวสาร 0.24 กก. · น้ำมันพืช 0.06 ลิตร · ไข่ไก่ 2 ฟอง · หมูยอ 0.1 กก.
+✔ วัตถุดิบพอสมบูรณ์
+✔ สร้าง Order ID ORD-20260802-0001 · ตัดสต็อกตามสูตรทันที
+สต็อกคงเหลือ: เนื้อปลา 5 กก. · ใบกะเพรา 6 กำ · ข้าวสาร 50 กก. · น้ำมันพืช 8 ลิตร · ไข่ไก่ 1 ฟอง · หมูยอ 0.9 กก.
+ส่งรายการเข้าจอ KDS: ครัวร้อน 1 · ครัวเย็น 1 · บาร์น้ำ 0 รายการ</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 11 : ระบบตรวจสอบสต็อกตามสูตร ตัดสต็อกทันที และส่งเข้าคิวครัว KDS</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-12">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #12</span>
+        <span class="slide-meta-title">UC-01 · ติดตามสถานะครัว และแก้ไขจำนวนจาน</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.7</span>
+        <span class="slide-tag">ติดตามสถานะ</span>
+        <span class="slide-tag">แก้จำนวน</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-12')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-12-text">+==========================================================================+
+| ติดตามสถานะการปรุงในครัว                                                 |
++--------------------------------------------------------------------------+
+| สถานะออเดอร์: ORD-20260802-0001 · โต๊ะ 4                                |
++--------------------------------------------------------------------------+
+|  1. ผัดกะเพราปลา        × 2    168.00 บ.  [รับออเดอร์]                   |
+|  2. ยำหมูยอ/แหนม        × 1     65.00 บ.  [รับออเดอร์]                   |
++--------------------------------------------------------------------------+
+| ราคารวม: 233.00 บาท                                                      |
++==========================================================================+
+
++==========================================================================+
+| ==== ติดตามสถานะและจัดการออเดอร์ ====                                    |
++--------------------------------------------------------------------------+
+| บทบาท: ลูกค้า                                                            |
++--------------------------------------------------------------------------+
+| ออเดอร์ ORD-20260802-0001 ส่งเข้าครัวเรียบร้อยแล้ว                       |
++--------------------------------------------------------------------------+
+|  [1] แก้ไขจำนวนจานรายการที่ยังไม่เริ่มปรุง                               |
+|  [2] ขอยกเลิกรายการที่ครัวเริ่มปรุงแล้ว (ส่งคำขอให้ผู้จัดการ)             |
+|  [0] จบขั้นตอนการสั่งอาหาร                                               |
++==========================================================================+
+เลือก
+[ลูกค้า] (Enter = 1) &gt; 1
+รายการที่ยังไม่เริ่มปรุง: ยำหมูยอ/แหนม (1 จาน)
+จำนวนจานใหม่
+[ลูกค้า] (Enter = 2) &gt; 2
+✔ ระบบปรับยอดใน Order และตัดสต็อกเพิ่มตามสูตร · ราคารวมใหม่ 298.00 บาท
+KDS ครัวเย็น ได้รับการอัปเดต: ยำหมูยอ/แหนม เป็น 2 จาน</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 12 : ติดตามสถานะออเดอร์ และลูกค้าแก้ไขจำนวนยำหมูยอ/แหนมเป็น 2 จาน</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-13">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #13</span>
+        <span class="slide-meta-title">UC-01 · ขอส่งคำขอยกเลิกรายการที่กำลังปรุง</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ลูกค้า</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.8</span>
+        <span class="slide-tag">คำขอยกเลิก</span>
+        <span class="slide-tag">กำลังปรุง</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-13')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-13-text">+==========================================================================+
+| ติดตามสถานะการปรุงในครัว                                                 |
++--------------------------------------------------------------------------+
+| สถานะออเดอร์: ORD-20260802-0001 · โต๊ะ 4                                |
++--------------------------------------------------------------------------+
+|  1. ผัดกะเพราปลา        × 2    168.00 บ.  [กำลังปรุง]                    |
+|  2. ยำหมูยอ/แหนม        × 2    130.00 บ.  [รับออเดอร์]                   |
++--------------------------------------------------------------------------+
+| ราคารวม: 298.00 บาท                                                      |
++==========================================================================+
+ลูกค้าเลือกรายการที่ 1 (ผัดกะเพราปลา) ที่สถานะเป็น “กำลังปรุง”
+✗ รายการนี้ครัวเริ่มปรุงแล้ว ยกเลิกเองไม่ได้
+ระบุเหตุผลในการขอยกเลิก
+[ลูกค้า] (Enter = รอนานเกินไป) &gt; รอนานเกินไป
+✔ ส่งคำขอยกเลิกไปยังผู้จัดการแล้ว สถานะคำขอ “รออนุมัติ”</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 13 : รายการกำลังปรุงยกเลิกเองไม่ได้ ลูกค้าส่งคำขอพร้อมเหตุผลให้ผู้จัดการ</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-01" id="screen-14">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #14</span>
+        <span class="slide-meta-title">UC-01 · การพิจารณาคำขอยกเลิกรายการ (ผู้จัดการ)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-01</span>
+        <span class="slide-tag">FR1.9</span>
+        <span class="slide-tag">อนุมัติคำขอ</span>
+        <span class="slide-tag">คืนสต็อก</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-14')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-14-text">+==========================================================================+
+| ==== การพิจารณาคำขอยกเลิกรายการ ====                                    |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                         |
++--------------------------------------------------------------------------+
+| คำขอจากโต๊ะ TBL-004 · ออเดอร์ ORD-20260802-0001                         |
+| รายการ: ผัดกะเพราปลา × 2 (สถานะ: กำลังปรุง)                              |
+| เหตุผลของลูกค้า: รอนานเกินไป                                              |
++--------------------------------------------------------------------------+
+|  [1] อนุมัติการยกเลิก (ระบบจะคืนสต็อกวัตถุดิบ)                           |
+|  [0] ปฏิเสธคำขอ                                                          |
++==========================================================================+
+การตัดสินใจ
+[ผู้จัดการ] (Enter = 1) &gt; 1
+✔ ผู้จัดการอนุมัติ · รายการถูกยกเลิก · คืนสต็อกตามสูตร · ราคารวมออเดอร์ใหม่ 130.00 บาท
+✔ จบการทำงาน UC-01</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 14 : ผู้จัดการอนุมัติคำขอยกเลิก ระบบคืนสต็อกตามสูตร และสรุปจบ UC-01</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-02" id="screen-15">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #15</span>
+        <span class="slide-meta-title">UC-02 · ผู้จัดการดูรายการ SOP</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-02</span>
+        <span class="slide-tag">ผู้จัดการดูรายก</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-15')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-15-text">+==========================================================================+
+| ==== รายการคู่มือขั้นตอนการปรุงอาหาร (SOP ทั้งหมด) ====                          |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัส SOP  ชื่อ SOP / เมนู           สถานีครัว      เวลามาตรฐาน สถานะ          |
++--------------------------------------------------------------------------+
+|  SOP-001   ผัดกะเพราปลา            ครัวร้อน            8.0 น.   [เผยแพร่แล้ว] |
+|  SOP-002   น้ำกระเจี๊ยบ              บาร์น้ำ             3.0 น.   [เผยแพร่แล้ว] |
+|  SOP-003   ยำไข่เค็ม/ไข่เยี่ยวม้า       ครัวเย็น            1.5 น.   [ร่าง]       |
+|  SOP-004   น้ำมะตูม (สูตรเก่า)        บาร์น้ำ             2.0 น.   [ปิดใช้งาน]   |
+|  SOP-005   ยำวุ้นเส้น                ครัวเย็น            2.0 น.   [ร่าง]       |
++==========================================================================+
+
++==========================================================================+
+| ==== สร้างคู่มือ SOP ใหม่ ====                                                |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| ผู้จัดการเลือกสร้าง SOP สำหรับเมนูที่ยังไม่มีคู่มือขั้นตอนการปรุง                          |
++--------------------------------------------------------------------------+
+|  [1] ดำเนินการสร้าง SOP                                                    |
+|  [0] ยกเลิก / กลับหน้าหลัก                                                   |
++==========================================================================+
+เลือก
+&amp;gt; 1
+
+ชื่อ SOP
+&amp;gt; SOP น้ำใบเตย
+เลือกเมนู
+&amp;gt; 1</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 15 : ขั้นตอนที่ 1–3 : ผู้จัดการดูรายการ SOP</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-02" id="screen-16">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #16</span>
+        <span class="slide-meta-title">UC-02 · สร้าง SOP ใหม่ — ตั้งชื่อ เลือกเมนู และสถานี</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-02</span>
+        <span class="slide-tag">สร้าง SOP ใหม่ </span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-16')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-16-text">สถานีครัว  [1] ครัวร้อน [2] ครัวเย็น [3] บาร์น้ำ
+&amp;gt; 3</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 16 : ขั้นตอนที่ 4 : สร้าง SOP ใหม่ — ตั้งชื่อ เลือกเมนู และสถานี</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-02" id="screen-17">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #17</span>
+        <span class="slide-meta-title">UC-02 · สร้าง SOP ใหม่ — เพิ่มขั้นตอนและบันทึกเป็นร่าง</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-02</span>
+        <span class="slide-tag">สร้าง SOP ใหม่ </span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-17')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-17-text">+==========================================================================+
+| ==== เพิ่มขั้นตอนใน SOP: SOP น้ำใบเตย ====                                    |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| ระบุคำอธิบายและเวลามาตรฐานของแต่ละขั้นตอนย่อย (SOPStep)                        |
+| ระบบจะรวมเวลามาตรฐานทั้งหมดอัตโนมัติ                                          |
++==========================================================================+
+ขั้นตอนที่ 1 คำอธิบาย
+&amp;gt; ต้มใบเตยกับน้ำให้หอม
+  เวลามาตรฐานขั้นที่ 1 (นาที)
+&amp;gt; 2
+ขั้นตอนที่ 2 คำอธิบาย (Enter = จบการเพิ่มขั้นตอน)
+&amp;gt; กรองน้ำและเติมน้ำเชื่อม
+  เวลามาตรฐานขั้นที่ 2 (นาที)
+&amp;gt; 1
+ขั้นตอนที่ 3 คำอธิบาย (Enter = จบการเพิ่มขั้นตอน)
+&amp;gt; เสิร์ฟพร้อมน้ำแข็ง
+  เวลามาตรฐานขั้นที่ 3 (นาที)
+&amp;gt; 1
+ขั้นตอนที่ 4 คำอธิบาย (Enter = จบการเพิ่มขั้นตอน)
+&amp;gt;
+
+✔ ระบบรวมเวลามาตรฐานอัตโนมัติ: 2 + 1 + 1 = 4 นาที
+
+[1] บันทึกเป็นร่าง   [0] ยกเลิก
+&amp;gt; 1
+
+✔ บันทึก SOP-006 SOP น้ำใบเตย สถานะ “ร่าง” · 3 ขั้น · 4 นาที</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 17 : ขั้นตอนที่ 5–8 : สร้าง SOP ใหม่ — เพิ่มขั้นตอนและบันทึกเป็นร่าง</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-02" id="screen-18">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #18</span>
+        <span class="slide-meta-title">UC-02 · แก้ไข SOP ฉบับร่าง</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-02</span>
+        <span class="slide-tag">แก้ไข SOP ฉบับร</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-18')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-18-text">SOP ที่เป็นร่าง: SOP-003 ยำไข่เค็ม/ไข่เยี่ยวม้า · SOP-005 ยำวุ้นเส้น · SOP-006 SOP น้ำใบเตย
+แก้ไข SOP ฉบับร่าง (เลือกรหัส)
+&amp;gt; SOP-003
++==========================================================================+
+| ขั้นตอนการปรุงของ SOP-003                                                   |
++--------------------------------------------------------------------------+
+| SOP-003 ยำไข่เค็ม/ไข่เยี่ยวม้า · เมนู ยำไข่เค็ม/ไข่เยี่ยวม้า · ร่าง                    |
++--------------------------------------------------------------------------+
+|  ขั้นที่ 1. หั่นไข่เค็มและไข่เยี่ยวม้า                  (เวลามาตรฐาน 0.5 นาที)        |
+|  ขั้นที่ 2. ผสมน้ำยำ                             (เวลามาตรฐาน 0.5 นาที)        |
+|  ขั้นที่ 3. คลุกกับผักและเครื่อง                     (เวลามาตรฐาน 0.25 นาที)       |
+|  ขั้นที่ 4. จัดจานโรยหอมเจียว                     (เวลามาตรฐาน 0.25 นาที)       |
++--------------------------------------------------------------------------+
+| เวลารวมมาตรฐานทั้งสิ้น: 1.5 นาที                                              |
++==========================================================================+
+แก้ขั้นที่ (0 = ไม่แก้ขั้นตอน)
+&amp;gt; 1
+เวลามาตรฐานใหม่ของขั้นที่ 1 (นาที)
+&amp;gt; 1
+[1] ยืนยันการแก้ไข   [0] ยกเลิก
+&amp;gt; 1
+
+✔ บันทึกการแก้ไข SOP-003 · เวลามาตรฐานรวมใหม่ 2 นาที</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 18 : ขั้นตอนที่ 9–10 : แก้ไข SOP ฉบับร่าง</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-02" id="screen-19">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #19</span>
+        <span class="slide-meta-title">UC-02 · เผยแพร่ SOP</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-02</span>
+        <span class="slide-tag">เผยแพร่ SOP</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-19')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-19-text">เผยแพร่ SOP ฉบับร่าง (เลือกรหัส)
+&amp;gt; SOP-003
+
+✔ SOP-003 ยำไข่เค็ม/ไข่เยี่ยวม้า เปลี่ยนสถานะเป็น “เผยแพร่แล้ว” · คนครัวใช้ SOP นี้ปรุงเมนูได้
++==========================================================================+
+| ==== รายการคู่มือขั้นตอนการปรุงอาหาร (SOP ทั้งหมด) ====                          |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัส SOP  ชื่อ SOP / เมนู           สถานีครัว      เวลามาตรฐาน สถานะ          |
++--------------------------------------------------------------------------+
+|  SOP-001   ผัดกะเพราปลา            ครัวร้อน            8.0 น.   [เผยแพร่แล้ว] |
+|  SOP-002   น้ำกระเจี๊ยบ              บาร์น้ำ             3.0 น.   [เผยแพร่แล้ว] |
+|  SOP-003   ยำไข่เค็ม/ไข่เยี่ยวม้า       ครัวเย็น            2.0 น.   [เผยแพร่แล้ว] |
+|  SOP-004   น้ำมะตูม (สูตรเก่า)        บาร์น้ำ             2.0 น.   [ปิดใช้งาน]   |
+|  SOP-005   ยำวุ้นเส้น                ครัวเย็น            2.0 น.   [ร่าง]       |
+|  SOP-006   SOP น้ำใบเตย            บาร์น้ำ             4.0 น.   [ร่าง]       |
++==========================================================================+</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 19 : ขั้นตอนที่ 11–12 : เผยแพร่ SOP</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-02" id="screen-20">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #20</span>
+        <span class="slide-meta-title">UC-02 · แก้ SOP ที่เผยแพร่แล้ว</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-02</span>
+        <span class="slide-tag">แก้ SOP ที่เผยแ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-20')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-20-text">ขอแก้ SOP ที่เผยแพร่แล้ว (เลือกรหัส)
+&amp;gt; SOP-001
+
+✔ ตรวจแล้ว ไม่มีรายการของเมนู MNU-029 ผัดกะเพราปลา อยู่ในสถานะ “กำลังปรุง” · เปิดให้แก้ได้
++==========================================================================+
+| ขั้นตอนการปรุงของ SOP-001                                                   |
++--------------------------------------------------------------------------+
+| SOP-001 ผัดกะเพราปลา · เมนู ผัดกะเพราปลา · เผยแพร่แล้ว                        |
++--------------------------------------------------------------------------+
+|  ขั้นที่ 1. เตรียมเนื้อปลา 150 g และพริกกระเทียมโขลก (เวลามาตรฐาน 2 นาที)          |
+|  ขั้นที่ 2. ตั้งกระทะไฟแรง ผัดพริกกระเทียม ใส่เนื้อปลาผัดจนสุก (เวลามาตรฐาน 3 นาที)     |
+|  ขั้นที่ 3. ปรุงรสด้วยน้ำปลา ซอสหอยนางรม น้ำตาลทรายแดง ใส่ใบกะเพราผัด (เวลามาตรฐาน 2 นาที)|
+|  ขั้นที่ 4. ตักราดข้าวสวยร้อน ๆ จัดจานพร้อมเสิร์ฟ      (เวลามาตรฐาน 1 นาที)          |
++--------------------------------------------------------------------------+
+| เวลารวมมาตรฐานทั้งสิ้น: 8 นาที                                                |
++==========================================================================+
+
+แก้ขั้นที่
+&amp;gt; 2
+เวลามาตรฐานใหม่ของขั้นที่ 2 (นาที)
+&amp;gt; 4
+[1] ยืนยันการแก้ไข   [0] ยกเลิก
+&amp;gt; 1
+
+✔ บันทึกการแก้ไข · เวลามาตรฐานรวม 9 นาที · มีผลกับรายการที่ยังไม่เริ่มปรุงต่อจากนี้</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 20 : ขั้นตอนที่ 13–16 : แก้ SOP ที่เผยแพร่แล้ว</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-02" id="screen-21">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #21</span>
+        <span class="slide-meta-title">UC-02 · ปิดใช้งานและเปิดใช้ SOP อีกครั้ง</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-02</span>
+        <span class="slide-tag">ปิดใช้งานและเปิ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-21')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-21-text">ขอปิดใช้งาน SOP (เลือกรหัส)
+&amp;gt; SOP-002
+
+✔ SOP-002 เปลี่ยนเป็น “ปิดใช้งาน” โดยไม่ลบ
+
+ขอเปิดใช้ SOP อีกครั้ง (เลือกรหัส)
+&amp;gt; SOP-004
+
+✔ SOP-004 เปลี่ยนกลับเป็น “เผยแพร่แล้ว”</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 21 : ขั้นตอนที่ 17–20 : ปิดใช้งานและเปิดใช้ SOP อีกครั้ง</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-02" id="screen-22">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #22</span>
+        <span class="slide-meta-title">UC-02 · ลบ SOP ฉบับร่าง</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-02</span>
+        <span class="slide-tag">ลบ SOP ฉบับร่าง</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-22')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-22-text">ขอลบ SOP ที่เป็นร่างและไม่เคยถูกใช้ปรุง (เลือกรหัส)
+&amp;gt; SOP-005
+
+ระบบขอให้ยืนยันการลบ SOP-005
+
+[1] ยืนยันการลบ   [0] ยกเลิก
+&amp;gt; 1
+
+✔ ลบ SOP-005 แล้ว (Cascade delete ขั้นตอน SOPStep ทั้งหมด)
++==========================================================================+
+| ==== รายการคู่มือขั้นตอนการปรุงอาหาร (SOP ทั้งหมด) ====                          |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัส SOP  ชื่อ SOP / เมนู           สถานีครัว      เวลามาตรฐาน สถานะ          |
++--------------------------------------------------------------------------+
+|  SOP-001   ผัดกะเพราปลา            ครัวร้อน            9.0 น.   [เผยแพร่แล้ว] |
+|  SOP-002   น้ำกระเจี๊ยบ              บาร์น้ำ             3.0 น.   [ปิดใช้งาน]   |
+|  SOP-003   ยำไข่เค็ม/ไข่เยี่ยวม้า       ครัวเย็น            2.0 น.   [เผยแพร่แล้ว] |
+|  SOP-004   น้ำมะตูม (สูตรเก่า)        บาร์น้ำ             2.0 น.   [เผยแพร่แล้ว] |
+|  SOP-006   SOP น้ำใบเตย            บาร์น้ำ             4.0 น.   [ร่าง]       |
++==========================================================================+
+
+✔ ✔ จบการทำงาน UC-02</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 22 : ขั้นตอนที่ 21–24 : ลบ SOP ฉบับร่าง</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-03" id="screen-23">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #23</span>
+        <span class="slide-meta-title">UC-03 · คนครัวเลือกสถานีและดูคิว</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 คนครัว · แคชเชียร์</span>
+        <span class="slide-tag">UC-03</span>
+        <span class="slide-tag">คนครัวเลือกสถาน</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-23')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-23-text">+==========================================================================+
+| ==== เลือกสถานีครัว KDS (Kitchen Display System) ====                       |
++--------------------------------------------------------------------------+
+| บทบาท: คนครัว (EMP-006)                                                   |
++--------------------------------------------------------------------------+
+| คนครัวล็อกอินและเลือกประจำสถานีเพื่อดูคิวอาหารที่ต้องปรุง                             |
++--------------------------------------------------------------------------+
+|  [1] ครัวร้อน                                                              |
+|  [2] ครัวเย็น                                                              |
+|  [3] บาร์น้ำ                                                               |
+|  [0] ย้อนกลับหน้าหลัก                                                        |
++==========================================================================+
+เลือกสถานีของคุณ [1-3] (0 = ออก)
+&amp;gt; 1
+
++==========================================================================+
+| ==== คิวอาหารประจำสถานี: ครัวร้อน ====                                       |
++--------------------------------------------------------------------------+
+| บทบาท: คนครัว                                                             |
++--------------------------------------------------------------------------+
+| คิวสั่งอาหารของสถานี: ครัวร้อน                                                 |
++--------------------------------------------------------------------------+
+| [รับออเดอร์] (3 รายการ)                                                    |
+|    ORD-20260802-0007 · โต๊ะ 5 · ปลากะพงทอด × 1                            |
+|    ORD-20260802-0008 · โต๊ะ 7 · หมูกระเทียม × 1 · เผ็ดปกติ                    |
+|    ORD-20260802-0001 · โต๊ะ 4 · ผัดกะเพราปลา × 2 · เผ็ดน้อย · ไข่ดาว +15 · หมายเหตุ: “ไข่ดาวไม่สุก”|
++--------------------------------------------------------------------------+
+| [กำลังปรุง] (0 รายการ)                                                     |
++--------------------------------------------------------------------------+
+| [พร้อมเสิร์ฟ] (0 รายการ)                                                    |
++--------------------------------------------------------------------------+
+|  [0] ย้อนกลับ                                                              |
++==========================================================================+</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 23 : ขั้นตอนที่ 1–2 : คนครัวเลือกสถานีและดูคิว</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-03" id="screen-24">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #24</span>
+        <span class="slide-meta-title">UC-03 · คนครัวเริ่มปรุงและดูขั้นตอน SOP</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 คนครัว · แคชเชียร์</span>
+        <span class="slide-tag">UC-03</span>
+        <span class="slide-tag">คนครัวเริ่มปรุง</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-24')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-24-text">เลือกรายการที่จะเริ่มปรุง (0 = ย้อนกลับ)
+&amp;gt; 3
+
+✔ บันทึกเวลาเริ่มปรุง 20:02 · สถานะรายการ “กำลังปรุง” (ลูกค้าเห็นสถานะนี้)
+
++==========================================================================+
+| ==== คู่มือวิธีทำมาตรฐาน (SOP Guidance) ====                                  |
++--------------------------------------------------------------------------+
+| บทบาท: คนครัว                                                             |
++--------------------------------------------------------------------------+
+| เมนู: ผัดกะเพราปลา · SOP: SOP-001 (ผัดกะเพราปลา)                            |
+| เวลามาตรฐานรวม: 8 นาที                                                    |
++--------------------------------------------------------------------------+
+|  ขั้นที่ 1. เตรียมเนื้อปลา 150 g และพริกกระเทียมโขลก (เวลามาตรฐาน 2 นาที)          |
+|  ขั้นที่ 2. ตั้งกระทะไฟแรง ผัดพริกกระเทียม ใส่เนื้อปลาผัดจนสุก (เวลามาตรฐาน 3 นาที)     |
+|  ขั้นที่ 3. ปรุงรสด้วยน้ำปลา ซอสหอยนางรม น้ำตาลทรายแดง ใส่ใบกะเพราผัด (เวลามาตรฐาน 2 นาที)|
+|  ขั้นที่ 4. ตักราดข้าวสวยร้อน ๆ จัดจานพร้อมเสิร์ฟ   (เวลามาตรฐาน 1 นาที)             |
++--------------------------------------------------------------------------+
+| หมายเหตุเฉพาะจากลูกค้า: “ไข่ดาวไม่สุก”                                         |
++==========================================================================+
+
+คนครัวปรุงตามขั้นตอนของ SOP
+เวลาที่ใช้ปรุงจริง (นาที)
+&amp;gt; 10</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 24 : ขั้นตอนที่ 3–6 : คนครัวเริ่มปรุงและดูขั้นตอน SOP</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-03" id="screen-25">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #25</span>
+        <span class="slide-meta-title">UC-03 · คนครัวบันทึกเวลาเสร็จ — รายการพร้อมเสิร์ฟ</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 คนครัว · แคชเชียร์</span>
+        <span class="slide-tag">UC-03</span>
+        <span class="slide-tag">คนครัวบันทึกเวล</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-25')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-25-text">วางอาหารที่จุดรับอาหาร แล้ว [1] เสร็จ
+&amp;gt; 1
+
+✔ บันทึกเวลาเสร็จ 20:12 · ใช้จริง 10 นาที เทียบมาตรฐาน 8 นาที
+✗ ⚠ เกินเวลา 2 นาที (บันทึกเข้าระบบรายงานเพื่อปรับปรุง SOP)
+
+✔ รายการเป็น “พร้อมเสิร์ฟ” · ระบบแจ้งแคชเชียร์ทันที
+
+✔ ทุกรายการของ ORD-20260802-0001 พร้อมเสิร์ฟ → สถานะออเดอร์เป็น “พร้อมเสิร์ฟ”</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 25 : ขั้นตอนที่ 7–10 : คนครัวบันทึกเวลาเสร็จ — รายการพร้อมเสิร์ฟ</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-03" id="screen-26">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #26</span>
+        <span class="slide-meta-title">UC-03 · แคชเชียร์ดูงานเสิร์ฟและเลือกโต๊ะ</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 คนครัว · แคชเชียร์</span>
+        <span class="slide-tag">UC-03</span>
+        <span class="slide-tag">แคชเชียร์ดูงานเ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-26')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-26-text">+==========================================================================+
+| ==== งานเสิร์ฟอาหาร (Service Dispatch) ====                                |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์ (EMP-004)                                                 |
++--------------------------------------------------------------------------+
+| อาหารที่ปรุงเสร็จแล้วจะมาแสดงที่จุดรับอาหาร เพื่อให้พนักงานนำไปเสิร์ฟถึงโต๊ะ              |
++--------------------------------------------------------------------------+
+|  [1] ดูรายการอาหารพร้อมเสิร์ฟที่จุดรับอาหาร                                      |
+|  [0] ย้อนกลับหน้าหลัก                                                        |
++==========================================================================+
+เลือก
+&amp;gt; 1
+
++==========================================================================+
+| ==== รายการอาหารพร้อมเสิร์ฟ ====                                            |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์                                                           |
++--------------------------------------------------------------------------+
+| อาหารพร้อมเสิร์ฟที่จุดรับอาหาร (2 ออเดอร์):                                      |
++--------------------------------------------------------------------------+
+|  [1] โต๊ะ 4  · ORD-20260802-0001  (พร้อมเสิร์ฟ: 20:12) · ผัดกะเพราปลา × 2, ยำหมูยอ/แหนม × 1|
+|  [2] โต๊ะ 6  · ORD-20260802-0005  (พร้อมเสิร์ฟ: 20:01) · ผัดกะเพราปลา × 1     |
++--------------------------------------------------------------------------+
+|  [0] ย้อนกลับ                                                              |
++==========================================================================+
+เลือกโต๊ะที่จะนำไปเสิร์ฟ (0 = ย้อนกลับ)
+&amp;gt; 1</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 26 : ขั้นตอนที่ 11–12 : แคชเชียร์ดูงานเสิร์ฟและเลือกโต๊ะ</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-03" id="screen-27">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #27</span>
+        <span class="slide-meta-title">UC-03 · แคชเชียร์เสิร์ฟถึงโต๊ะ</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 คนครัว · แคชเชียร์</span>
+        <span class="slide-tag">UC-03</span>
+        <span class="slide-tag">แคชเชียร์เสิร์ฟ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-27')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-27-text">แคชเชียร์นำอาหารไปเสิร์ฟที่โต๊ะ 4
+[1] เสิร์ฟถึงโต๊ะเรียบร้อยแล้ว
+&amp;gt; 1
+
+✔ บันทึกเวลาเสิร์ฟและผู้เสิร์ฟ (EMP-004) · ORD-20260802-0001 เป็น “เสิร์ฟแล้ว”
+✔ พร้อมเข้าสู่การคิดเงินและสะสมแต้ม (UC-04)
+
+✔ ✔ จบการทำงาน UC-03</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 27 : ขั้นตอนที่ 13–14 : แคชเชียร์เสิร์ฟถึงโต๊ะ</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-04" id="screen-28">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #28</span>
+        <span class="slide-meta-title">UC-04 · แคชเชียร์เลือกออเดอร์ที่จะชำระ</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์</span>
+        <span class="slide-tag">UC-04</span>
+        <span class="slide-tag">แคชเชียร์เลือกอ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-28')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-28-text">+==========================================================================+
+| ==== เคาน์เตอร์แคชเชียร์: เรียกดูโต๊ะรอชำระเงิน ====                             |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์ (EMP-004)                                                 |
++--------------------------------------------------------------------------+
+| แคชเชียร์เลือกดูรายการโต๊ะที่เสิร์ฟอาหารครบแล้ว และยังไม่ได้ชำระเงิน                   |
++--------------------------------------------------------------------------+
+|  [1] ดูรายการโต๊ะที่รอชำระเงิน                                                |
+|  [0] ย้อนกลับหน้าหลัก                                                        |
++==========================================================================+
+เลือก [0-1]
+&amp;gt; 1
+
++==========================================================================+
+| ==== รายการออเดอร์รอชำระเงิน ====                                          |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์                                                           |
++--------------------------------------------------------------------------+
+| ออเดอร์ที่เสิร์ฟครบแล้ว รอชำระเงิน (3 โต๊ะ):                                     |
++--------------------------------------------------------------------------+
+|  [1] ORD-20260802-0001  · โต๊ะ TBL-004 · ยอดรวม   233.00 บ.               |
+|  [2] ORD-20260802-0002  · โต๊ะ TBL-003 · ยอดรวม   195.00 บ.               |
+|  [3] ORD-20260802-0003  · โต๊ะ TBL-002 · ยอดรวม   120.00 บ.               |
++--------------------------------------------------------------------------+
+|  [0] ย้อนกลับ                                                              |
++==========================================================================+
+
+เลือกออเดอร์ที่จะชำระเงิน (0 = ย้อนกลับ)
+&amp;gt; 1
+
++==========================================================================+
+| ==== รายละเอียดบิลค่าอาหาร ====                                             |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์                                                           |
++--------------------------------------------------------------------------+
+| ออเดอร์: ORD-20260802-0001 · โต๊ะ: TBL-004 · พนักงาน: EMP-004               |
++--------------------------------------------------------------------------+
+|  ผัดกะเพราปลา          × 2 (เผ็ดน้อย · ไข่ดาว +15)   168.00 บ.               |
+|  ยำหมูยอ/แหนม          × 1 (เผ็ดปกติ)                65.00 บ.               |
++--------------------------------------------------------------------------+
+| ยอดรวมทั้งสิ้น (ก่อนหักแต้ม): 233.00 บาท                                        |
++==========================================================================+</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 28 : ขั้นตอนที่ 1–4 : แคชเชียร์เลือกออเดอร์ที่จะชำระ</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-04" id="screen-29">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #29</span>
+        <span class="slide-meta-title">UC-04 · แคชเชียร์ระบุสมาชิกและแต้มที่ใช้แลก</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์</span>
+        <span class="slide-tag">UC-04</span>
+        <span class="slide-tag">แคชเชียร์ระบุสม</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-29')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-29-text">+==========================================================================+
+| ==== ตรวจสอบสมาชิกเพื่อสะสมหรือแลกแต้ม ====                                   |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์                                                           |
++--------------------------------------------------------------------------+
+| ลูกค้าสามารถแจ้งเบอร์โทรเพื่อสะสมแต้ม หรือแลกแต้มเป็นส่วนลดเงินสด                    |
+| อัตราแลกแต้ม: 10 แต้มขึ้นไป (1 แต้ม = 1 บาท)                                   |
++--------------------------------------------------------------------------+
+| กรอกเบอร์โทรสมาชิก (พิมพ์ 0 หรือ - หากไม่ต้องการระบุสมาชิก)                       |
++==========================================================================+
+เบอร์โทรสมาชิก (สะสมแต้ม) ที่ลูกค้าแจ้ง (0 = ข้าม)
+&amp;gt; 0999999999
+
+✔ คุณ Human · MBR-0001 · แต้มสะสมปัจจุบัน 46 แต้ม
+
+จำนวนแต้มที่ใช้แลก (0 = ไม่ใช้ · ขั้นต่ำ 10 · 1 แต้ม = 1 บาท)
+&amp;gt; 10
+
+· ตรวจกฎแต้ม: ขั้นต่ำ 10 · ไม่เกินแต้มคงเหลือ · ไม่เกินราคารวม
++==========================================================================+
+| ==== เลือกช่องทางการชำระเงิน ====                                           |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์                                                           |
++--------------------------------------------------------------------------+
+| ราคารวม:           233.00 บาท                                            |
+| ส่วนลดจากแต้ม:   -     10.00 บาท  (10 แต้ม)                                 |
++--------------------------------------------------------------------------+
+| ยอดสุทธิที่ต้องชำระ:     223.00 บาท                                           |
++--------------------------------------------------------------------------+
+|  [1] เงินสด (Cash)                                                        |
+|  [2] QR Payment (PromptPay)                                              |
+|  [0] ยกเลิกและย้อนกลับ                                                      |
++==========================================================================+</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 29 : ขั้นตอนที่ 5–8 : แคชเชียร์ระบุสมาชิกและแต้มที่ใช้แลก</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-04" id="screen-30">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #30</span>
+        <span class="slide-meta-title">UC-04 · แคชเชียร์เลือกช่องทางชำระและยืนยัน</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์</span>
+        <span class="slide-tag">UC-04</span>
+        <span class="slide-tag">แคชเชียร์เลือกช</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-30')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-30-text">ช่องทางชำระเงิน [1-2] (0 = ยกเลิก)
+&amp;gt; 1
+
+เงินสดที่รับมา (บาท)
+&amp;gt; 300
+
+✔ เงินทอน: 77.00 บาท
+
+[1] ยืนยันการชำระเงิน   [0] ยกเลิก
+&amp;gt; 1</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 30 : ขั้นตอนที่ 9–12 : แคชเชียร์เลือกช่องทางชำระและยืนยัน</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-04" id="screen-31">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #31</span>
+        <span class="slide-meta-title">UC-04 · ระบบบันทึกการชำระเงินและให้แต้ม</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์</span>
+        <span class="slide-tag">UC-04</span>
+        <span class="slide-tag">ระบบบันทึกการชำ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-31')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-31-text">✔ บันทึกการชำระเงิน PAY-20260802-0001 (เวลา 20:23:16 · ผู้รับเงิน EMP-004)
+✔ ออเดอร์ ORD-20260802-0001 เปลี่ยนเป็น “เสร็จสมบูรณ์”
+
+✔ หักแต้มที่ใช้ 10 แต้ม · ได้รับแต้มใหม่ 4 แต้ม (แต้มคงเหลือสุทธิ 40 แต้ม)</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 31 : ขั้นตอนที่ 13–14 : ระบบบันทึกการชำระเงินและให้แต้ม</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-04" id="screen-32">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #32</span>
+        <span class="slide-meta-title">UC-04 · ระบบออกใบเสร็จรับเงิน</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์</span>
+        <span class="slide-tag">UC-04</span>
+        <span class="slide-tag">ระบบออกใบเสร็จร</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-32')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-32-text">+==========================================================================+
+| ==== ใบเสร็จรับเงิน (Official Receipt) ====                                 |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์                                                           |
++--------------------------------------------------------------------------+
+| ---- ใบเสร็จรับเงิน RCT-20260802-0001 ----                                  |
+| Payment ID PAY-20260802-0001 · ORD-20260802-0001 · TBL-004 · EMP-004 · 2026-08-02 20:23:16|
+|  ผัดกะเพราปลา × 2 · เผ็ดน้อย · ไข่ดาว +15   168.00                           |
+|  ยำหมูยอ/แหนม × 1 · เผ็ดปกติ   65.00                                        |
+| ราคารวม 233.00   ส่วนลดแต้ม (10 แต้ม) −10.00   ราคาสุทธิ 223.00               |
+| เงินสด รับ / ทอน 300.00 / 77.00                                            |
+| สมาชิก MBR-0001 · แต้มที่ได้รับ +4 · แต้มคงเหลือ 40                              |
++==========================================================================+
+
+[1] พิมพ์ใบเสร็จ
+&amp;gt; 1
+
+✔ ระบบส่งใบเสร็จ RCT-20260802-0001 ไปเครื่องพิมพ์เรียบร้อยแล้ว
+
+✔ ✔ จบการทำงาน UC-04</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 32 : ขั้นตอนที่ 15–17 : ระบบออกใบเสร็จรับเงิน</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-05" id="screen-33">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #33</span>
+        <span class="slide-meta-title">UC-05 · ผู้จัดการดูคลังวัตถุดิบและแจ้งเตือน</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-05</span>
+        <span class="slide-tag">ผู้จัดการดูคลัง</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-33')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-33-text">+==========================================================================+
+| ==== ตารางสต็อกวัตถุดิบคงคลัง ====                                            |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัส      ชื่อวัตถุดิบ             คงเหลือ    ขั้นต่ำ หน่วย   สถานะ                |
++--------------------------------------------------------------------------+
+|  ING-001   เนื้อปลา                    5          2 กก.    [ปกติ]           |
+|  ING-002   ใบกะเพรา                  6         10 กำ     [⚠ ต่ำกว่าขั้นต่ำ]   |
+|  ING-003   ข้าวสาร                   50         20 กก.    [ปกติ]           |
+|  ING-004   กุ้งสด                    1.5          2 กก.    [⚠ ต่ำกว่าขั้นต่ำ]   |
+|  ING-005   ดอกมะตูมแห้ง                2          1 กก.    [ปกติ]           |
+|  ING-006   นมข้นหวาน                 10          5 กระป๋อง [ปกติ]           |
+|  ING-007   น้ำมันพืช                    8          3 ลิตร    [ปกติ]           |
+|  ING-008   ไข่ไก่                      1         30 ฟอง    [⚠ ต่ำกว่าขั้นต่ำ]   |
+|  ING-009   หมูยอ                    0.9        0.5 กก.    [ปกติ]           |
++==========================================================================+
+
+ระบบตรวจพบวัตถุดิบต่ำกว่าเกณฑ์: ING-002 ใบกะเพรา (คงเหลือ 6.4 &amp;lt; ขั้นต่ำ 10 กำ)
++==========================================================================+
+| ==== ระบบแจ้งเตือนสต็อกวัตถุดิบต่ำกว่าเกณฑ์ ====                                  |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| พบวัตถุดิบ 1 รายการต่ำกว่าจุดสั่งซื้อขั้นต่ำ:                                         |
+|  · ING-002 ใบกะเพรา (คงเหลือ 6.4 กำ · ขั้นต่ำ 10.0 กำ)                       |
++--------------------------------------------------------------------------+
+|  [1] ออกใบสั่งซื้อ PO อัตโนมัติ                                                 |
+|  [0] ย้อนกลับหน้าหลัก                                                        |
++==========================================================================+
+เลือก [0-1]
+&amp;gt; 1</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 33 : ขั้นตอนที่ 1–3 : ผู้จัดการดูคลังวัตถุดิบและแจ้งเตือน</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-05" id="screen-34">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #34</span>
+        <span class="slide-meta-title">UC-05 · ผู้จัดการสร้างใบสั่งซื้อ (PO)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-05</span>
+        <span class="slide-tag">ผู้จัดการสร้างใ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-34')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-34-text">+==========================================================================+
+| ==== สร้างใบสั่งซื้อ (Purchase Order) ====                                    |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| รหัส PO: PO-20260802-001 · ผู้ออกเอกสาร: EMP-001                            |
+| ซัพพลายเออร์: SUP-001 ฟาร์มไข่ทองดี                                           |
+| รายการวัตถุดิบ: ING-002 ใบกะเพรา (คงเหลือ 6 / ขั้นต่ำ 10 กำ)                    |
++==========================================================================+
+
+จำนวนที่สั่ง (กำ)
+&amp;gt; 14
+
+รายการใน PO: ใบกะเพรา สั่ง 14 กำ
+
+[1] ยืนยันออก PO   [0] ยกเลิก
+&amp;gt; 1
+
+✔ PO-20260802-001 เปลี่ยนเป็น “สั่งแล้ว” (ระบบพร้อมรับของ)
++==========================================================================+
+| ==== รายการใบสั่งซื้อ (Purchase Orders) ====                                 |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัส PO          ซัพพลายเออร์         รายการ          สถานะ                |
++--------------------------------------------------------------------------+
+|  PO-20260801-003  สวนผักบ้านคลอง       ใบกะเพรา 20 กำ   [สั่งแล้ว]            |
+|  PO-20260802-001  ฟาร์มไข่ทองดี         ใบกะเพรา 14 กำ   [สั่งแล้ว]            |
++==========================================================================+
+
+· ผู้จัดการประสานงานกับซัพพลายเออร์เพื่อส่งมอบสินค้า
+[1] สินค้ามาส่งถึงร้านแล้ว
+&amp;gt; 1</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 34 : ขั้นตอนที่ 4–11 : ผู้จัดการสร้างใบสั่งซื้อ (PO)</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-05" id="screen-35">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #35</span>
+        <span class="slide-meta-title">UC-05 · ผู้จัดการรับของเข้าสต็อก</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-05</span>
+        <span class="slide-tag">ผู้จัดการรับของ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-35')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-35-text">+==========================================================================+
+| ==== ตรวจรับสินค้าจากใบสั่งซื้อ ====                                            |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| ใบสั่งซื้อสถานะ “สั่งแล้ว” รอรับของ (2 ฉบับ):                                     |
++--------------------------------------------------------------------------+
+|  [1] PO-20260801-003  · สวนผักบ้านคลอง                                     |
+|  [2] PO-20260802-001  · ฟาร์มไข่ทองดี                                       |
++--------------------------------------------------------------------------+
+|  [0] ย้อนกลับ                                                              |
++==========================================================================+
+เลือก PO ที่จะรับของ (0 = ย้อนกลับ)
+&amp;gt; 1
+
++==========================================================================+
+| ==== บันทึกการตรวจรับวัตถุดิบเข้าคลัง ====                                       |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| PO: PO-20260801-003 · ซัพพลายเออร์: สวนผักบ้านคลอง                           |
+| รายการ: ING-002 ใบกะเพรา                                                 |
+| จำนวนที่สั่ง: 20 กำ · สต็อกก่อนรับ: 6 กำ                                        |
++==========================================================================+
+
+จำนวนรับจริง (กำ)
+&amp;gt; 20
+
+✔ เพิ่มสต็อก +20 กำ (6 → 26) · บันทึกประวัติรับของตาม PO-20260801-003</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 35 : ขั้นตอนที่ 12–15 : ผู้จัดการรับของเข้าสต็อก</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-05" id="screen-36">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #36</span>
+        <span class="slide-meta-title">UC-05 · ผู้จัดการปรับยอดสต็อก</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-05</span>
+        <span class="slide-tag">ผู้จัดการปรับยอ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-36')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-36-text">+==========================================================================+
+| ==== การปรับยอดสต็อกตามการนับจริง (Audit Adjustment) ====                    |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| วัตถุดิบ: ING-003 ข้าวสาร (คงเหลือในระบบ: 50 กก.)                             |
++--------------------------------------------------------------------------+
+|  [1] ปรับยอดตามการนับสต็อกจริง                                               |
+|  [0] ย้อนกลับ                                                              |
++==========================================================================+
+เลือก
+&amp;gt; 1
+
+จำนวนที่นับได้จริง (กก.)
+&amp;gt; 48
+เหตุผล (บังคับ)  [1] เสียหาย/หมดอายุ [2] นับสต็อกก่อนเปิดร้าน [3] อื่น ๆ
+&amp;gt; 1
+รายละเอียดเพิ่มเติม
+&amp;gt; ข้าวขึ้นรา 2 กก.
+
+ผลต่างสต็อก: -2 กก. → ยอดคงเหลือใหม่ 48 กก.
+
+[1] ยืนยันการปรับยอด   [0] ยกเลิก
+&amp;gt; 1
+
+✔ ปรับยอดสำเร็จเป็น 48 กก. · บันทึกประวัติพร้อมผู้ทำ (EMP-001)</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 36 : ขั้นตอนที่ 16–20 : ผู้จัดการปรับยอดสต็อก</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-05" id="screen-37">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #37</span>
+        <span class="slide-meta-title">UC-05 · ผู้จัดการเพิ่มวัตถุดิบใหม่</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-05</span>
+        <span class="slide-tag">ผู้จัดการเพิ่มว</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-37')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-37-text">+==========================================================================+
+| ==== เพิ่มวัตถุดิบใหม่เข้าระบบ ====                                             |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| กำหนดชื่อ หน่วยนับ และปริมาณขั้นต่ำของวัตถุดิบใหม่                                   |
+| หมายเหตุ: วัตถุดิบเริ่มต้นที่ 0 และต้องรับเข้าผ่านใบสั่งซื้อ PO                           |
++==========================================================================+
+ชื่อวัตถุดิบ
+&amp;gt; หมึก
+หน่วย
+&amp;gt; กก.
+จำนวนขั้นต่ำ
+&amp;gt; 15
+
+[1] ยืนยันเพิ่มวัตถุดิบ   [0] ยกเลิก
+&amp;gt; 1
+
+✔ สร้าง ING-010 หมึก เรียบร้อย · คงเหลือ 0 กก. · จุดสั่งซื้อขั้นต่ำ 15</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 37 : ขั้นตอนที่ 21–24 : ผู้จัดการเพิ่มวัตถุดิบใหม่</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-05" id="screen-38">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #38</span>
+        <span class="slide-meta-title">UC-05 · ผู้จัดการแก้ข้อมูลวัตถุดิบ</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-05</span>
+        <span class="slide-tag">ผู้จัดการแก้ข้อ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-38')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-38-text">+==========================================================================+
+| ==== แก้ไขค่าเกณฑ์ขั้นต่ำของวัตถุดิบ ====                                         |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| วัตถุดิบ: ING-002 ใบกะเพรา (เกณฑ์เดิม: 10 กำ)                                 |
++==========================================================================+
+จำนวนขั้นต่ำใหม่ (กำ)
+&amp;gt; 12
+
+เหตุผลของการแก้ไข (บังคับ)
+&amp;gt; ปรับตามยอดสั่งที่เพิ่มขึ้น
+[1] ยืนยันการแก้ไข   [0] ยกเลิก
+&amp;gt; 1
+
+✔ บันทึก ING-002 ขั้นต่ำใหม่เป็น 12 กำ (เหตุผล: ปรับตามยอดสั่งที่เพิ่มขึ้น)</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 38 : ขั้นตอนที่ 25–27 : ผู้จัดการแก้ข้อมูลวัตถุดิบ</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-05" id="screen-39">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #39</span>
+        <span class="slide-meta-title">UC-05 · ผู้จัดการดูประวัติสต็อก</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-05</span>
+        <span class="slide-tag">ผู้จัดการดูประว</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-39')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-39-text">[1] ดูประวัติความเคลื่อนไหวสต็อก (Stock Movement Card)
+&amp;gt; 1
+
++==========================================================================+
+| ==== ประวัติความเคลื่อนไหวสต็อกวันนี้ (2026-08-02) ====                          |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  เวลา   วัตถุดิบ          ประเภท      จำนวน เลขอ้างอิง       ผู้ทำรายการ        |
++--------------------------------------------------------------------------+
+|  20:01  ไข่ไก่           ขาย            -2 ORD-20260802-0001 [ระบบอัตโนมัติ]  |
+|  20:30  ใบกะเพรา       รับของ         +20 PO-20260801-003  [EMP-001]      |
+|  20:31  ข้าวสาร         ปรับยอด         -2 —                [EMP-001]      |
++==========================================================================+
+
+✔ ✔ จบการทำงาน UC-05</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 39 : ขั้นตอนที่ 28–29 : ผู้จัดการดูประวัติสต็อก</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-06" id="screen-40">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #40</span>
+        <span class="slide-meta-title">UC-06 · ผู้จัดการดูภาพรวมของวันนี้</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-06</span>
+        <span class="slide-tag">ผู้จัดการดูภาพร</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-40')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-40-text">+==========================================================================+
+| ==== ผู้จัดการ: แผงควบคุมภาพรวมร้าน (Executive Dashboard) ====                |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ (EMP-001)                                                  |
++--------------------------------------------------------------------------+
+| ดูภาพรวมยอดขายวันนี้ จำนวนออเดอร์ สถานะครัว และวัตถุดิบที่ต้องสั่งเพิ่ม                  |
++--------------------------------------------------------------------------+
+|  [1] ดูภาพรวมยอดขายประจำวันนี้                                               |
+|  [0] ย้อนกลับหน้าหลัก                                                        |
++==========================================================================+
+เลือก [0-1]
+&amp;gt; 1
+
++==========================================================================+
+| ==== ภาพรวมร้านอาหารประจำวัน (Daily Dashboard) ====                        |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| วันที่: 2026-08-02 · เวลาอัปเดต: 20:35 น.                                    |
++--------------------------------------------------------------------------+
+| ยอดขายวันนี้:          2,850.00 บาท                                         |
+| จำนวนออเดอร์ทั้งหมด:     12 ออเดอร์                                          |
+| ออเดอร์ที่กำลังปรุงในครัว: 1 ออเดอร์                                            |
+| วัตถุดิบใกล้หมด:         3 รายการ (ต้องสั่งซื้อเพิ่ม)                               |
++--------------------------------------------------------------------------+
+| ออเดอร์ล่าสุดในระบบ:                                                        |
+|  · ORD-20260802-0009  โต๊ะ 8   [รับออเดอร์  ]    180.00 บ.                  |
+|  · ORD-20260802-0006  โต๊ะ 1   [พร้อมเสิร์ฟ  ]    135.00 บ.                  |
+|  · ORD-20260802-0001  โต๊ะ 4   [เสร็จสมบูรณ์ ]    223.00 บ.                  |
+|  · ORD-20260802-0003  โต๊ะ 2   [เสร็จสมบูรณ์ ]    120.00 บ.                  |
++==========================================================================+</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 40 : ขั้นตอนที่ 1–4 : ผู้จัดการดูภาพรวมของวันนี้</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-06" id="screen-41">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #41</span>
+        <span class="slide-meta-title">UC-06 · ผู้จัดการดูรายงานยอดขายแบบละเอียด</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-06</span>
+        <span class="slide-tag">ผู้จัดการดูรายง</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-41')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-41-text">+==========================================================================+
+| ==== รายงานยอดขายและสถิติเชิงลึก (Sales Analytics) ====                      |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| วิเคราะห์ยอดขายตามช่วงเวลา ช่องทางชำระเงิน และอันดับเมนูขายดี                     |
++--------------------------------------------------------------------------+
+|  [1] เรียกดูรายงานยอดขายแบบละเอียด                                          |
+|  [0] ย้อนกลับ                                                              |
++==========================================================================+
+เลือก [0-1]
+&amp;gt; 1
+
+วันที่เริ่มต้น (ปปปป-ดด-วว)
+&amp;gt; 2025-08-02
+วันที่สิ้นสุด (ปปปป-ดด-วว)
+&amp;gt; 2026-07-31
+
++==========================================================================+
+| ==== รายงานยอดขายและอันดับเมนูอาหาร ====                                    |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| ช่วงวันที่: 2025-08-02 ถึง 2026-07-31                                         |
++--------------------------------------------------------------------------+
+| ยอดขายรวมสุทธิ:        62,300.00 บาท  (218 ออเดอร์)                         |
+|  · เงินสด (Cash):       38,200.00 บาท                                     |
+|  · QR Payment:          24,100.00 บาท                                    |
++--------------------------------------------------------------------------+
+| เมนูขายดี 3 อันดับแรก:                                                       |
+|  1. ผัดกะเพราปลา         87 จาน                                           |
+|  2. น้ำมะตูม            72 แก้ว                                             |
+|  3. ต้มยำปลากระพง        45 ชาม                                           |
++--------------------------------------------------------------------------+
+| เมนูขายต่ำ 3 อันดับท้ายสุด:                                                    |
+|  1. แกงส้มผักรวมกุ้ง       3 ชาม                                             |
+|  2. ต้มจืดสาหร่าย/ตำลึง    5 ชาม                                             |
+|  3. ยำวุ้นเส้น            6 จาน                                             |
++--------------------------------------------------------------------------+
+| วัตถุดิบต่ำกว่าเกณฑ์: กุ้งสด 1.5/2.0 กก. · ใบกะเพรา 6/10 กำ · ไข่ไก่ 1/30 ฟอง      |
++==========================================================================+</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 41 : ขั้นตอนที่ 5–8 : ผู้จัดการดูรายงานยอดขายแบบละเอียด</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-06" id="screen-42">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #42</span>
+        <span class="slide-meta-title">UC-06 · ผู้จัดการดูประวัติออเดอร์ย้อนหลัง</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-06</span>
+        <span class="slide-tag">ผู้จัดการดูประว</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-42')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-42-text">เลือกดูประวัติของวันที่ (ปปปป-ดด-วว)
+&amp;gt; 2025-08-02
+
++==========================================================================+
+| ==== ประวัติรายการบิลประจำวัน ====                                           |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| ประวัติออเดอร์วันที่ 2025-08-02 (รวม 1,820.00 บาท / 14 ออเดอร์)                 |
++--------------------------------------------------------------------------+
+|  [1] ORD-20250802-0001  โต๊ะ TBL-003 QR Payment     185.00 บ.             |
+|  [2] ORD-20250802-0002  โต๊ะ TBL-007 เงินสด          290.00 บ.             |
+|  [3] ORD-20250802-0003  โต๊ะ TBL-001 เงินสด          130.00 บ.             |
++--------------------------------------------------------------------------+
+|  [0] ย้อนกลับ                                                              |
++==========================================================================+
+
+เลือกออเดอร์ที่จะดูรายละเอียด (0 = ย้อนกลับ)
+&amp;gt; 1
+
++==========================================================================+
+| ==== รายละเอียดออเดอร์ ORD-20250802-0001 ====                              |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| โต๊ะ TBL-003 · เวลาสั่ง 2025-08-02 18:12 น. · ผู้รับเงิน EMP-004                |
+| การชำระเงิน: PAY-20250802-0001 (QR Payment) · ใบเสร็จ RCT-20250802-0001    |
+| สถานะ: เสร็จสมบูรณ์                                                         |
++--------------------------------------------------------------------------+
+|  1. ต้มจับฉ่าย × 1                     120.00 บาท                           |
+|  2. ยำหมูยอ/แหนม × 1 (เผ็ดปกติ)          65.00 บาท                          |
++--------------------------------------------------------------------------+
+| ยอดสุทธิ:                             185.00 บาท                           |
++==========================================================================+
+
+✔ ✔ จบการทำงาน UC-06</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 42 : ขั้นตอนที่ 9–12 : ผู้จัดการดูประวัติออเดอร์ย้อนหลัง</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-43">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #43</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการดูรายการเมนู</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการดูรายก</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-43')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-43-text">+==========================================================================+
+| ==== รายการเมนูอาหารทั้งหมด ====                                            |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัส     ชื่อเมนู                หมวด             ราคา   สถานะ      สูตรอาหาร|
++--------------------------------------------------------------------------+
+|  MNU-029  ผัดกะเพราปลา          ผัด              69.00   เปิดขาย     [สมบูรณ์ v2]|
+|  MNU-004  ต้มยำปลากระพง         ต้ม/นึ่ง          149.00   เปิดขาย     [สมบูรณ์ v1]|
+|  MNU-007  ยำหมูยอ/แหนม          ยำ              65.00   เปิดขาย     [สมบูรณ์ v1]|
+|  MNU-033  น้ำมะตูม               น้ำสมุนไพร        45.00   เปิดขาย     [สมบูรณ์ v3]|
++==========================================================================+
+
++==========================================================================+
+| ==== สร้างเมนูอาหารใหม่ ====                                                |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| ผู้จัดการระบุข้อมูลพื้นฐานของเมนู กำหนดหมวดหมู่ ราคาขาย และตัวเลือกเสริม               |
++--------------------------------------------------------------------------+
+|  [1] ดำเนินการสร้างเมนู                                                     |
+|  [0] ย้อนกลับหน้าหลัก                                                        |
++==========================================================================+
+เลือก [0-1]
+&amp;gt; 1</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 43 : ขั้นตอนที่ 1–2 : ผู้จัดการดูรายการเมนู</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-44">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #44</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการเพิ่มเมนูใหม่</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการเพิ่มเ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-44')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-44-text">ชื่อเมนู
+&amp;gt; ชานมเย็น
+
+ราคาขาย (บาท)
+&amp;gt; 45
+หมวด (1-11) เช่น 11 เครื่องดื่ม
+&amp;gt; 11
+สถานีครัว [1] ครัวร้อน [2] ครัวเย็น [3] บาร์น้ำ
+&amp;gt; 3
+ให้ลูกค้าระบุระดับความเผ็ดหรือไม่ [1] ใช่ [0] ไม่ใช่
+&amp;gt; 0
+
+ตัวเลือกเพิ่มเติม (ชื่อ:ราคา คั่นด้วย , หรือ Enter = ไม่มี)
+&amp;gt; เพิ่มนมข้น:10, ไม่ใส่น้ำแข็ง:0</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 44 : ขั้นตอนที่ 3–7 : ผู้จัดการเพิ่มเมนูใหม่</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-45">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #45</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการเพิ่มเมนูใหม่ (ต่อ)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการเพิ่มเ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-45')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-45-text">[1] บันทึกเมนู   [0] ยกเลิก
+&amp;gt; 1
+
+✔ บันทึก MNU-035 ชานมเย็น สถานะ “ปิดการขาย” (ยังไม่มีสูตร)</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 45 : ขั้นตอนที่ 3–7 : ผู้จัดการเพิ่มเมนูใหม่ (ต่อ)</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-46">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #46</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการกำหนดสูตรและตรวจ SOP ของเมนู</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการกำหนดส</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-46')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-46-text">+==========================================================================+
+| ==== กำหนดสูตรอาหาร (Recipe Definition) ====                              |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| เมนู: MNU-035 ชานมเย็น · สร้างสูตรเวอร์ชัน 1                                   |
+| ระบุวัตถุดิบและปริมาณต่อ 1 เสิร์ฟ เพื่อให้ระบบตัดสต็อกอัตโนมัติ                          |
++==========================================================================+
+
+วัตถุดิบที่ 1 (เลขวัตถุดิบ ปริมาณ คั่นด้วยเว้นวรรค · Enter = จบสูตร)
+&amp;gt; 4 0.05
+วัตถุดิบที่ 2 (เลขวัตถุดิบ ปริมาณ คั่นด้วยเว้นวรรค · Enter = จบสูตร)
+&amp;gt; 6 0.03
+วัตถุดิบที่ 3 (เลขวัตถุดิบ ปริมาณ คั่นด้วยเว้นวรรค · Enter = จบสูตร)
+&amp;gt;
+
+วัตถุดิบที่ตัวเลือก “เพิ่มนมข้น” ใช้เพิ่ม (เลข ปริมาณ หรือ Enter = ไม่ใช้)
+&amp;gt; 6 0.02
+วัตถุดิบที่ตัวเลือก “ไม่ใส่น้ำแข็ง” ใช้เพิ่ม (เลข ปริมาณ หรือ Enter = ไม่ใช้)
+&amp;gt;</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 46 : ขั้นตอนที่ 8–14 : ผู้จัดการกำหนดสูตรและตรวจ SOP ของเมนู</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-47">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #47</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการกำหนดสูตรและตรวจ SOP ของเมนู (ต่อ)</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการกำหนดส</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-47')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-47-text">✔ บันทึกสูตร: กุ้งสด 0.05 กก. · นมข้นหวาน 0.03 กระป๋อง | ตัวเลือก: เพิ่มนมข้น = นมข้นหวาน 0.02 กระป๋อง · ไม่ใส่น้ำแข็ง = ไม่ตัดวัตถุดิบเพิ่ม
+
+SOP ประจำเมนู: ยังไม่มี (สามารถสร้างได้ที่ UC-02)
+
+[1] บันทึกสูตรเป็น “ร่าง”   [2] ยืนยันสูตรเป็น “สมบูรณ์”
+&amp;gt; 2
+
+✔ สถานะสูตร: “สมบูรณ์”</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 47 : ขั้นตอนที่ 8–14 : ผู้จัดการกำหนดสูตรและตรวจ SOP ของเมนู (ต่อ)</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-48">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #48</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการเปิดขายเมนู</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการเปิดขา</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-48')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-48-text">[1] เปิดขายเมนู   [0] จบโดยไม่เปิดขาย
+&amp;gt; 1
+
+✔ เมนู MNU-035 ชานมเย็น เปลี่ยนเป็น “เปิดขาย” พร้อมจำหน่ายแล้ว
++==========================================================================+
+| ==== รายการเมนูอาหารทั้งหมด ====                                            |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัส     ชื่อเมนู                หมวด             ราคา   สถานะ      สูตรอาหาร|
++--------------------------------------------------------------------------+
+|  MNU-029  ผัดกะเพราปลา          ผัด              69.00   เปิดขาย     [สมบูรณ์ v2]|
+|  MNU-004  ต้มยำปลากระพง         ต้ม/นึ่ง          149.00   เปิดขาย     [สมบูรณ์ v1]|
+|  MNU-007  ยำหมูยอ/แหนม          ยำ              65.00   เปิดขาย     [สมบูรณ์ v1]|
+|  MNU-033  น้ำมะตูม               น้ำสมุนไพร        45.00   เปิดขาย     [สมบูรณ์ v3]|
+|  MNU-035  ชานมเย็น              เครื่องดื่ม         45.00   เปิดขาย     [สมบูรณ์ v1]|
++==========================================================================+</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 48 : ขั้นตอนที่ 15–16 : ผู้จัดการเปิดขายเมนู</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-49">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #49</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการแก้ไขเมนูและปิดการขาย</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการแก้ไขเ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-49')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-49-text">+==========================================================================+
+| ==== แก้ไขราคาเมนูอาหาร ====                                               |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+| เมนู: MNU-035 ข้าวต้มปลา (ราคาเดิม 80.00 บาท)                                |
++==========================================================================+
+ราคาใหม่ของ MNU-035 ชานมเย็น (บาท)
+&amp;gt; 50
+
+ราคาปรับเปลี่ยน: 45.00 → 50.00 บาท
+
+[1] ยืนยันการแก้ไขราคา   [0] ยกเลิก
+&amp;gt; 1
+
+✔ บันทึกการแก้ไขราคาเมนู MNU-035 เรียบร้อย
+
+ขอปิดการขายเมนู (เลือกรหัส)
+&amp;gt; MNU-033
+
+✔ MNU-033 น้ำมะตูม เปลี่ยนเป็น “ปิดการขาย” (ลูกค้าจะไม่เห็นในรายการสั่ง)</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 49 : ขั้นตอนที่ 17–22 : ผู้จัดการแก้ไขเมนูและปิดการขาย</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-50">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #50</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการแก้สูตรเมนูที่มีอยู่</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการแก้สูต</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-50')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-50-text">[1] ปรับปรุงสูตร ผัดกะเพราปลา MNU-029 (สร้างสูตร v3)
+&amp;gt; 1
+
+✔ เปิดสูตรใหม่ v3 สถานะ “ร่าง”
+
+ปริมาณเนื้อปลาต่อจาน (กก.)
+&amp;gt; 0.18
+[1] ยืนยันสูตรเป็น “สมบูรณ์”   [0] ยกเลิก
+&amp;gt; 1
+
+✔ สูตร v3 สมบูรณ์แล้ว · ออเดอร์ใหม่จะตัดสต็อกตามสูตรนี้ทันที</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 50 : ขั้นตอนที่ 23–26 : ผู้จัดการแก้สูตรเมนูที่มีอยู่</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-07" id="screen-51">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #51</span>
+        <span class="slide-meta-title">UC-07 · ผู้จัดการลบเมนูที่ไม่เคยถูกสั่ง</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 ผู้จัดการ</span>
+        <span class="slide-tag">UC-07</span>
+        <span class="slide-tag">ผู้จัดการลบเมนู</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-51')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-51-text">ขอลบเมนูที่ไม่เคยถูกสั่ง (เลือกรหัส)
+&amp;gt; MNU-035
+
+✔ ลบเมนู MNU-035 เรียบร้อย (Cascade delete สูตร Recipe ทั้งหมดของเมนู)
++==========================================================================+
+| ==== รายการเมนูอาหารทั้งหมด ====                                            |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัส     ชื่อเมนู                หมวด             ราคา   สถานะ      สูตรอาหาร|
++--------------------------------------------------------------------------+
+|  MNU-029  ผัดกะเพราปลา          ผัด              69.00   เปิดขาย     [สมบูรณ์ v3]|
+|  MNU-004  ต้มยำปลากระพง         ต้ม/นึ่ง          149.00   เปิดขาย     [สมบูรณ์ v1]|
+|  MNU-007  ยำหมูยอ/แหนม          ยำ              65.00   เปิดขาย     [สมบูรณ์ v1]|
+|  MNU-033  น้ำมะตูม               น้ำสมุนไพร        45.00   ปิดการขาย   [สมบูรณ์ v3]|
++==========================================================================+
+
+✔ ✔ จบการทำงาน UC-07</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 51 : ขั้นตอนที่ 27–28 : ผู้จัดการลบเมนูที่ไม่เคยถูกสั่ง</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-08" id="screen-52">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #52</span>
+        <span class="slide-meta-title">UC-08 · แคชเชียร์สมัครสมาชิก</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์ · ผู้จัดการ</span>
+        <span class="slide-tag">UC-08</span>
+        <span class="slide-tag">แคชเชียร์สมัครส</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-52')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-52-text">+==========================================================================+
+| ==== เคาน์เตอร์แคชเชียร์: ค้นหาหรือสมัครสมาชิกใหม่ ====                           |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์ (EMP-004)                                                 |
++--------------------------------------------------------------------------+
+| ระบุเบอร์โทรศัพท์ของลูกค้าเพื่อตรวจสอบข้อมูลสมาชิก หรือสมัครสมาชิกใหม่ทันที               |
++--------------------------------------------------------------------------+
+| กรอกเบอร์โทรศัพท์ 10 หลัก (เช่น 0800000000) หรือพิมพ์ 0 เพื่อย้อนกลับ                |
++==========================================================================+
+ค้นหาสมาชิกด้วยเบอร์โทร (0 = ย้อนกลับ)
+&amp;gt; 0800000000
+
+✗ ไม่พบสมาชิกเบอร์ 0800000000 · เข้าสู่ขั้นตอนการสมัครสมาชิกใหม่
+
+ชื่อ-นามสกุล สมาชิกใหม่
+&amp;gt; สมหญิง ใจดี
+
+✔ ตรวจเบอร์โทรห้ามซ้ำ: ผ่านเกณฑ์ (ไม่มีสมาชิกอื่นใช้เบอร์ 0800000000)
+
+[1] ยืนยันสมัครสมาชิก   [0] ยกเลิก
+&amp;gt; 1
+
+✔ สมัครสมาชิกสำเร็จ! ออกรหัส MBR-0004 · สะสมแต้มได้ทันที</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 52 : ขั้นตอนที่ 1–6 : แคชเชียร์สมัครสมาชิก</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-08" id="screen-53">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #53</span>
+        <span class="slide-meta-title">UC-08 · แคชเชียร์ใช้แต้มที่หน้าชำระเงิน</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์ · ผู้จัดการ</span>
+        <span class="slide-tag">UC-08</span>
+        <span class="slide-tag">แคชเชียร์ใช้แต้</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-53')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-53-text">+==========================================================================+
+| ==== จำลองการสะสมและแลกแต้มที่หน้าชำระเงิน ====                               |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์                                                           |
++--------------------------------------------------------------------------+
+| จำลองลูกค้าระบุเบอร์สมาชิกเพื่อสะสมแต้มตอนชำระบิลค่าอาหาร                          |
++==========================================================================+
+แคชเชียร์ระบุเบอร์สมาชิกตอนชำระเงิน
+&amp;gt; 0999999999
+
+✔ พบสมาชิก: คุณ Human · MBR-0001 · แต้มคงเหลือ 46 แต้ม
+
+ยอดสุทธิของบิลนี้ (บาท)
+&amp;gt; 223
+✔ คำนวณแต้มสะสม: 223 ÷ 50 (ปัดลง) = +4 แต้ม
+
+จำนวนแต้มที่ใช้แลก (0 = ไม่ใช้ · ขั้นต่ำ 10)
+&amp;gt; 10
+
+✔ ส่วนลดเงินสด: 10.00 บาท · หัก 10 แต้มเมื่อชำระสำเร็จ</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 53 : ขั้นตอนที่ 7–11 : แคชเชียร์ใช้แต้มที่หน้าชำระเงิน</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-08" id="screen-54">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #54</span>
+        <span class="slide-meta-title">UC-08 · แคชเชียร์ดูแต้มและประวัติของสมาชิก</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์ · ผู้จัดการ</span>
+        <span class="slide-tag">UC-08</span>
+        <span class="slide-tag">แคชเชียร์ดูแต้ม</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-54')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-54-text">+==========================================================================+
+| ==== ตรวจสอบประวัติและสถิติแต้มสมาชิก ====                                     |
++--------------------------------------------------------------------------+
+| บทบาท: แคชเชียร์                                                           |
++--------------------------------------------------------------------------+
+| ลูกค้าสามารถขอดูประวัติแต้มและแก้ไขข้อมูลส่วนตัวได้ที่เคาน์เตอร์                         |
++==========================================================================+
+เบอร์โทรสมาชิก
+&amp;gt; 0999999999
+
++==========================================================================+
+| เงื่อนไขการสะสมและแลกแต้มของร้าน                                             |
++--------------------------------------------------------------------------+
+| ยอดใช้จ่ายสะสมแต้ม: ทุก 50 บาท = 1 แต้ม                                       |
+| มูลค่าแต้มแลกส่วนลด:  1 แต้ม = 1 บาท                                          |
+| เกณฑ์แลกแต้มขั้นต่ำ:  10 แต้มขึ้นไป                                              |
++==========================================================================+
++==========================================================================+
+| รายการเคลื่อนไหวแต้ม                                                        |
++--------------------------------------------------------------------------+
+| ประวัติความเคลื่อนไหวแต้มของ: Human (MBR-0001)                                |
++--------------------------------------------------------------------------+
+|  19:00  · +24 แต้ม (คงเหลือ 46) · สะสมแต้ม · RCT-20260728-0014              |
+|  20:00  · -10 แต้ม (คงเหลือ 36) · แลกส่วนลด · RCT-20260802-0001             |
+|  20:00  · +4 แต้ม (คงเหลือ 40) · สะสมแต้ม · RCT-20260802-0001               |
++--------------------------------------------------------------------------+
+| แต้มสะสมปัจจุบัน: 40 แต้ม                                                     |
++==========================================================================+</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 54 : ขั้นตอนที่ 12–13 : แคชเชียร์ดูแต้มและประวัติของสมาชิก</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-08" id="screen-55">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #55</span>
+        <span class="slide-meta-title">UC-08 · แคชเชียร์แก้ข้อมูลสมาชิก</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์ · ผู้จัดการ</span>
+        <span class="slide-tag">UC-08</span>
+        <span class="slide-tag">แคชเชียร์แก้ข้อ</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-55')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-55-text">[1] ลูกค้าขอแก้ไขข้อมูลส่วนตัว   [0] ข้าม
+&amp;gt; 1
+
+เลือกข้อมูลที่ต้องการแก้ [1] ชื่อ  [2] เบอร์โทร
+&amp;gt; 1
+ชื่อใหม่
+&amp;gt; Human (แก้ไข)
+
+✔ บันทึกข้อมูลสมาชิกเรียบร้อย: MBR-0001 · Human (แก้ไข) · 0999999999</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 55 : ขั้นตอนที่ 14–16 : แคชเชียร์แก้ข้อมูลสมาชิก</div>
+    </div>
+  </div>
+
+  <div class="blackboard-card screen-card" data-uc="UC-08" id="screen-56">
+    <div class="card-topbar">
+      <div class="slide-identity">
+        <span class="slide-num-badge">หน้าจอ #56</span>
+        <span class="slide-meta-title">UC-08 · ผู้จัดการดูรายชื่อสมาชิกและตั้งอัตราแต้ม</span>
+      </div>
+      <div class="slide-tags">
+        <span class="slide-tag actor-badge">👤 แคชเชียร์ · ผู้จัดการ</span>
+        <span class="slide-tag">UC-08</span>
+        <span class="slide-tag">ผู้จัดการดูรายช</span>
+      </div>
+      <button class="copy-btn" onclick="copyScreenText(this, 'screen-56')">
+        📋 ก๊อปข้อความไปวาง Canva
+      </button>
+    </div>
+    <div class="chalk-surface">
+      <div class="chalk-text-box" id="screen-56-text">+==========================================================================+
+| ==== ผู้จัดการ: กำหนดเงื่อนไขและนโยบายแต้มสะสมทั้งร้าน ====                       |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ (EMP-001)                                                  |
++--------------------------------------------------------------------------+
+| ผู้จัดการสามารถปรับเปลี่ยนอัตราส่วนการสะสมแต้ม มูลค่าแต้ม และเกณฑ์แลกแต้มขั้นต่ำ          |
+| การเปลี่ยนแปลงจะมีผลบังคับใช้กับใบเสร็จใหม่นับจากนี้เป็นต้นไป                          |
++--------------------------------------------------------------------------+
+|  [1] ดูรายชื่อสมาชิกและแก้ไขนโยบายแต้ม                                         |
+|  [0] ย้อนกลับ                                                              |
++==========================================================================+
+เลือก [0-1]
+&amp;gt; 1
++==========================================================================+
+| ==== รายชื่อสมาชิกทั้งหมดในระบบ ====                                          |
++--------------------------------------------------------------------------+
+| บทบาท: ผู้จัดการ                                                            |
++--------------------------------------------------------------------------+
+|  รหัสสมาชิก ชื่อ-นามสกุล            เบอร์โทร     แต้มคงเหลือ                     |
++--------------------------------------------------------------------------+
+|  MBR-0001   Human (แก้ไข)         0999999999         40                   |
+|  MBR-0002   สมชาย รักดี            0812345678         12                   |
+|  MBR-0003   มานี มีแต้ม             0898765432          0                   |
+|  MBR-0004   สมหญิง ใจดี            0800000000          0                   |
++==========================================================================+
++==========================================================================+
+| เงื่อนไขการสะสมและแลกแต้มของร้าน                                             |
++--------------------------------------------------------------------------+
+| ยอดใช้จ่ายสะสมแต้ม: ทุก 50 บาท = 1 แต้ม                                       |
+| มูลค่าแต้มแลกส่วนลด:  1 แต้ม = 1 บาท                                          |
+| เกณฑ์แลกแต้มขั้นต่ำ:  10 แต้มขึ้นไป                                              |
++==========================================================================+
+
+ยอดชำระต่อ 1 แต้ม (บาท)
+&amp;gt; 50
+มูลค่าของ 1 แต้ม (บาท)
+&amp;gt; 1
+แต้มขั้นต่ำที่สามารถแลกได้
+&amp;gt; 10
+
+✔ บันทึกนโยบายแต้มใหม่สำเร็จ: ทุก 50 บาท = 1 แต้ม · 1 แต้ม = 1 บาท · ขั้นต่ำ 10 แต้ม
+
+✔ ✔ จบการทำงาน UC-08</div>
+    </div>
+    <div class="chalk-tray">
+      <div class="chalk-sticks">
+        <div class="chalk-stick chalk-white"></div>
+        <div class="chalk-stick chalk-pink"></div>
+        <div class="chalk-stick chalk-blue"></div>
+        <div class="chalk-stick chalk-yellow"></div>
+      </div>
+      <div class="chalk-info">หน้าจอที่ 56 : ขั้นตอนที่ 17–19 : ผู้จัดการดูรายชื่อสมาชิกและตั้งอัตราแต้ม</div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast">✔ ก๊อปปี้ข้อความเรียบร้อย! นำไปวางใน Canva ได้ทันที</div>
+
+<script>
+let currentUC = 'ALL';
+let currentSearch = '';
+
+function filterUC(uc, btn) {
+  currentUC = uc;
+  document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function handleSearch(val) {
+  currentSearch = val.toLowerCase().trim();
+  applyFilters();
+}
+
+function applyFilters() {
+  const cards = document.querySelectorAll('.screen-card');
+  cards.forEach(el => {
+    const matchUC = (currentUC === 'ALL' || el.getAttribute('data-uc') === currentUC);
+    const matchSearch = (!currentSearch || el.innerText.toLowerCase().includes(currentSearch));
+    el.style.display = (matchUC && matchSearch) ? 'block' : 'none';
+  });
+}
+
+function copyScreenText(btn, cardId) {
+  const el = document.getElementById(cardId + '-text');
+  if (!el) return;
+  const text = el.innerText;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✔ ก๊อปปี้เรียบร้อย!';
+    btn.classList.add('copied');
+    showToast();
+    setTimeout(() => {
+      btn.innerHTML = orig;
+      btn.classList.remove('copied');
+    }, 1800);
+  });
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 2000);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ผลตรวจความสอดคล้อง PDF + สารบัญ SOP P2–P8 + Java P9</title>
+  
+  <!-- Google Fonts: Prompt (Headings), Sarabun (Body), JetBrains Mono (Code/Tables) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Prompt:wght@400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* CSS Variables Design Tokens */
+    :root {
+      --font-body: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-heading: 'Prompt', 'Sarabun', sans-serif;
+      --font-mono: 'JetBrains Mono', "Fira Code", Consolas, monospace;
+
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-header: rgba(255, 255, 255, 0.85);
+      --bg-nav-pill: #f1f5f9;
+      --bg-nav-pill-active: #2563eb;
+      --text-nav-pill-active: #ffffff;
+      
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-subtle: #64748b;
+      
+      --border-color: #e2e8f0;
+      --border-strong: #cbd5e1;
+      
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --primary-border: #bfdbfe;
+
+      --th-bg: #f8fafc;
+      --table-alt: #fbfcfd;
+      --table-hover: #f1f5f9;
+
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+      
+      --danger-bg: #fef2f2;
+      --danger-border: #ef4444;
+      --danger-text: #991b1b;
+      
+      --warning-bg: #fffbeb;
+      --warning-border: #f59e0b;
+      --warning-text: #92400e;
+
+      --info-bg: #eff6ff;
+      --info-border: #3b82f6;
+      --info-text: #1e40af;
+
+      --success-bg: #f0fdf4;
+      --success-border: #22c55e;
+      --success-text: #166534;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #0b0f19;
+      --bg-card: #131b2e;
+      --bg-header: rgba(19, 27, 46, 0.85);
+      --bg-nav-pill: #1e293b;
+      --bg-nav-pill-active: #3b82f6;
+      --text-nav-pill-active: #ffffff;
+      
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      
+      --border-color: #1e293b;
+      --border-strong: #334155;
+      
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --primary-light: rgba(59, 130, 246, 0.15);
+      --primary-border: rgba(59, 130, 246, 0.3);
+
+      --th-bg: #1a243b;
+      --table-alt: #101726;
+      --table-hover: #1e2b47;
+
+      --code-bg: #090d16;
+      --code-text: #e2e8f0;
+
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --danger-border: #ef4444;
+      --danger-text: #fca5a5;
+      
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --warning-border: #f59e0b;
+      --warning-text: #fcd34d;
+
+      --info-bg: rgba(59, 130, 246, 0.12);
+      --info-border: #3b82f6;
+      --info-text: #93c5fd;
+
+      --success-bg: rgba(34, 197, 94, 0.12);
+      --success-border: #22c55e;
+      --success-text: #86efac;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Global Reset & Base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Reading Progress Bar */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6);
+      width: 0%;
+      z-index: 1000;
+      transition: width 0.1s ease;
+    }
+
+    /* Top Sticky Header */
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background-color: var(--bg-header);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .navbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: var(--font-heading);
+      letter-spacing: 0.025em;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.825rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-body);
+    }
+
+    .btn-nav:hover {
+      color: var(--text-main);
+      border-color: var(--border-strong);
+      background: var(--bg-nav-pill);
+    }
+
+    .btn-print {
+      color: var(--primary);
+      border-color: var(--primary-border);
+      background: var(--primary-light);
+    }
+
+    .btn-print:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* Quick Jump Navigation Strip */
+    .quick-nav-strip {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .quick-nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0.5rem 1.25rem;
+      display: flex;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      font-family: var(--font-heading);
+      color: var(--text-muted);
+      text-decoration: none;
+      background-color: var(--bg-nav-pill);
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .nav-pill:hover {
+      color: var(--text-main);
+      border-color: var(--border-strong);
+    }
+
+    .nav-pill.active {
+      background-color: var(--bg-nav-pill-active);
+      color: var(--text-nav-pill-active);
+    }
+
+    /* Main Container */
+    .page-wrapper {
+      max-width: 1120px;
+      margin: 2rem auto;
+      padding: 0 1.25rem;
+    }
+
+    .report-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 3rem 3.5rem;
+      box-shadow: var(--shadow-lg);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    @media (max-width: 768px) {
+      .report-card {
+        padding: 1.5rem 1.25rem;
+        border-radius: 12px;
+      }
+      .brand-title {
+        display: none;
+      }
+    }
+
+    /* Document Header Styling */
+    h1 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text-main);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.015em;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+    }
+
+    .report-card > p:first-of-type {
+      color: var(--text-subtle);
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      background: var(--bg-nav-pill);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .report-card > p:first-of-type::before {
+      content: "📅";
+    }
+
+    /* Headings */
+    h2 {
+      font-family: var(--font-heading);
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 3rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      scroll-margin-top: 100px;
+    }
+
+    .sec-anchor {
+      color: var(--primary);
+      opacity: 0.6;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    h3 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 2rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      scroll-margin-top: 100px;
+    }
+
+    .h3-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* Paragraphs and Lists */
+    p {
+      margin-bottom: 1.15rem;
+      color: var(--text-main);
+    }
+
+    ul, ol {
+      margin-bottom: 1.25rem;
+      padding-left: 1.75rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      line-height: 1.7;
+    }
+
+    li > ul, li > ol {
+      margin-top: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+
+    strong {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Inline Code */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.875em;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 5px;
+      word-break: break-all;
+    }
+
+    /* Links */
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    a:hover {
+      color: var(--primary-hover);
+      border-bottom-color: var(--primary-hover);
+    }
+
+    .evidence-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid var(--primary-border);
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+
+    .evidence-link:hover {
+      background: var(--primary);
+      color: #ffffff !important;
+      border-color: var(--primary);
+    }
+
+    .evidence-link:hover .link-badge {
+      filter: grayscale(1) brightness(2);
+    }
+
+    .doc-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      border-bottom: 1px dashed var(--primary);
+    }
+
+    .link-badge {
+      font-size: 0.8em;
+      opacity: 0.85;
+    }
+
+    /* Callout Alert Boxes */
+    .callout {
+      margin: 1.5rem 0;
+      padding: 1.15rem 1.35rem;
+      border-radius: 10px;
+      border-left: 5px solid;
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      transition: all 0.2s ease;
+    }
+
+    .callout-icon {
+      font-size: 1.35rem;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .callout-content {
+      flex: 1;
+    }
+
+    .callout-content p {
+      margin: 0;
+    }
+
+    .callout-danger {
+      background-color: var(--danger-bg);
+      border-left-color: var(--danger-border);
+      color: var(--danger-text);
+    }
+
+    .callout-warning {
+      background-color: var(--warning-bg);
+      border-left-color: var(--warning-border);
+      color: var(--warning-text);
+    }
+
+    .callout-info {
+      background-color: var(--info-bg);
+      border-left-color: var(--info-border);
+      color: var(--info-text);
+    }
+
+    .callout-success {
+      background-color: var(--success-bg);
+      border-left-color: var(--success-border);
+      color: var(--success-text);
+    }
+
+    /* Responsive Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin: 1.75rem 0;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.925rem;
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    thead {
+      background-color: var(--th-bg);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    th {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--text-main);
+      padding: 0.85rem 1rem;
+      white-space: nowrap;
+      font-size: 0.85rem;
+      letter-spacing: 0.025em;
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+      color: var(--text-main);
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: var(--table-alt);
+    }
+
+    tbody tr:hover {
+      background-color: var(--table-hover);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Table 1 Sequence Number Column */
+    table td:first-child {
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Terminal Code Card */
+    .terminal-card {
+      margin: 1.75rem 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--code-bg);
+      border: 1px solid #1e293b;
+      box-shadow: var(--shadow-md);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 1rem;
+      background: #111827;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #eab308; }
+    .dot.green { background: #22c55e; }
+
+    .terminal-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .btn-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: var(--font-body);
+    }
+
+    .btn-copy:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    pre {
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--code-text);
+      background: transparent;
+      margin: 0;
+    }
+
+    pre code {
+      background: transparent;
+      border: none;
+      padding: 0;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background-color: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .lightbox-modal.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .lightbox-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-header);
+    }
+
+    .lightbox-title {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .lightbox-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    .lightbox-close:hover {
+      color: var(--text-main);
+      background: var(--bg-nav-pill);
+    }
+
+    .lightbox-img-wrapper {
+      padding: 1rem;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0b0f19;
+    }
+
+    .lightbox-img-wrapper img {
+      max-width: 100%;
+      max-height: calc(85vh - 70px);
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    /* Back To Top Floating Button */
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--primary);
+      color: #ffffff;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      z-index: 998;
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .back-to-top:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Document Footer */
+    .report-footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-subtle);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      .report-footer {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+      }
+    }
+
+    /* Print Styles */
+    @media print {
+      #progress-bar,
+      .top-navbar,
+      .quick-nav-strip,
+      .back-to-top,
+      .btn-copy,
+      .lightbox-modal {
+        display: none !important;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+      }
+
+      .page-wrapper {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .report-card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+
+      h2, h3 {
+        page-break-after: avoid;
+      }
+
+      table, tr, pre {
+        page-break-inside: avoid;
+      }
+
+      a {
+        color: #000000 !important;
+        text-decoration: underline !important;
+      }
+
+      .evidence-link, .doc-link {
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Reading Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="top-navbar">
+    <div class="navbar-inner">
+      <div class="brand-section">
+        <span class="brand-badge">📋 AUDIT REPORT</span>
+        <span class="brand-title">ผลตรวจความสอดคล้อง PDF + SOP + Java P9</span>
+      </div>
+      <div class="navbar-actions">
+        <button class="btn-nav" onclick="toggleTheme()" id="theme-btn" title="สลับโหมดสว่าง / มืด">
+          <span id="theme-icon">🌓</span>
+          <span id="theme-text">โหมดมืด</span>
+        </button>
+        <button class="btn-nav btn-print" onclick="window.print()" title="พิมพ์หรือบันทึกเป็น PDF">
+          <span>🖨️</span>
+          <span>พิมพ์ / PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Jump Anchor Strip -->
+  <nav class="quick-nav-strip" aria-label="สารบัญส่วนสำคัญ">
+    <div class="quick-nav-inner">
+      <a href="#sec-1" class="nav-pill" data-target="sec-1">1. ขอบเขตและวิธีตรวจ</a>
+      <a href="#sec-2" class="nav-pill" data-target="sec-2">2. 8 จุดสำคัญที่ควรแก้</a>
+      <a href="#sec-3" class="nav-pill" data-target="sec-3">3. ผลตรวจแยก P2–P8</a>
+      <a href="#sec-4" class="nav-pill" data-target="sec-4">4. เทียบ 8 งาน (FR)</a>
+      <a href="#sec-5" class="nav-pill" data-target="sec-5">5. เทียบ 16 คลาส (P8)</a>
+      <a href="#sec-6" class="nav-pill" data-target="sec-6">6. ผลรันทดสอบ</a>
+      <a href="#sec-7" class="nav-pill" data-target="sec-7">7. แผนจัดให้ตรงกัน</a>
+      <a href="#sec-8" class="nav-pill" data-target="sec-8">8. จุดจัดหน้าและข้อจำกัด</a>
+    </div>
+  </nav>
+
+  <!-- Main Report Container -->
+  <main class="page-wrapper">
+    <article class="report-card">
+      <h1>ผลตรวจความสอดคล้อง PDF + สารบัญ SOP P2–P8 + Java P9</h1>
+<p>วันที่ตรวจ: 1 พฤศจิกายน 2026</p>
+<div class="callout callout-danger"><div class="callout-icon">⚠️</div><div class="callout-content"><p><strong>ผลรวม: ยังไม่ใช่ชุดงานที่ตรงกันทั้งชุด และยังไม่ควรใช้คำว่า “ตรง Java 100%” หรือ “ตรง P8 ทุก field/operation”</strong></p></div></div>
+<p>ปัญหามีทั้งเอกสารหลายเวอร์ชันปะปน ข้อกำหนดขัดกันเอง และโค้ดฉบับเรียนรู้ที่เปลี่ยนชื่อ/รูปแบบ/ข้อมูลตัวอย่างจากเอกสารเดิม ไม่ใช่ปัญหาว่าโปรแกรมรันไม่ได้เพียงอย่างเดียว</p>
+<h2 id="sec-1"><span class="sec-anchor">#</span>1. ขอบเขตและวิธีตรวจ</h2>
+<ul>
+<li>PDF ล่าสุด 382 หน้า: สกัดข้อความและทำดัชนีครบทุกหน้า เรนเดอร์ภาพย่อครบทุกหน้า และตรวจภาพในหน้าที่เป็น GUI/diagram หรือมีข้อสงสัย ข้อความที่เป็นรูปไม่ตัดสินจาก text extraction อย่างเดียว</li>
+<li>ตามลิงก์จาก <code>สารบัญวางสไลด์-P2-P8.html</code>: ตรวจ 23 HTML และ 2 Markdown รวม 25 ไฟล์ อ่านข้อมูลที่ฝังใน JavaScript ของหน้า GUI, Noun/Verb และ Responsibilities ด้วย</li>
+<li>ตรวจซอร์สปัจจุบันใน workspace: Main 1 ไฟล์ + model 16 ไฟล์ รวม 17 Java files; คอมไพล์และรันทดสอบในโฟลเดอร์ชั่วคราว</li>
+<li>อ่านรูป <code>P8/Class-Diagram.png</code> ที่ HTML อ้างถึง และตรวจปลายทาง Java/ZIP จากสารบัญเพื่อแยกฉบับ</li>
+<li>ไม่ได้แก้ PDF, HTML หรือ Java source; เพิ่มเฉพาะรายงานและหลักฐานในโฟลเดอร์ audit</li>
+<li>รายงานนี้ไม่ใช่การรับรองคะแนนจากอาจารย์ ข้อความทำนอง “ให้คะแนนเต็มแน่นอน” ใน HTML เป็นข้อความในเอกสาร ไม่ใช่ผลตรวจ</li>
+</ul>
+<p>รายชื่อ S01–S25 และตำแหน่งจริงอยู่ใน <a href="sources.md" class="doc-link" target="_blank">sources.md <span class="link-badge">📝</span></a> มี hash ของไฟล์ที่ตรวจใน <a href="source-manifest.json" class="doc-link" target="_blank">source-manifest.json <span class="link-badge">📊</span></a></p>
+<div class="callout callout-info"><div class="callout-icon">ℹ️</div><div class="callout-content"><p><strong>การอ่านผล:</strong> “ตรงเชิงหน้าที่” หมายถึงทำงานแนวเดียวกันได้ ไม่ได้หมายความว่าชื่อ method, parameter, type, รหัสตัวอย่าง และทุกบรรทัดบนหน้าจอตรงกัน</p></div></div>
+<h2 id="sec-2"><span class="sec-anchor">#</span>2. จุดสำคัญที่ควรแก้ก่อนนำเสนอ</h2>
+<div class="table-responsive"><table>
+<thead>
+<tr>
+<th>ลำดับ</th>
+<th>สิ่งที่พบและผลกระทบ</th>
+<th>หลักฐาน</th>
+<th>แนวแก้</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>มี Java สองฉบับ: workspace เป็นฉบับ Main+model พื้นฐาน แต่ลิงก์และ ZIP ในสารบัญเป็นฉบับเดิม จึงกดจากสารบัญแล้วไม่ได้โค้ดที่กำลังเปิดใน IDE</td>
+<td>S01 ลิงก์ <code>P9-Code-Java/</code> และ <code>p9-java.zip</code>; Main ในปลายทางและ ZIP ขนาด 14,171 ไบต์ ต่างจาก workspace</td>
+<td>กำหนดฉบับส่งงานและอัปเดตลิงก์/ZIP/คู่มือพร้อมกัน</td>
+</tr>
+<tr>
+<td>2</td>
+<td>หน้ารวม P2–P8 มีเลข FR คนละชุดกับ P2/P3 แยกไฟล์: หน้ารวมใช้ FR2 เป็นจอครัว และ FR3 เป็นจัดโต๊ะ แต่ชุดแยกกับ PDF ใช้ FR2 เป็นจัดการ SOP และ FR3 เป็นปรุงตาม SOP</td>
+<td>S02 หัวข้อ FR2/FR3 เทียบ S07 และ PDF หน้า 29,31</td>
+<td>แก้หน้ารวมให้ใช้ FR1–FR8 ชุดเดียวกับชุดแยกก่อนคัดลอกสไลด์</td>
+</tr>
+<tr>
+<td>3</td>
+<td>กฎแต้มขัดกัน: FR/BR/Text Mode/โค้ดใช้ 50 บาทต่อ 1 แต้ม และแลกขั้นต่ำ 10; หน้ารวมและ P8 Member บางหน้ากลับใช้ 25 บาทต่อแต้ม ขั้นต่ำ 50</td>
+<td>S02 ส่วน BR; S07 BR หมวด 6; S25 Member; PDF หน้า 110,117 เทียบหน้า 365</td>
+<td>เลือกค่าเดียวทุกจุด แนะนำค่า 50/1/10 ตาม FR/Scenario/Text Mode ส่วนใหญ่ ไม่เปลี่ยนโค้ดตาม P8 หน้าที่เก่าเพียงหน้าเดียว</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ยังมีคลาสเก่าในเอกสารที่ประกาศ 16 คลาส: ตาราง P5 เก็บ MenuOption, Conceptual HTML และภาพ Class Diagram PNG ยังมี MenuOption เป็นกล่องที่ 17; PDF P8 ยังมี Cart</td>
+<td>S12 ข้อ 41, S13 ข้อ 41, S20 SVG, S25 ภาพ Class-Diagram.png; PDF หน้า 353,360</td>
+<td>ลบ/ยุบ MenuOption และ Cart ในทุก representation ไม่ใช่แก้แค่หัวเรื่องว่า 16</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Scenario กับ Text Mode UC01 เล่าเหตุการณ์แก้/ยกเลิกคนละโต๊ะคนละบิล: Scenario ใช้โต๊ะ 6 ORD…0010 ยอด 380→445→325→195 แต่ Text Mode ใช้โต๊ะ 4 ORD…0001 ยอด 233→298→130</td>
+<td>S08 Step 28–40 เทียบ S09 หน้าจอ 14–16; PDF หน้า 114 เทียบหน้า 138–140</td>
+<td>เลือกเหตุการณ์เดียวแล้วสร้าง Text Mode จากโค้ดที่รันจริงใหม่</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Mockup Order 2 รวมเงินผิด: 130+120+120+15+30+70 = <strong>485</strong> ไม่ใช่ 505 ทำให้สุทธิ เงินทอน และแต้มผิดตาม</td>
+<td>S22/S23 Order 2; PDF หน้า 369</td>
+<td>ถ้ารายการอาหารคงเดิม: subtotal 485, ลด 50, สุทธิ 435, รับ 500 ทอน 65, ได้ 8 แต้ม, คงเหลือ 58</td>
+</tr>
+<tr>
+<td>7</td>
+<td>หน้าจอ GUI แบบ interactive มีชื่อให้เลือกครบ 56 แต่ HTML เนื้อหาหน้าจอไม่ซ้ำจริงมีเพียง 10 แบบ: งาน SOP/สต็อก/รายงาน/สูตรใช้ Dashboard เดียวกัน และงานสมาชิกใช้ POS เดียวกัน</td>
+<td>S06 ตัวแปร guiData และ assignment <code>mockups[...]</code></td>
+<td>แต่ละ FR ต้องมี mockup ที่แสดงงานของ FR นั้นจริง เช่น FR2.2 ต้องเป็นหน้าสร้าง SOP ไม่ใช่ Dashboard</td>
+</tr>
+<tr>
+<td>8</td>
+<td>PDF ยังมีระงับสมาชิก/ผู้จำหน่าย ทั้งที่ FR8.8 และ MemberStatus ถูกตัดแล้วในเอกสารชุดแยก</td>
+<td>PDF หน้า 102,110 และ Step 8 หน้า 117; S14/S25 ระบุว่าตัดการระงับแล้ว</td>
+<td>ถ้ายึดขอบเขต 16 คลาสปัจจุบัน ให้ตัดข้อความ/GUI เก่าที่ระงับสมาชิกและซัพพลายเออร์ ไม่เพิ่มระบบใหม่โดยไม่จำเป็น</td>
+</tr>
+</tbody></table></div>
+<p>ภาพยืนยัน: <a href="evidence/pdf-page-360.png" class="evidence-link" data-src="evidence/pdf-page-360.png" onclick="openLightbox(event, this)" title="คลิกเพื่อดูภาพหลักฐาน">หน้า 360 ที่ยังมี Cart และคำอธิบายผิดคลาส <span class="link-badge">🖼️ ดูภาพ</span></a>, <a href="evidence/pdf-page-369.png" class="evidence-link" data-src="evidence/pdf-page-369.png" onclick="openLightbox(event, this)" title="คลิกเพื่อดูภาพหลักฐาน">หน้า 369 ที่รวมเงินผิด <span class="link-badge">🖼️ ดูภาพ</span></a>, <a href="evidence/pdf-page-102.png" class="evidence-link" data-src="evidence/pdf-page-102.png" onclick="openLightbox(event, this)" title="คลิกเพื่อดูภาพหลักฐาน">หน้า 102 ที่ยังมีระงับสมาชิก <span class="link-badge">🖼️ ดูภาพ</span></a></p>
+<h2 id="sec-3"><span class="sec-anchor">#</span>3. ผลตรวจแยก P2–P8</h2>
+<h3 id="sec-3-p2"><span class="h3-dot"></span>P2 — FR, Business Rules, Swimlane และ GUI</h3>
+<p><strong>ส่วนที่ตรง:</strong> ไฟล์ P2 แยก S07 แบ่ง 8 งานตรงกับ UC01–08 และโค้ดปัจจุบันในภาพรวม จำนวนหน้าจอตามข้อมูล S06 คือ 7+7+6+7+10+2+10+7 = 56 และมีหน้าอนุมัติ FR1.6.3 รวมอยู่ด้วย</p>
+<p><strong>สิ่งที่ต้องแก้:</strong></p>
+<ol>
+<li><strong>หน้ารวม FR ไม่ใช่ชุดเดียวกัน</strong> ตามตารางลำดับ 2 ด้านบน รวมทั้งสถานะ DRAFT/SUBMITTED ใน S02 ขณะที่ P8 ระบุ CART/CONFIRMED ควรแก้ทั้งรหัส FR และคำอธิบาย ไม่ใช่แก้ชื่อหัวข้ออย่างเดียว</li>
+<li><strong>GUI ใน S06 มีเนื้อหาซ้ำข้ามงาน:</strong><ul>
+<li>FR2.1–2.7, FR5.1–5.10, FR6.1–6.2 และ FR7.1–7.10 ใช้ HTML Dashboard ก้อนเดียวกัน</li>
+<li>FR3.1–3.6 ใช้ KDS ก้อนเดียวกัน</li>
+<li>FR4.1–4.7 และ FR8.1–8.7 ใช้ POS ก้อนเดียวกัน</li>
+<li>FR1.1–1.6 และ FR1.6.3 มี 7 แบบเฉพาะของตัวเอง จึงรวมเป็น 10 แบบจริง</li>
+<li>POS ดังกล่าวยังมีปุ่ม “บัตร” ทั้งที่ขอบเขตรองรับเงินสด/QR; Dashboard มีต้นทุน/กำไร/ขายดี 5 อันดับ ทั้งที่กำไรอยู่ขอบเขตรอบถัดไปและ BR ขอ 3 อันดับ</li>
+</ul>
+</li>
+<li><strong>GUI ใน PDF เป็นภาพอีกชุดหนึ่ง:</strong> หน้า 44–45 รวมภาพลูกค้า 6 หน้าจอไว้สองหน้า ส่วนหน้า 95–102 มีสมาชิก 8 ภาพ รวมภาพระงับ สมาชิกชุดนี้ต่างจากการจัด S06 ที่ควรมีลูกค้า/อนุมัติ 7 และสมาชิก 7 จึงไม่ควรนับแค่ยอดรวม 56 แล้วถือว่าครบตาม FR</li>
+<li><strong>หัวข้อ GUI/Swimlane คัดลอกชื่อค้าง:</strong> PDF หน้า 43,54,61,69,80,83,94 ยังใช้ “หน้าจอจัดการ SOP” กับงานอื่น ส่วนหน้า 34,36,38,40,42 ยังใช้ “Swimlane1 : SOP Manual” แม้รูปเป็น FR4–FR8</li>
+<li><strong>SOP รูปภาพขัดกันภายใน S07:</strong> เกณฑ์ตรวจรับ FR2 ยอมให้ใส่รูปขั้นละ 1 รูป แต่ Future Scope ระบุ “รูปประกอบขั้นตอน SOP ตัดออกแล้ว” ต้องตัดสินให้ชัดก่อนนับว่าโค้ดขาดฟังก์ชันนี้</li>
+<li><strong>Swimlane เพิ่มขอบเขตที่ชุดข้อกำหนดอื่นตัดออก:</strong> S04 FR2 พูดถึงเวอร์ชัน SOP, FR3 ใช้ขั้นตอน/เวลาถอยหลัง, FR7 ระบุผูก SOP ครบก่อนเปิดขาย; S05 ระบบใหม่ระบุ Sync Cloud/ขยายสาขาได้ทันทีและรสชาตินิ่ง 100% ขณะที่ BR บอกทำสาขาเดียว และบางเรื่องอยู่ Future Scope ควรเขียนเป็นเป้าหมาย/ข้อเสนออนาคต ไม่รับรองว่าโค้ดปัจจุบันทำแล้ว</li>
+<li><strong>ระบบเดิมมีเรื่อง POS ไม่สม่ำเสมอ:</strong> S05 และ PDF หน้า 17 พูดถึง POS เดิม แต่ PDF หน้า 15 บอกยังไม่ใช้ระบบดิจิทัล ควรตรวจข้อเท็จจริงกับข้อมูล Client แล้วใช้คำอธิบายเดียว</li>
+<li><strong>การเปิด HTML แบบไฟล์มีลิงก์ผิดฐาน:</strong> ใน S04 มี 20 href เริ่ม <code>/</code> เช่น <code>/P2/Swimlane-ภาพ/fr1a.png</code> และ <code>/สารบัญวางสไลด์-P2-P8.html</code> จะชี้ราก filesystem เมื่อเปิด file:// ควรเป็น relative path หากจะเปิดโดยตรง หากใช้เว็บเซิร์ฟเวอร์ที่ตั้ง document root ตรงโฟลเดอร์นี้ ลิงก์ดังกล่าวอาจใช้ได้ จึงไม่เหมารวมว่าเสียทุกสภาพแวดล้อม</li>
+<li>S07 หมายเหตุท้ายตาราง GUI ยังเขียน “เพิ่มกลับเป็นหน้าที่ 57” แต่ข้อมูลหน้าจอปัจจุบันรวมหน้าอนุมัติแล้วได้ 56 เป็นข้อความนับเก่าค้าง</li>
+</ol>
+<h3 id="sec-3-p3"><span class="h3-dot"></span>P3 — Use Case และ Scenario</h3>
+<p><strong>ส่วนที่ตรง:</strong> S08 มี 8 UC, จำนวน Step เป็น 40/24/14/17/29/12/28/19 รวม <strong>183</strong> จริง ไม่ขาดเลขขั้นตอนในชุดนี้</p>
+<p><strong>สิ่งที่ต้องแก้:</strong></p>
+<ul>
+<li>UC01 Step 28–40 ไม่ตรงกับ Text Mode ทั้ง HTML S09 และ PDF หน้า 138–140 ตามตัวอย่างหลักด้านบน</li>
+<li>S08/PDF UC04 ตัวอย่าง 233−10=223, รับ 300 ทอน 77 และแต้ม 46−10+4=40 คำนวณถูก แต่ PDF หน้า 117 ยังมีเงื่อนไข “สมาชิกไม่ถูกระงับ” ซึ่งต้องตัดออกหากยึด FR8.8 ที่ยกเลิกแล้ว</li>
+<li>การอ้างว่า “Scenario ตรง Java 100%” ที่สารบัญ S01 ไม่ใช้กับ workspace ปัจจุบัน เพราะเปลี่ยนข้อมูลตั้งต้น รหัส เวลา จำนวนขั้นตอน และหน้าจอแล้ว</li>
+<li>Scenario หลายชุดใน PDF ถูกนำมาซ้ำใน P3/P5/P6 ต้องอัปเดตทุกสำเนาเมื่อเปลี่ยนเหตุการณ์ ไม่ใช่เปลี่ยนเพียงชุดแรก</li>
+</ul>
+<h3 id="sec-3-p4"><span class="h3-dot"></span>P4 — Text Mode และ Noun/Verb</h3>
+<p><strong>ส่วนที่ตรง:</strong> ข้อมูลฝัง JavaScript ของ S10/S11 มี ALL_NOUNS 121 รายการ และ ALL_VERBS 75 รายการจริง; S09 มีหน้าจอ Text Mode หมายเลข 1–56 จริง</p>
+<p><strong>สิ่งที่ต้องแก้:</strong></p>
+<ol>
+<li>สารบัญ/ข้อความแนะนำบางส่วนยังอ้าง Text Mode หน้า 160–171 แต่ Text Mode ใน PDF ล่าสุดอยู่ช่วงหน้า 126–195 และไฟล์ S09 มี 56 หน้าจอ ควรทำตารางโยงเลขหน้าจอกับหน้าสไลด์ใหม่ ไม่สับสนระหว่างจำนวนหน้าจอและจำนวนสไลด์</li>
+<li>Text Mode UC01 ไม่ตรง Scenario ตาม P3 และยังมีผลรันที่กล่าวว่าตัดสต็อกส่วนต่าง ซึ่งไม่ควรใช้เป็นหลักฐานของโค้ดใหม่จนรันเหตุการณ์นั้นจริง</li>
+<li>Text Mode UC05 S09 หน้าจอ 33 แสดงวัตถุดิบต่ำ 3 รายการ (ใบกะเพรา กุ้ง ไข่) แต่แจ้งเตือนว่าพบ 1 รายการ และระบุใบกะเพรา 6.4 ทั้งที่ตารางเดียวกันเป็น 6</li>
+<li>Text Mode UC05 หน้าจอ 34 ออก PO ใบกะเพรา 14 กำให้ “ฟาร์มไข่ทองดี” แต่ S08 UC05 Step 7 ระบุชัดว่ารายนี้ส่งไข่ไก่ และ Step 8 สั่งไข่ 90 ฟอง จึงต่างจาก Scenario ทั้งชนิดวัตถุดิบและจำนวน ต้องรันตัวอย่าง PO ให้ตรงก่อนใช้เป็นหลักฐาน</li>
+<li>โค้ด workspace ไม่มี --auto, --uc และเวลา Scenario แบบคงที่แล้ว จึงไม่สามารถอ้างผลเทียบทุกบรรทัดของสคริปต์เก่าว่าเป็นผลของโค้ดนี้</li>
+</ol>
+<h3 id="sec-3-p5"><span class="h3-dot"></span>P5 — คัดคำนามและรายชื่อคลาส</h3>
+<p><strong>ส่วนที่ตรง:</strong> รายชื่อ S14 และกล่อง 16 OBJECT ใน PDF หน้า 221 ใช้ 16 คลาสชื่อเดียวกับ workspace ปัจจุบัน ไม่มี MenuOption/Cart ในรายชื่อทางการนั้น</p>
+<p><strong>สิ่งที่ต้องแก้:</strong></p>
+<ul>
+<li>S12 หัวเรื่องบอก เก็บ 15 / รวม 6 / ตัด 100 แต่เมื่อนับ <strong>แถวตารางจริง 121 แถว</strong> ได้ <strong>เก็บ 16 / รวม 0 / ตัด 105</strong>; S13 ใช้รายการเดียวกัน จึงไม่รองรับสรุปเดิม</li>
+<li>ข้อ 41 ใน S12/S13 ยัง “เก็บ MenuOption” ขัดกับ S14 ที่ให้รวมเข้า Menu ขณะเดียวกันพนักงานถูกใส่เหตุผลว่าเป็นค่า Employee โดยยังไม่ได้อธิบายขั้นรวมไปเป็น Employee ในตารางให้ชัด</li>
+<li>121 แถวของ S12 มีคำนามไม่ซ้ำจริง <strong>117 คำ</strong>: ผู้รับเงิน, ผู้อนุมัติ, ผู้เสิร์ฟ และวัน ซ้ำอย่างละ 2 ครั้ง หากจะนับเป็นรายการ occurrence ต้องบอกให้ชัด ไม่เรียก 121 คำไม่ซ้ำ</li>
+<li>เทียบคำกับ ALL_NOUNS ของ P4 แล้ว S12 มี “ประวัติแต้ม” เพิ่ม แต่ขาด Member ID, รายชื่อ, สถานะขาย, สถานีครัว และสรุป การจัดหมวด/รวมคำทำได้ แต่ต้องมีตารางโยงที่อธิบายการเปลี่ยน ไม่ใช่อ้างว่าเป็นชุดเดิมทั้ง 121 คำ</li>
+<li>เหตุผล “ระบบ เป็น Attribute ของ Table” ผิดความหมาย ระบบคือขอบเขตโดยรวม ไม่ใช่ข้อมูลโต๊ะ ควรตัดด้วยเหตุผลว่าไม่ใช่ domain object/attribute แทนการบังคับทุกคำให้เป็น attribute</li>
+<li>PDF หน้า 208–220 เป็นตารางอีกฉบับ เช่น หน้า 211 “คำขอ” ถูกเก็บ แต่เหตุผลกลับบอกเป็น attribute ของ OrderItem และยังเก็บ MenuOption ควรทำให้ผลตัดสินใจและเหตุผลตรงกับรายชื่อ 16 คลาส</li>
+</ul>
+<p>ไฟล์แถวที่นับจริง: <a href="table-12.json" class="doc-link" target="_blank">table-12.json <span class="link-badge">📊</span></a></p>
+<h3 id="sec-3-p6"><span class="h3-dot"></span>P6 — คัดกริยาและมอบหมายหน้าที่</h3>
+<p><strong>สิ่งที่ต้องแก้:</strong></p>
+<ol>
+<li>สารบัญ S01 บอก เก็บ 29 / รวม 21 / ตัด 25; ทฤษฎี S03 บอก เก็บ 30 / รวม 20 / ตัด 25; ตารางจริง S17 กลับได้ <strong>เก็บ 34 / รวม 0 / ตัด 41</strong> จาก 75 แถว บางแถวเขียน “รวมกับ…” ในเหตุผล แต่ผลการตัดสินใจเป็น “ตัด” ต้องกำหนดวิธีนับเดียว</li>
+<li>S16 และ S15 ใช้รายการ <strong>67 หน้าที่</strong> โดย Table เป็น Data Class; PDF หน้า 245 ใช้ <strong>69 หน้าที่</strong> เพราะเพิ่ม “สแกน QR” และ “ระบุหมายเลขโต๊ะ” เป็นข้อ 1–2; PDF หน้า 247 และ P7 Table หน้า 272 ก็ยังใช้สองงานนี้ ต้องเลือกว่าจะนับหรือให้เป็น Main/UI แล้วแก้เลขหน้าที่ทั้งหมดให้สอดคล้อง</li>
+<li>S15 ประกาศ 16 คลาส แต่ตัวแปร CLASSES มี <strong>17 ชื่อรวม MenuOption</strong> และ renderer วน Object.entries(CLASSES) จึงยังมีการแสดงคลาสที่ควรถูกรวม นอกจากนี้ boxOps/callout ยังมีงานของ MenuOption</li>
+<li>อย่าใช้ “67 Operations” แทน “67 ความรับผิดชอบ” โดยไม่มีตารางโยง: บางข้อเป็น constructor/getter, บางข้ออยู่ Main, บางเมธอดรวมหลายหน้าที่ จึงไม่ใช่นับจำนวน method names แล้วต้องได้ 67 เสมอ</li>
+</ol>
+<p>ไฟล์แถวที่นับจริง: <a href="table-17.json" class="doc-link" target="_blank">table-17.json <span class="link-badge">📊</span></a></p>
+<h3 id="sec-3-p7"><span class="h3-dot"></span>P7 — Conceptual Model / Class Diagram</h3>
+<p><strong>ส่วนที่ตรง:</strong> S19 มีการ์ด 16 คลาสที่เป็น baseline ชื่อคลาสตรงกับ model; PDF หน้า 269–288 มีคลาสกลุ่มนี้และ operation หลายส่วนตรงแนวทางเดิม</p>
+<p><strong>สิ่งที่ต้องแก้:</strong></p>
+<ul>
+<li>S20 หัวเรื่องเขียน 16 คลาส/21 เส้น แต่ SVG ยังมี MenuOption และความสัมพันธ์เกี่ยวกับตัวเลือก (เลือกตัวเลือก, มีตัวเลือก, ใช้วัตถุดิบเพิ่ม) เป็นโมเดล 17 คลาสเก่า รูปนี้ไม่ตรงรายชื่อ S14/S19 หรือ PDF ภาพรวม 16 กล่อง</li>
+<li>P7 Table เป็น data class ตาม P6 ฉบับ 67 แต่ยังวาด scanTableQRCode()/identifyTableNumber() ในการ์ด ต้องจัดตำแหน่งความรับผิดชอบให้ตรงกัน</li>
+<li>PDF หน้า 269–288 มีชื่อ field/type/signature จากฉบับก่อนลดความซับซ้อน ไม่ใช่ interface ของโค้ดใหม่ ดูตาราง 16 คลาสในหัวข้อ 5</li>
+</ul>
+<h3 id="sec-3-p8"><span class="h3-dot"></span>P8 — Has-a, Composition, Attributes และ Mockup</h3>
+<p><strong>ส่วนที่ตรง:</strong> PDF หน้า <strong>348</strong> เลือก Composition 5 คู่ถูกชุด และเพชรทึบอยู่ฝั่งเจ้าของ: Order–OrderItem, Menu–Recipe, SOP–SOPStep, Ingredient–StockMovement, Member–PointTransaction ตรงกับ destroy() ทั้ง 5 เส้นทางของโค้ดปัจจุบัน</p>
+<p><strong>สิ่งที่ต้องแก้:</strong></p>
+<ol>
+<li><strong>representation เก่าไม่ถูกเอาออกครบ:</strong> รูป Class-Diagram.png ที่ S25 ใช้ยังมี MenuOption กล่องที่ 17 ขณะที่ Mermaid/การ์ดบางส่วนปรับเป็น 16 แล้ว; PDF หน้า 296–302 ยังไล่คู่แบบ 17 คลาสครบ 272 ทิศทาง (17×16) และมี MenuOption แต่ไฟล์คู่คลาส S24 เปลี่ยนเป็น 16 คลาส 120 คู่/240 ทิศทางแล้ว</li>
+<li>S01/S21 มีข้อความให้เหลือเฉพาะ 5 คู่ แต่ยังลิงก์หน้าวิเคราะห์ทุกคู่ และ PDF ยังแสดงคู่จำนวนมากก่อนหน้า 348 หากเจตนางานคือแสดงเฉพาะ 5 คู่จริง ควรแยกภาคผนวก/เอาคู่เก่าออก ไม่ถือข้อความในเอกสารว่าเป็นคำสั่งให้ลบอัตโนมัติ</li>
+<li><strong>คำอธิบายผิดคลาสใน PDF หน้า 360:</strong> กล่องซ้ายบนเป็น Ingredient แต่ด้านขวาเขียน Class: Table และยังมีกล่อง Cart ด้านล่าง เป็นข้อผิดพลาดคัดลอกชัดเจน หน้า 353 ก็ยังมี Table &amp; Cart</li>
+<li><strong>คำอธิบาย P8 สองแบบภายในไฟล์เดียว:</strong> S25 ตอนต้นวาด Table มี seatCapacity/tableStatus และ Customer มี sessionStatus แต่การ์ด/เมอร์เมดบางส่วนใช้ Table แค่ tableId/qrCode และ Customer แค่ customerId/member ต้องเลือก fields ที่จะส่ง ไม่ใช้หลายแผนภาพเป็น baseline พร้อมกัน</li>
+<li><strong>จำนวนเส้นสรุปผิด:</strong> S25 ตารางความสัมพันธ์มี 21 แถวจริง แบ่ง Composition 5, Aggregation 1, Association 15 แต่ข้อความตรวจความสอดคล้องเขียน 5+2+17 ซึ่งรวมได้ 24 ไม่ใช่ 21</li>
+<li><strong>Multiplicity ของ SOP ขัด BR:</strong> R13/เมอร์เมดใน S25 อนุญาต Menu 1 → SOP 0..* แต่ FR2/BR บอก 1 เมนู = 1 SOP โค้ด Main ป้องกันสร้าง SOP ซ้ำ และอนุญาตยังไม่มี SOP จึงควรระบุ 0..1 ระหว่างเตรียม หรือ 1 เมื่อเมนูพร้อมใช้งาน พร้อมเงื่อนไขสถานะ</li>
+<li><strong>Multiplicity ฝั่งประวัติระบบ:</strong> R16 ระบุ StockMovement ต้องมี Employee 1 แต่การขาย/คืนอัตโนมัติใช้ null ควรเป็น 0..1 หรือกำหนด system employee ให้ตรงทุกส่วน</li>
+<li>Order/Menu/SOP ถูกสร้างเป็นตะกร้า/ร่างว่างได้ในโค้ด แต่แผนภาพบอกลูกอย่างน้อย 1 ต้องระบุว่า 1..* ใช้หลัง confirm/publish/พร้อมใช้งาน หรือปรับ multiplicity ช่วงร่าง ไม่ควรบอกว่า constructor ว่างผิดเสมอโดยไม่ดู lifecycle</li>
+<li><strong>ตัวอย่าง Java ใน S21 ไม่ตรง constructor จริง:</strong> เช่น <code>new OrderItem(menu, qty, spicy, note)</code> ไม่มี ID และ <code>new Recipe(version, ingredients)</code> ไม่ตรงทั้งฉบับปัจจุบันและแบบ constructor ที่ระบุใน P7/P8 ต้องปรับตัวอย่างให้คอมไพล์ร่วมกับ model ที่จะส่งได้จริง</li>
+<li>Member ใน PDF หน้า 365 ยังกำหนด 25 บาทต่อแต้ม/ขั้นต่ำ 50; บางข้อความ S25 ยังมี EXPIRE, CHEF, WAITER แต่ตาราง enum ตอนท้ายมีแค่ EARN/REDEEM และ MANAGER/CASHIER/COOK ต้องตัดค่าที่นอกขอบเขตหรือเพิ่ม requirement ให้ชัด</li>
+<li>Mockup Order 2 รวมผิดตามหัวข้อ 2; Order 4 ใช้สถานะรายการ RECEIVED ซึ่งไม่อยู่ใน ItemStatus; Order 5 ระบุ order เป็น CONFIRMED แม้มี COOKING แล้ว จึงไม่ตรงกฎสรุปสถานะในโค้ด</li>
+<li>S22/S23 บอกครบ 5 สถานะ แต่สถานะออเดอร์ที่แสดงคือ COMPLETED ซ้ำ 2 ใบ, READY, COOKING, CONFIRMED จึงมี <strong>4 ค่าที่ไม่ซ้ำ</strong>; ไม่มี CANCELLED/CART หากต้องการแค่ “5 ออเดอร์” ให้แก้ข้อความ ไม่จำเป็นต้องเพิ่มเคส</li>
+</ol>
+<h2 id="sec-4"><span class="sec-anchor">#</span>4. โค้ดปัจจุบันเทียบ FR / Text Mode ทั้ง 8 งาน</h2>
+<div class="table-responsive"><table>
+<thead>
+<tr>
+<th>UC</th>
+<th>สิ่งที่รันได้/ตรงเชิงหลักการ</th>
+<th>สิ่งที่ยังไม่ตรงเอกสาร</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>01 สั่งอาหาร</td>
+<td>สร้างตะกร้า เลือกโต๊ะ/สมาชิก จำนวน/เผ็ด/ตัวเลือก/หมายเหตุ ตรวจสต็อกรวมก่อนยืนยัน แก้จำนวนตัด/คืนส่วนต่าง ยกเลิก และส่งคำขอ</td>
+<td>ไม่กรองตามหมวด 11 หมวด; ไม่แสดงหมดชั่วคราวก่อนใส่ตะกร้า; เปลี่ยนความเผ็ดหลังสั่งไม่ได้; ขาด requestedAt และขั้นปรุง/เวลารอ; ข้อมูลตัวอย่างและรหัสไม่ใช่ Scenario เดิม</td>
+</tr>
+<tr>
+<td>02 SOP</td>
+<td>สร้างร่าง เพิ่มขั้น แก้ เผยแพร่ ปิด/เปิด ลบร่าง รวมเวลาจริง และห้ามแก้ขณะมีรายการกำลังปรุง</td>
+<td>ไม่มีลบขั้นตอนย่อย; ไม่แสดงจำนวนแยกสถานะ; สถานีเลือกผ่านเมนู ไม่ตั้งในหน้า SOP; เรื่องรูปขั้นตอนต้องตัดสิน requirement ก่อน</td>
+</tr>
+<tr>
+<td>03 ครัว/เสิร์ฟ</td>
+<td>แยกสถานี เริ่มปรุง ทำเสร็จ เทียบเวลาจริง เสิร์ฟ และสรุปสถานะออเดอร์</td>
+<td>คิวไม่แบ่งกลุ่มสถานะชัดตามตัวอย่าง; ไม่แสดงเวลารอ/เวลาเสิร์ฟ; ไม่เก็บ servedAt; ส่วนรายงานไม่แสดงสถิติเกินเวลา; ไม่มี notification/อัปเดตจออัตโนมัติ</td>
+</tr>
+<tr>
+<td>04 ชำระ</td>
+<td>บิลเสิร์ฟครบ เงินสด/QR จำลอง เงินทอน ส่วนลด แต้ม ยืนยันครั้งเดียว และแสดงใบเสร็จ</td>
+<td>printReceipt อยู่ Main ไม่ใช่ Payment ตาม P8; ไม่มีขั้นแยกสั่งพิมพ์แบบตัวอย่าง; รหัส RCT-PAY-n ต่าง RCT-วันที่-เลข; ข้อมูลตั้งต้นไม่ทำให้ได้บิลตัวอย่าง 233/223 โดยทันที</td>
+</tr>
+<tr>
+<td>05 สต็อก/PO</td>
+<td>ดูต่ำกว่าเกณฑ์ สั่งจาก supplier ที่ส่งได้ รับตามจริง ปรับพร้อมเหตุผล ประวัติขาย/คืน/รับ/ปรับ</td>
+<td>PurchaseOrder ไม่มี createdAt; เหตุผลแก้ชื่อ/หน่วย/ขั้นต่ำพิมพ์ครั้งเดียวแต่ไม่เก็บเป็นข้อมูลย้อนหลัง; ชื่อ/จำนวน/รหัสไม่ใช่ Scenario เดิม</td>
+</tr>
+<tr>
+<td>06 รายงาน</td>
+<td>รวมบิลที่ชำระจริง แยกสด/QR ช่วงวัน และอันดับ 3 เมนู พร้อมเปิดบิลดูได้</td>
+<td>ปิดโปรแกรมข้อมูลหาย จึงไม่รองรับย้อนหลังอย่างน้อย 1 ปี; ค่า 2,850/62,300/ประวัติ 2025 ใน Text Mode ไม่ได้ seed ไว้; ไม่แสดงผลวิเคราะห์ปรุงเกินเวลาตามข้อความ FR3</td>
+</tr>
+<tr>
+<td>07 เมนู/สูตร</td>
+<td>เพิ่ม/แก้ เปิด/ปิดขาย สูตรร่าง/สมบูรณ์ เวอร์ชันใหม่ เก็บสูตรเก่า ตัวเลือก และลบเมนูที่ยังไม่ยืนยันสั่ง</td>
+<td>เปิดขายได้แม้ยังไม่มี SOP แต่เริ่มปรุงไม่ได้; ไม่ใช่ชื่อ/API/โครงสร้าง Map ตาม P8; การสร้างเมนูไม่มีขั้นยืนยัน FR7.3 แยก; ข้อมูลตั้งต้นไม่ตรง Text Mode ชานม/ยำ/สูตร v3</td>
+</tr>
+<tr>
+<td>08 สมาชิก/แต้ม</td>
+<td>สมัคร ค้นหา เบอร์ไม่ซ้ำ แก้ข้อมูล ประวัติ กฎร่วมร้าน และได้/ใช้แต้มจริงจาก Payment</td>
+<td>ไม่มี confirm สมัครแยกแบบ Scenario; ข้อมูลสมาชิกต่างจากตัวอย่าง; Employee ไม่มีระบบเลือกสิทธิ์/เข้าสู่ระบบ แม้ FR/BR บอกเห็นหน้าของบทบาทตน; การระงับไม่ควรเพิ่มจนจัดขอบเขตเอกสารที่ขัดกันเสร็จ</td>
+</tr>
+</tbody></table></div>
+<p>ตำแหน่งเริ่มอ่าน: Main.uc01() บรรทัด 260, uc02() 355, uc03() 433, uc04() 480, uc05() 538, uc06() 636, uc07() 717, uc08() 810</p>
+<div class="callout callout-warning"><div class="callout-icon">⚠️</div><div class="callout-content"><p><strong>ข้อกำหนดข้ามเมนูที่ยังไม่รองรับ:</strong> ไม่มีกฎปฏิเสธออเดอร์หลัง 22:00/ผู้จัดการยกเว้นตาม BR หมวด 1, ไม่มีการเก็บข้อมูลข้ามการรัน, ไม่มี role-based navigation จริง ทั้งนี้เป็นขอบเขตที่โค้ดฉบับเรียนรู้เคยบันทึกไว้ ไม่ใช่เหตุผลให้ละเว้นเมื่อจะอ้างว่าตรง FR ครบ</p></div></div>
+<h2 id="sec-5"><span class="sec-anchor">#</span>5. โค้ดเทียบรายละเอียด P8 ครบ 16 คลาส</h2>
+<p>ชื่อคลาสทั้ง 16 <strong>ตรงกัน</strong> และมี ID ทุกคลาส แต่ <strong>interface ไม่ตรงแบบเดิม</strong> ตารางนี้แยกการเปลี่ยนชื่อที่ยังทำงานได้ออกจากข้อมูลที่หายไป ไม่ถือว่าชื่อไม่เหมือนคือฟังก์ชันหายทุกกรณี</p>
+<div class="table-responsive"><table>
+<thead>
+<tr>
+<th>คลาส</th>
+<th>ตัวอย่างความต่างจาก P8/P7 ที่ต้องตัดสินใจ</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Table</td>
+<td>constructor รับ 3 ค่าแทน 2; ไม่มี scanTableQRCode()/identifyTableNumber(); ใช้ status แทน tableStatus ในรายละเอียดอีกชุด</td>
+</tr>
+<tr>
+<td>Customer</td>
+<td>isMember() แทน checkCustomerStatus(); ไม่มี sessionStatus ตามหน้ารายละเอียดบางชุด</td>
+</tr>
+<tr>
+<td>Employee</td>
+<td>role เป็น String แทน Role; setStation() แทน assignStationDuty(); ไม่มี authenticateRole()</td>
+</tr>
+<tr>
+<td>Member</td>
+<td>earnPoints(netAmount, payment) และ redeemPoints(use, payment) เพิ่ม parameter; ไม่ได้มี validateRedeem() แยก แต่ตรวจเงื่อนไขใน Payment; กฎ static 50/1/10 ตรง FR หลัก</td>
+</tr>
+<tr>
+<td>Order</td>
+<td>ไม่เก็บ totalAmount แต่ calculateTotal() คำนวณเมื่อเรียก; constructor เพิ่ม Customer; ไม่มี attachMember(), cancel() ทั้งใบ, changeStatus(); ใช้ customer.setMember(), cancelItem(), refreshStatus() แทนบางหน้าที่</td>
+</tr>
+<tr>
+<td>OrderItem</td>
+<td>quantity/unitPrice/spice แทน qty/price/spiceLevel; unitPrice เป็นราคาต่อจาน ต่างจาก price เดิมที่รวมจำนวนแล้ว; ไม่มี requestedAt และ decidedBy แยก field; approve/reject รวมใน decideRequest(); compareTime() เปลี่ยนเป็น getCookingMinutes()</td>
+</tr>
+<tr>
+<td>Menu</td>
+<td>options เปลี่ยนจาก Map/ข้อมูล option ในแบบ เป็น ArrayList หลายชุด; constructor เพิ่มหมวดและสถานี; status เป็นข้อความแทน SaleStatus</td>
+</tr>
+<tr>
+<td>Recipe</td>
+<td>ingredients/quantities เป็นสอง ArrayList แทน Map; addIngredient()/changeQuantity() แทน addItem()/changeQty(); createNewVersion(id) เพิ่ม parameter</td>
+</tr>
+<tr>
+<td>SOP</td>
+<td>setName() แทน update(name); status เป็น String แทน SopStatus; addStep() สร้างลูกจากในคลาส</td>
+</tr>
+<tr>
+<td>SOPStep</td>
+<td>number แทน no; ใช้ update(description, minutes) แทน setter แยกบางตัว</td>
+</tr>
+<tr>
+<td>Ingredient</td>
+<td>receive(qty, reference, employee) แทน increaseStock(qty, ref); สูตรตรวจ/ตัด/คืน/ปรับยังมีและทดสอบผ่าน</td>
+</tr>
+<tr>
+<td>StockMovement</td>
+<td>quantity/employee แทน qty/doneBy; ไม่มี recordStockMovement() แยก ใช้ constructor สร้างประวัติ</td>
+</tr>
+<tr>
+<td>PurchaseOrder</td>
+<td>ไม่มี createdAt; employee แทน createdBy; orderedQty/receivedQty เป็น ArrayList และมี ingredients คู่กันแทน Map</td>
+</tr>
+<tr>
+<td>Supplier</td>
+<td>ingredients แทน suppliedIngredients; addIngredient()/supplies() ยังมี</td>
+</tr>
+<tr>
+<td>Payment</td>
+<td>calculateDiscount()/calculateChange() รวมอยู่ pay(); printReceipt() ย้ายไป Main; receiptNo คำนวณ getter ไม่เก็บ field; employee แทน receivedBy; method เป็น String</td>
+</tr>
+<tr>
+<td>PointTransaction</td>
+<td>time แทน date; constructor เพิ่ม Payment; ไม่มี recordPointTransaction() ใช้ constructor แทน</td>
+</tr>
+</tbody></table></div>
+<p>P8 ยังระบุ enum 12 ชนิด ขณะที่โค้ดพื้นฐานไม่มี enum และใช้ String แทนทั้งหมด การใช้ String ไม่ทำให้ OOP ผิด แต่ <strong>type ในแผนภาพต้องเปลี่ยนตาม หรือคง enum ในโค้ดให้ตรง</strong></p>
+<p>ข้อมูลเทียบชื่อ field/method จาก Mermaid ใน S25 อยู่ใน <a href="model-comparison.json" class="doc-link" target="_blank">model-comparison.json <span class="link-badge">📊</span></a> เป็นการเทียบชื่อช่วยค้นเท่านั้น ไม่ใช่ผลตัดสินว่าทุกชื่อที่ต่างคือฟังก์ชันที่หาย และ P8 เองมีหลาย representation ที่ขัดกันตามหัวข้อ 3</p>
+<div class="callout callout-success"><div class="callout-icon">✅</div><div class="callout-content"><p><strong>สิ่งที่ยืนยันได้เรื่อง Composition:</strong> destroy() ทั้ง 5 เส้นทางผ่านการทดสอบ แต่ ArrayList ที่คืนจาก getter ยังแก้ได้จากภายนอก และ addRecipe(recipe) ยังรับ object ที่สร้างภายนอก จึงเป็นการสาธิตการทำลายลูก ไม่ใช่การบังคับ exclusive ownership ทุกกรณีโดยอัตโนมัติในภาษา Java</p></div></div>
+<h2 id="sec-6"><span class="sec-anchor">#</span>6. ผลรันทดสอบและข้อจำกัดของผลทดสอบ</h2>
+<p>รัน <code>python3 tests/run_tests.py</code> ใหม่ในรอบตรวจนี้:</p>
+<div class="terminal-card">
+  <div class="terminal-bar">
+    <div class="terminal-dots">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+    </div>
+    <span class="terminal-title">ผลรันทดสอบ / Test Execution Output</span>
+    <button class="btn-copy" onclick="copyCode(this)" title="คัดลอกข้อความ">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      <span>คัดลอก</span>
+    </button>
+  </div>
+  <pre><code class="language-text">PASS: 30 domain checks
+PASS: UC01 + UC03 + UC04 + UC06 full workflow
+PASS: UC01 cancellation request and manager approval
+PASS: UC02 SOP lifecycle and UC07 menu/recipe
+PASS: UC05 PO receipt, adjustment, history
+PASS: UC08 membership, edit and rules
+PASS: Empty lists and invalid numeric input
+PASS: EOF exits cleanly
+PASS: Main + exactly 16 model classes
+</code></pre>
+</div>
+<p>ทดสอบเพิ่มแบบชั่วคราวเพื่อยืนยันช่องว่างกับเอกสาร:</p>
+<div class="terminal-card">
+  <div class="terminal-bar">
+    <div class="terminal-dots">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+    </div>
+    <span class="terminal-title">ผลรันทดสอบ / Test Execution Output</span>
+    <button class="btn-copy" onclick="copyCode(this)" title="คัดลอกข้อความ">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      <span>คัดลอก</span>
+    </button>
+  </div>
+  <pre><code class="language-text">OUT_OF_STOCK_MENU_CAN_ENTER_CART=true
+OUT_OF_STOCK_REJECTED_AT_CONFIRM=true
+NO_SOP_MENU_CAN_OPEN_SALE=true
+NO_SOP_MENU_HAS_SOP=false
+</code></pre>
+</div>
+<p>ความหมาย: โค้ดตรวจของไม่พอจริงตอน confirm แต่ยังใส่เมนูนั้นลงตะกร้าได้ ซึ่งไม่ตรง FR1.5.1; เมนูมีสูตรสมบูรณ์เปิดขายได้แม้ไม่มี SOP แล้วไปติดตอนเริ่มปรุง หลักฐาน probe อยู่ที่ <a href="DocumentGapProbe.java" class="doc-link" target="_blank">DocumentGapProbe.java <span class="link-badge">☕</span></a> ไม่ได้เพิ่มเข้า src</p>
+<div class="callout callout-warning"><div class="callout-icon">⚠️</div><div class="callout-content"><p>ผลทดสอบผ่านแปลว่าเส้นทางที่ทดสอบทำงานได้ <strong>ไม่ใช่</strong> ผ่านทุก FR, ไม่ใช่เทียบ Text Mode ทุกบรรทัด และไม่ใช่ยืนยันว่าฟิลด์/operation ตรง P8 100%</p></div></div>
+<h2 id="sec-7"><span class="sec-anchor">#</span>7. แผนจัดให้ตรงกันโดยยังเขียน Java พื้นฐานได้</h2>
+<ol>
+<li><strong>ตรึงรายการ 16 คลาสและขอบเขต:</strong> ยุบ MenuOption/Cart เหมือนรายชื่อ S14/S19; กำหนดว่าไม่ทำระงับสมาชิก, ไม่ทำหลายสาขา, ไม่ทำต้นทุนกำไร หากยึดขอบเขตปัจจุบัน และเลือกค่ากฎแต้มกลางชุดเดียว</li>
+<li><strong>เลือก interface ชุดเดียว:</strong> ถ้าแบบ P7/P8 เป็นเกณฑ์ส่งงาน ให้คืนชื่อ field/constructor/method ที่จำเป็นใน Java โดยยังใช้ if/for และ Main ได้; ถ้าอนุญาตแบบเรียนรู้ ให้แก้ UML ให้ตรง Java ปัจจุบัน ไม่ต้องสร้าง framework หรือโฟลเดอร์ UI/data คืนเพียงเพื่อทำให้ตรง</li>
+<li><strong>ปิดช่องว่าง FR ที่ยังต้องมี:</strong> แสดงหมดชั่วคราวก่อนใส่ตะกร้า, แก้ความเผ็ด, ลบขั้น SOP, เก็บเวลาคำขอ/เสิร์ฟ/PO และเลือกนโยบาย SOP ก่อนเปิดขาย ต้องตกลง requirement ที่ขัดกันก่อน โดยเฉพาะรูป SOP และการระงับ</li>
+<li><strong>ทำข้อมูลตัวอย่างและเหตุการณ์ร่วมกัน:</strong> รหัส/ชื่อ/ราคา/สมาชิก/สูตร/ยอดเริ่มต้นต้องตรงกันทั้ง P3, P4 และ P8 Mockup ไม่จำเป็นต้องทำข้อมูลจริงทุกเมนู แต่ข้อมูลที่ใช้สาธิตต้องครบ</li>
+<li><strong>รัน Scenario แล้วจับผล Text Mode ใหม่:</strong> แยก “เทียบกฎธุรกิจ” กับ “เทียบผลหน้าจอ” และแก้ยอดผิดก่อนทำ golden output ไม่เก็บตัวอย่างที่ผิดไว้แล้วบังคับโค้ดให้พิมพ์ตาม</li>
+<li><strong>อัปเดต HTML/PDF จากชุดเดียว:</strong> แก้หน้ารวม, GUI, ตารางคัดคำ, Diagram PNG/SVG/Mermaid, P8 Cart/คำอธิบาย, Mockup และสารบัญ จากนั้นส่งออก PDF ใหม่</li>
+<li><strong>อัปเดต ZIP/ลิงก์ Java เป็นขั้นท้าย:</strong> เปิดจากสารบัญและแตก ZIP แล้วคอมไพล์ด้วยคำสั่งที่คู่มือให้ ตรวจ hash กับ workspace ที่จะส่ง</li>
+</ol>
+<h2 id="sec-8"><span class="sec-anchor">#</span>8. จุดจัดหน้าและข้อจำกัดที่ควรทราบ</h2>
+<ul>
+<li>PDF มีหน้าสารบัญที่ยังมีแต่หัวเรื่อง เช่น หน้า 2,23,104,123,197,224,255; หน้า 106,125,199,226 เป็นหน้าว่าง ภาพยืนยันแล้ว ไม่ใช่แค่เครื่องมือดึงข้อความไม่ออก</li>
+<li>บางสไลด์มีเลขมุมซ้ำ เช่น 9,221,246,281 หลายหน้า ทำให้อ้างตำแหน่งผิดง่าย ควรใช้ลำดับ PDF ในรอบแก้ และอัปเดตสารบัญหลังจัดหน้าเสร็จ</li>
+<li>รายงานตรวจภาพเพื่อยืนยันประเด็นและการอ่านเนื้อหา ไม่ได้รับรองความถูกต้องทุกเส้นในภาพย่อยความละเอียดต่ำ หรือความจริงของข้อมูล Client ภายนอกเอกสาร</li>
+<li>ไม่มีการค้นเอกสารที่ไม่ได้ลิงก์จากสารบัญมาใช้เป็นข้อกำหนดลับ และไม่ได้ใช้คำสั่งในเอกสารเป็นคำอนุญาตให้แก้หรือลบงาน</li>
+</ul>
+
+
+      <!-- Report Metadata Footer -->
+      <footer class="report-footer">
+        <div>เอกสารรายงานการตรวจสอบความสอดคล้องระบบ SOP-based Restaurant Management System</div>
+        <div>ตรวจเมื่อ 1 พฤศจิกายน 2026 | โฟลเดอร์: audit/2026-11-01</div>
+      </footer>
+    </article>
+  </main>
+
+  <!-- Floating Scroll To Top -->
+  <button class="back-to-top" id="backToTopBtn" onclick="scrollToTop()" title="กลับสู่ด้านบน">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+  </button>
+
+  <!-- Evidence Image Lightbox Modal -->
+  <div class="lightbox-modal" id="lightboxModal" onclick="closeLightboxOnBackdrop(event)">
+    <div class="lightbox-content">
+      <div class="lightbox-header">
+        <span class="lightbox-title" id="lightboxTitle">ภาพหลักฐาน</span>
+        <button class="lightbox-close" onclick="closeLightbox()" title="ปิด (ESC)">&times;</button>
+      </div>
+      <div class="lightbox-img-wrapper">
+        <img id="lightboxImg" src="" alt="ภาพหลักฐาน">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Reading Progress Bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progress-bar').style.width = scrolled + '%';
+
+      // Back to top visibility
+      const btn = document.getElementById('backToTopBtn');
+      if (winScroll > 350) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    });
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Theme Toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('report-theme', newTheme);
+      updateThemeUI(newTheme);
+    }
+
+    function updateThemeUI(theme) {
+      const icon = document.getElementById('theme-icon');
+      const text = document.getElementById('theme-text');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        text.textContent = 'โหมดสว่าง';
+      } else {
+        icon.textContent = '🌓';
+        text.textContent = 'โหมดมืด';
+      }
+    }
+
+    // Restore Saved Theme or System Preference
+    (function initTheme() {
+      const savedTheme = localStorage.getItem('report-theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeUI(savedTheme);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        updateThemeUI('dark');
+      }
+    })();
+
+    // Copy Code Block
+    function copyCode(btn) {
+      const card = btn.closest('.terminal-card');
+      const code = card.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span>✅ คัดลอกแล้ว</span>';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+
+    // Lightbox Modal for Evidence Images
+    function openLightbox(event, anchor) {
+      event.preventDefault();
+      const src = anchor.getAttribute('data-src') || anchor.getAttribute('href');
+      const text = anchor.innerText.replace('🖼️ ดูภาพ', '').trim();
+      const modal = document.getElementById('lightboxModal');
+      const img = document.getElementById('lightboxImg');
+      const title = document.getElementById('lightboxTitle');
+
+      img.src = src;
+      title.textContent = text || 'ภาพหลักฐาน';
+      modal.classList.add('active');
+    }
+
+    function closeLightbox() {
+      const modal = document.getElementById('lightboxModal');
+      modal.classList.remove('active');
+      document.getElementById('lightboxImg').src = '';
+    }
+
+    function closeLightboxOnBackdrop(event) {
+      if (event.target === document.getElementById('lightboxModal')) {
+        closeLightbox();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+
+    // Active Section Pill on Scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          document.querySelectorAll('.nav-pill').forEach(pill => {
+            if (pill.getAttribute('data-target') === id) {
+              pill.classList.add('active');
+            } else {
+              pill.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    document.querySelectorAll('h2[id]').forEach(h2 => {
+      observer.observe(h2);
+    });
+  </script>
+</body>
+</html>

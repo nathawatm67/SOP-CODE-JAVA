@@ -1,0 +1,25 @@
+# Compiled Java class files
+*.class
+bin/
+out/
+build/
+target/
+
+# Archive files
+backups/
+*.zip
+*.tar.gz
+
+# IDE and Editor settings
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Temporary and local configurations
+.agents/
+.aws/
+.codex/
+*.log

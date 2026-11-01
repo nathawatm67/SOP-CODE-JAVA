@@ -1,0 +1,19 @@
+{
+  "src/Main.java": "e4b7220426c99179c901ab0d99615226110dfb5f9c3ac059891997216fa71f5c",
+  "src/model/Customer.java": "2379d4436c6a2ec059ba9264a83ddac65ebe3bae1a0fc0535f02ef180e752db4",
+  "src/model/Employee.java": "8f66e51536901b546140f28c794d32578f04bbb5e4703c7659d8f8f79c93da65",
+  "src/model/Ingredient.java": "7b082887191e6516ee80cb6e5f2ded519653ec25cbab76a3bb6c438b9cfc29d3",
+  "src/model/Member.java": "b79e301d5b0ad834b9c6f5e5f0f7198a09d0fdf3dcd33698286863876cdaa3aa",
+  "src/model/Menu.java": "f2e9f4621e159d0fce7828133474a6d4c7753c1e02f28b5808cc5a2a5b2030b5",
+  "src/model/Order.java": "2341aad4518f63dbed0983285be515c4e6173154a7cbc63224f8f08f60c22513",
+  "src/model/OrderItem.java": "88429ddacf97c62d65f6b8bc054976ee5b424ca796aea6b0f5ee5da2dd35ccda",
+  "src/model/Payment.java": "ec483f2e873958e27570f44cb4e86af7d30c26ac051b782bbc92829aea7173a1",
+  "src/model/PointTransaction.java": "0e8f6bc48dd2d5057af8861c59a6b796e71ec4ea14065c61d6739e587f76989f",
+  "src/model/PurchaseOrder.java": "1dd630291beadca760a811ace087ef2da8cce422dfe8bdc8ecec871c1f8e6b00",
+  "src/model/Recipe.java": "9702105564a6693114936dac9d1e808de45b02a372422a0f007e110d3274ee92",
+  "src/model/SOP.java": "e948ff3e0d8aa55c41326fdc6d3326bd7b95786647bbe5aa1a405597d0517e52",
+  "src/model/SOPStep.java": "cd698bfe8c44e313177cb1c0fb587fc73c17204e1659d174a5890d3a1d591777",
+  "src/model/StockMovement.java": "47b34479a12ddcdc693d9f684f3dcae31c6527017f981218991c1c1b3f46cf62",
+  "src/model/Supplier.java": "c6b1a062931929529a752b59c041f18c756f2709495df2bc24f6629296809207",
+  "src/model/Table.java": "68b2c0f92e0055584226663b872475cd7514340b254ddb99aab535d5b77a6116"
+}
