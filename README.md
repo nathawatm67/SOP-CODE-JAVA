@@ -20,12 +20,14 @@ java -Dfile.encoding=UTF-8 -cp bin Main
 
 ไฟล์ JAR ที่สร้างจากซอร์สชุดนี้รันได้ด้วย `java -jar KhaoTomAromDee.jar`
 
-## โครงสร้าง
+## โครงสร้างโปรเจกต์
 
 ```text
-src/
-  Main.java            รับคำตอบ แสดงเมนู เตรียมข้อมูล และเรียก object
-  model/               คลาสข้อมูลและกฎการทำงาน 16 คลาส
+src/                   ซอร์สโค้ด Java (Main.java และ 16 Model Classes)
+docs/                  เอกสารสถาปัตยกรรม คำอธิบายโปรแกรมทีละขั้น และตารางเทียบ P7
+examples/              ชุดข้อมูล input/output ตัวอย่างตาม P4
+tests/                 ชุดทดสอบอัตโนมัติ (Python + BasicOopTest.java)
+P9/                    สคริปต์สร้างคู่มือ PDF 103 หน้า, สไลด์นำเสนอ และทฤษฎี P9
 ```
 
 ไม่มีโฟลเดอร์ `ui`, `data` และ `util` แล้ว หน้าที่รับคำตอบและสร้างข้อมูลตัวอย่างย้ายมาอยู่ใน `Main` ส่วนกฎธุรกิจอยู่ใน `model`
@@ -61,10 +63,10 @@ src/
 
 - **[P9-JAVA-OOP-17CLASSES-GUIDE.pdf](P9-JAVA-OOP-17CLASSES-GUIDE.pdf)**: 📖 **คู่มือเจาะลึก 103 หน้า A4 (ฉบับสมบูรณ์)** อธิบายโค้ดทั้ง 16 คลาสโมเดลและ `Main.java` อย่างละเอียด, กฎ Composition ทั้ง 5 คู่, วงจรชีวิตออเดอร์, Two-Pass Stock Check, ผ่าลอจิกทั้ง 8 Use Cases, พร้อมคลัง 15 คำถามปราบเซียนสำหรับเตรียมสอบและนำเสนอ
 - **[P9-JAVA-OOP-17CLASSES-GUIDE.html](P9-JAVA-OOP-17CLASSES-GUIDE.html)**: ฉบับ HTML สำหรับเปิดอ่านผ่านเว็บบราวเซอร์
-- [EXPLAIN-PROGRAM-STEP-BY-STEP.md](EXPLAIN-PROGRAM-STEP-BY-STEP.md): อธิบายตั้งแต่ `Main.main()` ไปจนถึงงานทั้ง 8 ส่วน พร้อมตัวอย่างคำนวณยอด สต็อก และแต้ม
-- [HOW-TO-EXPLAIN.md](HOW-TO-EXPLAIN.md): สรุปสั้นสำหรับทบทวนก่อนนำเสนอ
-- [P7-CODE-ALIGNMENT.md](P7-CODE-ALIGNMENT.md): ใช้เทียบโค้ดกับ 16 คลาสของ P7
-- [ARCHITECTURAL-ALIGNMENT-16CLASSES.md](ARCHITECTURAL-ALIGNMENT-16CLASSES.md): สรุปสถาปัตยกรรมฉบับ Java OOP พื้นฐาน 16 คลาสโมเดล
+- [docs/EXPLAIN-PROGRAM-STEP-BY-STEP.md](docs/EXPLAIN-PROGRAM-STEP-BY-STEP.md): อธิบายตั้งแต่ `Main.main()` ไปจนถึงงานทั้ง 8 ส่วน พร้อมตัวอย่างคำนวณยอด สต็อก และแต้ม
+- [docs/HOW-TO-EXPLAIN.md](docs/HOW-TO-EXPLAIN.md): สรุปสั้นสำหรับทบทวนก่อนนำเสนอ
+- [docs/P7-CODE-ALIGNMENT.md](docs/P7-CODE-ALIGNMENT.md): ใช้เทียบโค้ดกับ 16 คลาสของ P7
+- [docs/ARCHITECTURAL-ALIGNMENT-16CLASSES.md](docs/ARCHITECTURAL-ALIGNMENT-16CLASSES.md): สรุปสถาปัตยกรรมฉบับ Java OOP พื้นฐาน 16 คลาสโมเดล
 
 
 ## ตรวจสอบ
@@ -83,6 +85,5 @@ python3 tests/run_tests.py
 - ใช้ `double` แทนเงิน สถานะหลักเก็บเป็น `enum` แล้วแปลงเป็นข้อความภาษาไทยตอนแสดงหน้าจอ
 - `Menu`, `Recipe` และ `PurchaseOrder` ใช้ `List` หลายชุดที่จับคู่กันด้วยตำแหน่งเดียวกัน เช่น วัตถุดิบตำแหน่ง 0 กับปริมาณตำแหน่ง 0 เพื่อให้อธิบายด้วย Java พื้นฐานได้ง่ายขึ้น; `OrderItem` เก็บสำเนาสูตรและราคาเพื่อให้บิลเก่าไม่เปลี่ยน
 - P4 เป็นผลรันตัวอย่างที่ใช้ข้อมูลและวันที่ 2 สิงหาคม 2026 ส่วนโปรแกรมใช้วันที่จริงและให้ผู้ใช้เลือกข้อมูลเอง จึงได้รหัส/ยอดตรงตัวอย่างเมื่อป้อนกรณีเดียวกัน แต่ผลทุกบิลไม่ใช่ข้อความคงที่จากสไลด์
-- โค้ด model มี 16 คลาสและ operation หลักตาม Class Diagram P7 แต่ชนิดข้อมูลคู่ที่ P7 เขียนเป็น `Map` เปลี่ยนเป็น `List` ตามข้อกำหนดฉบับเรียนรู้ เมธอดอ่าน/แก้ข้อมูลที่จำเป็นใช้ชื่อบอกหน้าที่โดยไม่มี getter/setter ทั่วไป ยกเว้น `getTotalMinutes()` และ `setRule()` ซึ่งอยู่ใน P7 ดู [P7-CODE-ALIGNMENT.md](P7-CODE-ALIGNMENT.md)
+- โค้ด model มี 16 คลาสและ operation หลักตาม Class Diagram P7 แต่ชนิดข้อมูลคู่ที่ P7 เขียนเป็น `Map` เปลี่ยนเป็น `List` ตามข้อกำหนดฉบับเรียนรู้ เมธอดอ่าน/แก้ข้อมูลที่จำเป็นใช้ชื่อบอกหน้าที่โดยไม่มี getter/setter ทั่วไป ยกเว้น `getTotalMinutes()` และ `setRule()` ซึ่งอยู่ใน P7 ดู [P7-CODE-ALIGNMENT.md](docs/P7-CODE-ALIGNMENT.md)
 - โปรแกรมไม่รองรับ `--auto`, `--uc`, `--test` ของฉบับเดิม
-- ซอร์ส เอกสาร สคริปต์ทดสอบ และไฟล์รันฉบับก่อนปรับ เก็บไว้ใน `backups/before-basic-oop.zip`
