@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class Diagram 2 — ข้าวต้มอารมณ์ดี (16 คลาส · 5 Composition)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Fira+Code:wght@400;500;600&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --primary: #ea580c;
+    --bg: #0f172a;
+    --panel-bg: #1e293b;
+    --text: #f8fafc;
+    --border: #334155;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.top-bar {
+    background: #1e293b;
+    border-bottom: 1.5px solid #334155;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+}
+.title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.badge {
+    background: linear-gradient(135deg, #ea580c, #f59e0b);
+    color: white;
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+.h1-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: #ffffff;
+}
+.btn-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.btn {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn:hover {
+    background: #475569;
+    color: white;
+}
+.btn-primary {
+    background: #ea580c;
+    border-color: #c2410c;
+    color: white;
+}
+.btn-primary:hover {
+    background: #c2410c;
+}
+.filter-btn.active {
+    background: #0284c7;
+    border-color: #0369a1;
+    color: white;
+}
+.viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    background: #0b1120;
+}
+.viewport:active {
+    cursor: grabbing;
+}
+.diagram-container {
+    position: absolute;
+    transform-origin: 0 0;
+    transition: transform 0.05s ease-out;
+}
+svg {
+    display: block;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.zoom-hud {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="title-group">
+        <span class="badge">ข้อ 1.4</span>
+        <h1 class="h1-title">Class Diagram 2 — แผนภาพรวมระบบละเอียด (16 คลาส · 21 ความสัมพันธ์ · 5 Composition)</h1>
+    </div>
+    <div class="btn-group">
+        <button class="btn filter-btn active" onclick="filterDomain('all')">🌐 ทั้งหมด 16 คลาส</button>
+        <button class="btn filter-btn" onclick="filterDomain('comp')">💎 5 Composition แท้</button>
+        <button class="btn" onclick="resetZoom()">🔍 Reset View</button>
+        <a href="Class-Diagram-2.svg" download="Class-Diagram-2.svg" class="btn">📥 ดาวน์โหลด SVG</a>
+        <a href="Class-Diagram-2.png" download="Class-Diagram-2.png" class="btn btn-primary">📸 ดาวน์โหลด 4K PNG</a>
+    </div>
+</div>
+
+<div class="viewport" id="viewport">
+    <div class="diagram-container" id="container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4300 2650" width="4300" height="2650">
+<defs>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&amp;family=Fira+Code:wght@400;500;600&amp;family=Sarabun:wght@400;500;600;700&amp;display=swap');
+        text { font-family: 'Sarabun', 'Fira Code', sans-serif; }
+        .header-title { font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 21px; }
+        .header-thai { font-family: 'Sarabun', sans-serif; font-size: 13.5px; fill: #475569; }
+        .badge-text { font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 11.5px; }
+        .code-attr { font-family: 'Fira Code', monospace; font-size: 13.5px; fill: #1e293b; }
+        .code-op { font-family: 'Fira Code', monospace; font-size: 13px; fill: #0f172a; }
+        .vis-priv { font-weight: 700; fill: #ef4444; }
+        .vis-pub { font-weight: 700; fill: #10b981; }
+        .cardinality { font-family: 'Chakra Petch', monospace; font-weight: 700; font-size: 14.5px; fill: #0f172a; }
+        .role-text { font-family: 'Fira Code', monospace; font-size: 12.5px; fill: #1e293b; font-weight: 600; }
+        .banner-h1 { font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 34px; fill: #0f172a; }
+        .banner-p { font-family: 'Sarabun', sans-serif; font-size: 16px; fill: #475569; }
+    </style>
+    <filter id="shadow" x="-3%" y="-2%" width="108%" height="106%" filterUnits="userSpaceOnUse">
+        <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <filter id="comp-glow" x="-5%" y="-5%" width="110%" height="110%">
+        <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#ea580c" flood-opacity="0.22"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-comp-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ea580c"/>
+    </marker>
+    <marker id="arrow-comp-2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
+    <marker id="arrow-comp-3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrow-comp-4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#e11d48"/>
+    </marker>
+    <marker id="arrow-comp-5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#0891b2"/>
+    </marker>
+</defs>
+
+<!-- Subtle Grid Background -->
+<rect width="4300" height="2650" fill="#f8fafc"/>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <rect width="40" height="40" fill="none"/>
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" stroke-width="0.8"/>
+</pattern>
+<rect width="4300" height="2650" fill="url(#grid)" opacity="0.6"/>
+
+<!-- Header Title Banner -->
+<g transform="translate(100, 40)">
+    <rect width="3320" height="70" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="28" y="44" class="banner-h1">📐 Class Diagram 2 — ระบบบริหารจัดการร้านข้าวต้มอารมณ์ดี (16 คลาสทางการ · 21 ความสัมพันธ์ · 5 Composition)</text>
+    <text x="1950" y="43" class="banner-p">ตามเกณฑ์ข้อ 1.4 ของอาจารย์: แสดง Attribute และ Operation ครบทุกคลาส · กำกับ Visibility (- private, + public) และ Data Types · เน้น Composition 5 คู่แท้ (◆)</text>
+</g>
+
+<!-- Top Legend / Key -->
+<g transform="translate(3460, 40)">
+    <rect width="740" height="70" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow)"/>
+    <polygon points="30,35 40,28 50,35 40,42" fill="#ea580c"/>
+    <text x="58" y="40" font-family="'Chakra Petch', sans-serif" font-weight="700" font-size="14" fill="#0f172a">◆ Composition (5 คู่แท้)</text>
+    
+    <polygon points="250,35 260,28 270,35 260,42" fill="#ffffff" stroke="#475569" stroke-width="1.8"/>
+    <text x="278" y="40" font-family="'Chakra Petch', sans-serif" font-weight="600" font-size="14" fill="#475569">◇ Aggregation (1 คู่)</text>
+
+    <line x1="450" y1="35" x2="480" y2="35" stroke="#475569" stroke-width="2.2" marker-end="url(#arrow)"/>
+    <text x="495" y="40" font-family="'Chakra Petch', sans-serif" font-weight="600" font-size="14" fill="#475569">─▶ Association</text>
+
+    <text x="635" y="40" font-family="'Fira Code', monospace" font-size="13" fill="#64748b">- priv / + pub</text>
+</g>
+<!-- ================= RELATIONSHIPS ================= -->
+<g id="relationships">
+    <!-- Composition 1: Order -> OrderItem (R1) -->
+    <path d="M 1176 320 L 1298 320" stroke="#ea580c" stroke-width="3.5" fill="none" marker-end="url(#arrow-comp-1)"/>
+    <polygon points="1160,320 1168,314 1176,320 1168,326" fill="#ea580c" stroke="#ea580c" stroke-width="1.8"/>
+    <g transform="translate(1235, 308)">
+        <rect x="-67.6" y="-14" width="135.2" height="22" rx="5" fill="#ffffff" stroke="#ea580c" stroke-width="1.2" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#ea580c">items [1..*]</text>
+    </g>
+    <text x="1180" y="342" class="cardinality">1</text>
+    <text x="1275" y="342" class="cardinality">1..*</text>
+
+    <!-- Composition 2: Menu -> Recipe (R9) -->
+    <path d="M 2506 280 L 2638 280" stroke="#059669" stroke-width="3.5" fill="none" marker-end="url(#arrow-comp-2)"/>
+    <polygon points="2490,280 2498,274 2506,280 2498,286" fill="#059669" stroke="#059669" stroke-width="1.8"/>
+    <g transform="translate(2570, 268)">
+        <rect x="-77.2" y="-14" width="154.4" height="22" rx="5" fill="#ffffff" stroke="#059669" stroke-width="1.2" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#059669">recipes [1..*]</text>
+    </g>
+    <text x="2510" y="302" class="cardinality">1</text>
+    <text x="2615" y="302" class="cardinality">1..*</text>
+
+    <!-- Composition 3: SOP -> SOPStep (R14) -->
+    <path d="M 2506 920 L 2638 920" stroke="#7c3aed" stroke-width="3.5" fill="none" marker-end="url(#arrow-comp-3)"/>
+    <polygon points="2490,920 2498,914 2506,920 2498,926" fill="#7c3aed" stroke="#7c3aed" stroke-width="1.8"/>
+    <g transform="translate(2570, 908)">
+        <rect x="-67.6" y="-14" width="135.2" height="22" rx="5" fill="#ffffff" stroke="#7c3aed" stroke-width="1.2" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#7c3aed">steps [1..*]</text>
+    </g>
+    <text x="2510" y="942" class="cardinality">1</text>
+    <text x="2615" y="942" class="cardinality">1..*</text>
+
+    <!-- Composition 4: Ingredient -> StockMovement (R15) -->
+    <path d="M 2746 1620 L 2888 1620" stroke="#e11d48" stroke-width="3.5" fill="none" marker-end="url(#arrow-comp-4)"/>
+    <polygon points="2730,1620 2738,1614 2746,1620 2738,1626" fill="#e11d48" stroke="#e11d48" stroke-width="1.8"/>
+    <g transform="translate(2815, 1608)">
+        <rect x="-86.8" y="-14" width="173.6" height="22" rx="5" fill="#ffffff" stroke="#e11d48" stroke-width="1.2" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#e11d48">movements [0..*]</text>
+    </g>
+    <text x="2750" y="1642" class="cardinality">1</text>
+    <text x="2865" y="1642" class="cardinality">0..*</text>
+
+    <!-- Composition 5: Member -> PointTransaction (R22) -->
+    <path d="M 664 1620 L 522 1620" stroke="#0891b2" stroke-width="3.5" fill="none" marker-end="url(#arrow-comp-5)"/>
+    <polygon points="680,1620 672,1614 664,1620 672,1626" fill="#0891b2" stroke="#0891b2" stroke-width="1.8"/>
+    <g transform="translate(598, 1608)">
+        <rect x="-101.2" y="-14" width="202.4" height="22" rx="5" fill="#ffffff" stroke="#0891b2" stroke-width="1.2" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#0891b2">transactions [0..*]</text>
+    </g>
+    <text x="658" y="1642" class="cardinality">1</text>
+    <text x="535" y="1642" class="cardinality">0..*</text>
+
+    <!-- Association: Order -> Table (R2) -->
+    <path d="M 680 240 L 522 240" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(600, 230)">
+        <rect x="-30.5" y="-14" width="61" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">table</text>
+    </g>
+    <text x="655" y="260" class="cardinality">0..*</text>
+    <text x="535" y="260" class="cardinality">1</text>
+
+    <!-- Association: Order -> Customer (R3) -->
+    <path d="M 680 480 L 522 480" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(600, 470)">
+        <rect x="-44.0" y="-14" width="88" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">customer</text>
+    </g>
+    <text x="655" y="500" class="cardinality">0..*</text>
+    <text x="535" y="500" class="cardinality">1</text>
+
+    <!-- Association: Order -> Payment (R4) -->
+    <path d="M 720 660 L 720 730 L 310 730 L 310 858" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(515, 720)">
+        <rect x="-39.5" y="-14" width="79" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">payment</text>
+    </g>
+    <text x="740" y="680" class="cardinality">1</text>
+    <text x="330" y="840" class="cardinality">0..1</text>
+
+    <!-- Association: OrderItem -> Menu (R5) -->
+    <path d="M 1840 320 L 1998 320" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(1920, 308)">
+        <rect x="-26.0" y="-14" width="52" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">menu</text>
+    </g>
+    <text x="1860" y="340" class="cardinality">*</text>
+    <text x="1975" y="340" class="cardinality">1</text>
+
+    <!-- Association: OrderItem -> Recipe (R7) -->
+    <path d="M 1840 460 L 1940 460 L 1940 70 L 2865 70 L 2865 138" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(2400, 60)">
+        <rect x="-35.0" y="-14" width="70" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">recipe</text>
+    </g>
+    <text x="1860" y="480" class="cardinality">*</text>
+    <text x="2885" y="120" class="cardinality">1</text>
+
+    <!-- Association: OrderItem -> Employee (R8) -->
+    <path d="M 1300 820 L 1230 820 L 1230 920 L 1162 920" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(1230, 860)">
+        <rect x="-48.5" y="-14" width="97" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">handledBy</text>
+    </g>
+    <text x="1270" y="840" class="cardinality">*</text>
+    <text x="1175" y="940" class="cardinality">0..1</text>
+
+    <!-- Association: Recipe -> Ingredient (R10) -->
+    <path d="M 2865 440 L 2865 730 L 2540 730 L 2540 1418" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(2700, 720)">
+        <rect x="-57.5" y="-14" width="115" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">ingredients</text>
+    </g>
+    <text x="2885" y="460" class="cardinality">*</text>
+    <text x="2560" y="1400" class="cardinality">1..*</text>
+
+    <!-- Association: SOP -> Menu (R13) -->
+    <path d="M 2245 790 L 2245 642" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(2245, 715)">
+        <rect x="-26.0" y="-14" width="52" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">menu</text>
+    </g>
+    <text x="2265" y="770" class="cardinality">0..*</text>
+    <text x="2265" y="660" class="cardinality">1</text>
+
+    <!-- Association: StockMovement -> Employee (R16) -->
+    <path d="M 3120 1860 L 3120 2420 L 920 2420 L 920 1242" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(2020, 2410)">
+        <rect x="-35.0" y="-14" width="70" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">doneBy</text>
+    </g>
+    <text x="3140" y="1890" class="cardinality">*</text>
+    <text x="900" y="1260" class="cardinality">1</text>
+
+    <!-- Association: PurchaseOrder -> Ingredient (R17) -->
+    <path d="M 2070 1620 L 2238 1620" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(2155, 1608)">
+        <rect x="-53.0" y="-14" width="106" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">orderedQty</text>
+    </g>
+    <text x="2090" y="1640" class="cardinality">*</text>
+    <text x="2215" y="1640" class="cardinality">1..*</text>
+
+    <!-- Association: PurchaseOrder -> Supplier (R18) -->
+    <path d="M 1825 1840 L 1825 2038" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(1825, 1940)">
+        <rect x="-44.0" y="-14" width="88" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">supplier</text>
+    </g>
+    <text x="1845" y="1860" class="cardinality">*</text>
+    <text x="1845" y="2020" class="cardinality">1</text>
+
+    <!-- Aggregation: Supplier -> Ingredient (R19) -->
+    <path d="M 2086 2160 L 2485 2160 L 2485 1962" stroke="#475569" stroke-width="2.4" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow)"/>
+    <polygon points="2070,2160 2078,2154 2086,2160 2078,2166" fill="#ffffff" stroke="#475569" stroke-width="1.8"/>
+    <g transform="translate(2285, 2150)">
+        <rect x="-111.5" y="-14" width="223" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">suppliedIngredients [*]</text>
+    </g>
+    <text x="2100" y="2180" class="cardinality">1</text>
+    <text x="2505" y="1980" class="cardinality">1..*</text>
+
+    <!-- Association: PurchaseOrder -> Employee (R20) -->
+    <path d="M 1580 1520 L 1230 1520 L 1230 1060 L 1162 1060" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(1405, 1510)">
+        <rect x="-48.5" y="-14" width="97" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">createdBy</text>
+    </g>
+    <text x="1550" y="1540" class="cardinality">*</text>
+    <text x="1175" y="1080" class="cardinality">1</text>
+
+    <!-- Association: Payment -> Employee (R21) -->
+    <path d="M 520 1020 L 678 1020" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(600, 1008)">
+        <rect x="-53.0" y="-14" width="106" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">receivedBy</text>
+    </g>
+    <text x="540" y="1040" class="cardinality">*</text>
+    <text x="655" y="1040" class="cardinality">1</text>
+
+    <!-- Association: PointTransaction -> Payment (R23) -->
+    <path d="M 310 1420 L 310 1262" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(310, 1340)">
+        <rect x="-39.5" y="-14" width="79" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">payment</text>
+    </g>
+    <text x="330" y="1400" class="cardinality">*</text>
+    <text x="330" y="1280" class="cardinality">0..1</text>
+
+    <!-- Association: Customer -> Member (R24) -->
+    <path d="M 310 630 L 310 760 L 600 760 L 600 1490 L 678 1490" stroke="#64748b" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(455, 750)">
+        <rect x="-35.0" y="-14" width="70" height="22" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+        <text x="0" y="2" text-anchor="middle" class="role-text" fill="#475569">member</text>
+    </g>
+    <text x="330" y="650" class="cardinality">1</text>
+    <text x="655" y="1510" class="cardinality">0..1</text>
+</g>
+<!-- ================= CLASS BOXES ================= -->
+<g id="classes">
+    <!-- Class Table -->
+    <g id="class-Table" filter="url(#shadow)">
+        <rect x="100" y="140" width="420" height="198" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 100 150 Q 100 140 110 140 L 510 140 Q 520 140 520 150 L 520 196 L 100 196 Z" fill="#fef3c7"/>
+        <line x1="100" y1="196" x2="520" y2="196" stroke="#94a3b8" stroke-width="1.5"/>
+
+        <rect x="425" y="148" width="85" height="20" rx="4" fill="#d97706" opacity="0.9"/>
+        <text x="468" y="162" text-anchor="middle" fill="#ffffff" class="badge-text">Entity</text>
+
+        <text x="118" y="168" class="header-title" fill="#d97706">Table</text>
+        <text x="118" y="188" class="header-thai">โต๊ะอาหาร</text>
+
+        <line x1="100" y1="256" x2="520" y2="256" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="116" y="216">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">tableId : String</tspan>
+        </text>        <text x="116" y="238">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">qrCode : String</tspan>
+        </text>        <text x="116" y="276">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Table(tableId, qrCode)</tspan>
+        </text>        <text x="116" y="298">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">scanTableQRCode() : void</tspan>
+        </text>        <text x="116" y="320">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">identifyTableNumber() : String</tspan>
+        </text>    </g>
+
+    <!-- Class Customer -->
+    <g id="class-Customer" filter="url(#shadow)">
+        <rect x="100" y="420" width="420" height="198" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 100 430 Q 100 420 110 420 L 510 420 Q 520 420 520 430 L 520 476 L 100 476 Z" fill="#fef3c7"/>
+        <line x1="100" y1="476" x2="520" y2="476" stroke="#94a3b8" stroke-width="1.5"/>
+
+        <rect x="425" y="428" width="85" height="20" rx="4" fill="#d97706" opacity="0.9"/>
+        <text x="468" y="442" text-anchor="middle" fill="#ffffff" class="badge-text">Entity</text>
+
+        <text x="118" y="448" class="header-title" fill="#d97706">Customer</text>
+        <text x="118" y="468" class="header-thai">ลูกค้า / ผู้สั่งอาหาร</text>
+
+        <line x1="100" y1="536" x2="520" y2="536" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="116" y="496">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">customerId : String</tspan>
+        </text>        <text x="116" y="518">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">member : Member</tspan>
+        </text>        <text x="116" y="556">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Customer(customerId : String)</tspan>
+        </text>        <text x="116" y="578">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">checkCustomerStatus() : boolean</tspan>
+        </text>        <text x="116" y="600">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">setMember(member : Member) : void</tspan>
+        </text>    </g>
+
+    <!-- Class Order -->
+    <g id="class-Order" filter="url(#comp-glow)">
+        <rect x="680" y="140" width="480" height="462" rx="10" fill="#ffffff" stroke="#ea580c" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 680 150 Q 680 140 690 140 L 1150 140 Q 1160 140 1160 150 L 1160 196 L 680 196 Z" fill="#ffedd5"/>
+        <line x1="680" y1="196" x2="1160" y2="196" stroke="#ea580c" stroke-width="1.5"/>
+
+        <rect x="1065" y="148" width="85" height="20" rx="4" fill="#ea580c" opacity="0.9"/>
+        <text x="1108" y="162" text-anchor="middle" fill="#ffffff" class="badge-text">Whole ①</text>
+
+        <text x="698" y="168" class="header-title" fill="#ea580c">Order</text>
+        <text x="698" y="188" class="header-thai">คำสั่งซื้อ / บิลโต๊ะ (Whole ①)</text>
+
+        <line x1="680" y1="388" x2="1160" y2="388" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="696" y="216">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">orderId : String</tspan>
+        </text>        <text x="696" y="238">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">status : OrderStatus</tspan>
+        </text>        <text x="696" y="260">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">totalAmount : double</tspan>
+        </text>        <text x="696" y="282">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">createdAt : LocalDateTime</tspan>
+        </text>        <text x="696" y="304">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">items : List&lt;OrderItem&gt;  [◆ Comp 1]</tspan>
+        </text>        <text x="696" y="326">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">table : Table</tspan>
+        </text>        <text x="696" y="348">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">customer : Customer</tspan>
+        </text>        <text x="696" y="370">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">payment : Payment</tspan>
+        </text>        <text x="696" y="408">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Order(orderId : String, table : Table)</tspan>
+        </text>        <text x="696" y="430">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">addItem(menu, qty, spice, note) : OrderItem</tspan>
+        </text>        <text x="696" y="452">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">removeItem(item : OrderItem) : void</tspan>
+        </text>        <text x="696" y="474">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">attachMember(member : Member) : void</tspan>
+        </text>        <text x="696" y="496">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">calculateTotal() : double</tspan>
+        </text>        <text x="696" y="518">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">confirm() : void</tspan>
+        </text>        <text x="696" y="540">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">cancel() : void</tspan>
+        </text>        <text x="696" y="562">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">changeStatus(s : OrderStatus) : void</tspan>
+        </text>        <text x="696" y="584">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">destroy() : void</tspan>
+        </text>    </g>
+
+    <!-- Class OrderItem -->
+    <g id="class-OrderItem" filter="url(#comp-glow)">
+        <rect x="1300" y="140" width="540" height="704" rx="10" fill="#ffffff" stroke="#ea580c" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 1300 150 Q 1300 140 1310 140 L 1830 140 Q 1840 140 1840 150 L 1840 196 L 1300 196 Z" fill="#ffedd5"/>
+        <line x1="1300" y1="196" x2="1840" y2="196" stroke="#ea580c" stroke-width="1.5"/>
+
+        <rect x="1745" y="148" width="85" height="20" rx="4" fill="#ea580c" opacity="0.9"/>
+        <text x="1788" y="162" text-anchor="middle" fill="#ffffff" class="badge-text">Part ①</text>
+
+        <text x="1318" y="168" class="header-title" fill="#ea580c">OrderItem</text>
+        <text x="1318" y="188" class="header-thai">รายการอาหารในบิล (Part ①)</text>
+
+        <line x1="1300" y1="608" x2="1840" y2="608" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="1316" y="216">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">orderItemId : String</tspan>
+        </text>        <text x="1316" y="238">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">qty : int</tspan>
+        </text>        <text x="1316" y="260">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">price : double</tspan>
+        </text>        <text x="1316" y="282">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">spiceLevel : String</tspan>
+        </text>        <text x="1316" y="304">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">note : String</tspan>
+        </text>        <text x="1316" y="326">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">status : ItemStatus</tspan>
+        </text>        <text x="1316" y="348">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">startTime : LocalDateTime</tspan>
+        </text>        <text x="1316" y="370">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">endTime : LocalDateTime</tspan>
+        </text>        <text x="1316" y="392">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">requestType : RequestType</tspan>
+        </text>        <text x="1316" y="414">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">requestReason : String</tspan>
+        </text>        <text x="1316" y="436">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">requestStatus : RequestStatus</tspan>
+        </text>        <text x="1316" y="458">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">decisionReason : String</tspan>
+        </text>        <text x="1316" y="480">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">decidedBy : String</tspan>
+        </text>        <text x="1316" y="502">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">requestedAt : LocalDateTime</tspan>
+        </text>        <text x="1316" y="524">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">menu : Menu</tspan>
+        </text>        <text x="1316" y="546">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">option : String</tspan>
+        </text>        <text x="1316" y="568">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">recipe : Recipe</tspan>
+        </text>        <text x="1316" y="590">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">handledBy : Employee</tspan>
+        </text>        <text x="1316" y="628">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">OrderItem(id, menu, qty, recipe)</tspan>
+        </text>        <text x="1316" y="650">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">startCooking(cook : Employee) : void</tspan>
+        </text>        <text x="1316" y="672">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">markReady() : void</tspan>
+        </text>        <text x="1316" y="694">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">serve(by : Employee) : void</tspan>
+        </text>        <text x="1316" y="716">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">cancel() : void</tspan>
+        </text>        <text x="1316" y="738">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">compareTime() : int</tspan>
+        </text>        <text x="1316" y="760">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">changeStatus(s : ItemStatus) : void</tspan>
+        </text>        <text x="1316" y="782">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">requestChange(type, reason) : void</tspan>
+        </text>        <text x="1316" y="804">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">approve(by : Employee) : void</tspan>
+        </text>        <text x="1316" y="826">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">reject(by : Employee, why) : void</tspan>
+        </text>    </g>
+
+    <!-- Class Menu -->
+    <g id="class-Menu" filter="url(#comp-glow)">
+        <rect x="2000" y="140" width="490" height="440" rx="10" fill="#ffffff" stroke="#059669" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 2000 150 Q 2000 140 2010 140 L 2480 140 Q 2490 140 2490 150 L 2490 196 L 2000 196 Z" fill="#d1fae5"/>
+        <line x1="2000" y1="196" x2="2490" y2="196" stroke="#059669" stroke-width="1.5"/>
+
+        <rect x="2395" y="148" width="85" height="20" rx="4" fill="#059669" opacity="0.9"/>
+        <text x="2438" y="162" text-anchor="middle" fill="#ffffff" class="badge-text">Whole ②</text>
+
+        <text x="2018" y="168" class="header-title" fill="#059669">Menu</text>
+        <text x="2018" y="188" class="header-thai">เมนูอาหาร (Whole ②)</text>
+
+        <line x1="2000" y1="410" x2="2490" y2="410" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="2016" y="216">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">menuId : String</tspan>
+        </text>        <text x="2016" y="238">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">name : String</tspan>
+        </text>        <text x="2016" y="260">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">price : double</tspan>
+        </text>        <text x="2016" y="282">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">category : String</tspan>
+        </text>        <text x="2016" y="304">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">station : String</tspan>
+        </text>        <text x="2016" y="326">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">spiceSelectable : boolean</tspan>
+        </text>        <text x="2016" y="348">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">status : SaleStatus</tspan>
+        </text>        <text x="2016" y="370">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">recipes : List&lt;Recipe&gt;  [◆ Comp 2]</tspan>
+        </text>        <text x="2016" y="392">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">options : Map&lt;String, Double&gt;</tspan>
+        </text>        <text x="2016" y="430">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Menu(menuId : String, name, price)</tspan>
+        </text>        <text x="2016" y="452">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">update(name, price, cat, station) : void</tspan>
+        </text>        <text x="2016" y="474">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">openSale() : void</tspan>
+        </text>        <text x="2016" y="496">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">closeSale() : void</tspan>
+        </text>        <text x="2016" y="518">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">isDeletable() : boolean</tspan>
+        </text>        <text x="2016" y="540">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">addRecipe(recipe : Recipe) : void</tspan>
+        </text>        <text x="2016" y="562">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">addOption(name, extraPrice) : void</tspan>
+        </text>    </g>
+
+    <!-- Class Recipe -->
+    <g id="class-Recipe" filter="url(#comp-glow)">
+        <rect x="2640" y="140" width="450" height="286" rx="10" fill="#ffffff" stroke="#059669" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 2640 150 Q 2640 140 2650 140 L 3080 140 Q 3090 140 3090 150 L 3090 196 L 2640 196 Z" fill="#d1fae5"/>
+        <line x1="2640" y1="196" x2="3090" y2="196" stroke="#059669" stroke-width="1.5"/>
+
+        <rect x="2995" y="148" width="85" height="20" rx="4" fill="#059669" opacity="0.9"/>
+        <text x="3038" y="162" text-anchor="middle" fill="#ffffff" class="badge-text">Part ②</text>
+
+        <text x="2658" y="168" class="header-title" fill="#059669">Recipe</text>
+        <text x="2658" y="188" class="header-thai">สูตรอาหาร / BOM (Part ②)</text>
+
+        <line x1="2640" y1="300" x2="3090" y2="300" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="2656" y="216">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">recipeId : String</tspan>
+        </text>        <text x="2656" y="238">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">version : int</tspan>
+        </text>        <text x="2656" y="260">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">status : RecipeStatus</tspan>
+        </text>        <text x="2656" y="282">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">ingredients : Map&lt;Ingredient, Double&gt;</tspan>
+        </text>        <text x="2656" y="320">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Recipe(recipeId : String, version : int)</tspan>
+        </text>        <text x="2656" y="342">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">addItem(ing : Ingredient, qty : double) : void</tspan>
+        </text>        <text x="2656" y="364">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">changeQty(ing : Ingredient, qty : double) : void</tspan>
+        </text>        <text x="2656" y="386">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">complete() : void</tspan>
+        </text>        <text x="2656" y="408">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">createNewVersion() : Recipe</tspan>
+        </text>    </g>
+
+    <!-- Class SOP -->
+    <g id="class-SOP" filter="url(#comp-glow)">
+        <rect x="2000" y="790" width="490" height="374" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 2000 800 Q 2000 790 2010 790 L 2480 790 Q 2490 790 2490 800 L 2490 846 L 2000 846 Z" fill="#ede9fe"/>
+        <line x1="2000" y1="846" x2="2490" y2="846" stroke="#7c3aed" stroke-width="1.5"/>
+
+        <rect x="2395" y="798" width="85" height="20" rx="4" fill="#7c3aed" opacity="0.9"/>
+        <text x="2438" y="812" text-anchor="middle" fill="#ffffff" class="badge-text">Whole ③</text>
+
+        <text x="2018" y="818" class="header-title" fill="#7c3aed">SOP</text>
+        <text x="2018" y="838" class="header-thai">คู่มือขั้นตอนปฏิบัติงาน (Whole ③)</text>
+
+        <line x1="2000" y1="972" x2="2490" y2="972" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="2016" y="866">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">sopId : String</tspan>
+        </text>        <text x="2016" y="888">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">name : String</tspan>
+        </text>        <text x="2016" y="910">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">status : SopStatus</tspan>
+        </text>        <text x="2016" y="932">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">menu : Menu</tspan>
+        </text>        <text x="2016" y="954">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">steps : List&lt;SOPStep&gt;  [◆ Comp 3]</tspan>
+        </text>        <text x="2016" y="992">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">SOP(sopId : String, name : String, menu : Menu)</tspan>
+        </text>        <text x="2016" y="1014">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">update(name : String) : void</tspan>
+        </text>        <text x="2016" y="1036">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">publish() : void</tspan>
+        </text>        <text x="2016" y="1058">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">disable() : void</tspan>
+        </text>        <text x="2016" y="1080">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">enable() : void</tspan>
+        </text>        <text x="2016" y="1102">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">isDeletable() : boolean</tspan>
+        </text>        <text x="2016" y="1124">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getTotalMinutes() : double</tspan>
+        </text>        <text x="2016" y="1146">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">addStep(step : SOPStep) : void</tspan>
+        </text>    </g>
+
+    <!-- Class SOPStep -->
+    <g id="class-SOPStep" filter="url(#comp-glow)">
+        <rect x="2640" y="790" width="450" height="264" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 2640 800 Q 2640 790 2650 790 L 3080 790 Q 3090 790 3090 800 L 3090 846 L 2640 846 Z" fill="#ede9fe"/>
+        <line x1="2640" y1="846" x2="3090" y2="846" stroke="#7c3aed" stroke-width="1.5"/>
+
+        <rect x="2995" y="798" width="85" height="20" rx="4" fill="#7c3aed" opacity="0.9"/>
+        <text x="3038" y="812" text-anchor="middle" fill="#ffffff" class="badge-text">Part ③</text>
+
+        <text x="2658" y="818" class="header-title" fill="#7c3aed">SOPStep</text>
+        <text x="2658" y="838" class="header-thai">ขั้นตอนย่อย SOP (Part ③)</text>
+
+        <line x1="2640" y1="950" x2="3090" y2="950" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="2656" y="866">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">sopStepId : String</tspan>
+        </text>        <text x="2656" y="888">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">no : int</tspan>
+        </text>        <text x="2656" y="910">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">description : String</tspan>
+        </text>        <text x="2656" y="932">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">standardMinutes : double</tspan>
+        </text>        <text x="2656" y="970">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">SOPStep(id, no, desc, minutes)</tspan>
+        </text>        <text x="2656" y="992">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getSopStepId() : String</tspan>
+        </text>        <text x="2656" y="1014">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getNo() : int</tspan>
+        </text>        <text x="2656" y="1036">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getStandardMinutes() : double</tspan>
+        </text>    </g>
+
+    <!-- Class Ingredient -->
+    <g id="class-Ingredient" filter="url(#comp-glow)">
+        <rect x="2240" y="1420" width="490" height="374" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 2240 1430 Q 2240 1420 2250 1420 L 2720 1420 Q 2730 1420 2730 1430 L 2730 1476 L 2240 1476 Z" fill="#ffe4e6"/>
+        <line x1="2240" y1="1476" x2="2730" y2="1476" stroke="#e11d48" stroke-width="1.5"/>
+
+        <rect x="2635" y="1428" width="85" height="20" rx="4" fill="#e11d48" opacity="0.9"/>
+        <text x="2678" y="1442" text-anchor="middle" fill="#ffffff" class="badge-text">Whole ④</text>
+
+        <text x="2258" y="1448" class="header-title" fill="#e11d48">Ingredient</text>
+        <text x="2258" y="1468" class="header-thai">วัตถุดิบในคลัง (Whole ④)</text>
+
+        <line x1="2240" y1="1624" x2="2730" y2="1624" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="2256" y="1496">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">ingredientId : String</tspan>
+        </text>        <text x="2256" y="1518">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">name : String</tspan>
+        </text>        <text x="2256" y="1540">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">unit : String</tspan>
+        </text>        <text x="2256" y="1562">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">stockQty : double</tspan>
+        </text>        <text x="2256" y="1584">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">minQty : double</tspan>
+        </text>        <text x="2256" y="1606">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">movements : List&lt;StockMovement&gt;  [◆ Comp 4]</tspan>
+        </text>        <text x="2256" y="1644">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Ingredient(id, name, unit, minQty)</tspan>
+        </text>        <text x="2256" y="1666">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">hasEnough(qty : double) : boolean</tspan>
+        </text>        <text x="2256" y="1688">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">deduct(qty : double, ref : String) : void</tspan>
+        </text>        <text x="2256" y="1710">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">restore(qty : double, ref : String) : void</tspan>
+        </text>        <text x="2256" y="1732">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">increaseStock(qty : double, ref : String) : void</tspan>
+        </text>        <text x="2256" y="1754">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">adjustStock(newQty, reason, by : Employee) : void</tspan>
+        </text>        <text x="2256" y="1776">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">update(name : String, unit, minQty) : void</tspan>
+        </text>    </g>
+
+    <!-- Class StockMovement -->
+    <g id="class-StockMovement" filter="url(#comp-glow)">
+        <rect x="2890" y="1420" width="470" height="352" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 2890 1430 Q 2890 1420 2900 1420 L 3350 1420 Q 3360 1420 3360 1430 L 3360 1476 L 2890 1476 Z" fill="#ffe4e6"/>
+        <line x1="2890" y1="1476" x2="3360" y2="1476" stroke="#e11d48" stroke-width="1.5"/>
+
+        <rect x="3265" y="1428" width="85" height="20" rx="4" fill="#e11d48" opacity="0.9"/>
+        <text x="3308" y="1442" text-anchor="middle" fill="#ffffff" class="badge-text">Part ④</text>
+
+        <text x="2908" y="1448" class="header-title" fill="#e11d48">StockMovement</text>
+        <text x="2908" y="1468" class="header-thai">ประวัติสต็อก / Audit Log (Part ④)</text>
+
+        <line x1="2890" y1="1668" x2="3360" y2="1668" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="2906" y="1496">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">stockMovementId : String</tspan>
+        </text>        <text x="2906" y="1518">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">time : LocalDateTime</tspan>
+        </text>        <text x="2906" y="1540">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">type : MovementType</tspan>
+        </text>        <text x="2906" y="1562">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">qty : double</tspan>
+        </text>        <text x="2906" y="1584">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">balance : double</tspan>
+        </text>        <text x="2906" y="1606">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">reference : String</tspan>
+        </text>        <text x="2906" y="1628">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">reason : String</tspan>
+        </text>        <text x="2906" y="1650">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">doneBy : Employee</tspan>
+        </text>        <text x="2906" y="1688">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">StockMovement(id, type, qty, bal, ref, reason, by)</tspan>
+        </text>        <text x="2906" y="1710">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">recordStockMovement(...) : void</tspan>
+        </text>        <text x="2906" y="1732">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getStockMovementId() : String</tspan>
+        </text>        <text x="2906" y="1754">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getType() : MovementType</tspan>
+        </text>    </g>
+
+    <!-- Class PurchaseOrder -->
+    <g id="class-PurchaseOrder" filter="url(#shadow)">
+        <rect x="1580" y="1420" width="490" height="330" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 1580 1430 Q 1580 1420 1590 1420 L 2060 1420 Q 2070 1420 2070 1430 L 2070 1476 L 1580 1476 Z" fill="#ffedd5"/>
+        <line x1="1580" y1="1476" x2="2070" y2="1476" stroke="#94a3b8" stroke-width="1.5"/>
+
+        <rect x="1975" y="1428" width="85" height="20" rx="4" fill="#ea580c" opacity="0.9"/>
+        <text x="2018" y="1442" text-anchor="middle" fill="#ffffff" class="badge-text">Entity</text>
+
+        <text x="1598" y="1448" class="header-title" fill="#ea580c">PurchaseOrder</text>
+        <text x="1598" y="1468" class="header-thai">ใบสั่งซื้อวัตถุดิบ (PO)</text>
+
+        <line x1="1580" y1="1646" x2="2070" y2="1646" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="1596" y="1496">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">poId : String</tspan>
+        </text>        <text x="1596" y="1518">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">status : PoStatus</tspan>
+        </text>        <text x="1596" y="1540">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">createdAt : LocalDateTime</tspan>
+        </text>        <text x="1596" y="1562">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">orderedQty : Map&lt;Ingredient, Double&gt;</tspan>
+        </text>        <text x="1596" y="1584">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">receivedQty : Map&lt;Ingredient, Double&gt;</tspan>
+        </text>        <text x="1596" y="1606">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">supplier : Supplier</tspan>
+        </text>        <text x="1596" y="1628">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">createdBy : Employee</tspan>
+        </text>        <text x="1596" y="1666">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">PurchaseOrder(poId : String, supplier, by)</tspan>
+        </text>        <text x="1596" y="1688">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">addItem(ing : Ingredient, qty : double) : void</tspan>
+        </text>        <text x="1596" y="1710">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">markOrdered() : void</tspan>
+        </text>        <text x="1596" y="1732">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">receive(qtys : Map&lt;Ingredient, Double&gt;) : void</tspan>
+        </text>    </g>
+
+    <!-- Class Supplier -->
+    <g id="class-Supplier" filter="url(#shadow)">
+        <rect x="1580" y="2040" width="490" height="220" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 1580 2050 Q 1580 2040 1590 2040 L 2060 2040 Q 2070 2040 2070 2050 L 2070 2096 L 1580 2096 Z" fill="#ffedd5"/>
+        <line x1="1580" y1="2096" x2="2070" y2="2096" stroke="#94a3b8" stroke-width="1.5"/>
+
+        <rect x="1975" y="2048" width="85" height="20" rx="4" fill="#ea580c" opacity="0.9"/>
+        <text x="2018" y="2062" text-anchor="middle" fill="#ffffff" class="badge-text">Entity</text>
+
+        <text x="1598" y="2068" class="header-title" fill="#ea580c">Supplier</text>
+        <text x="1598" y="2088" class="header-thai">ผู้จัดจำหน่ายวัตถุดิบ</text>
+
+        <line x1="1580" y1="2178" x2="2070" y2="2178" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="1596" y="2116">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">supplierId : String</tspan>
+        </text>        <text x="1596" y="2138">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">name : String</tspan>
+        </text>        <text x="1596" y="2160">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">suppliedIngredients : List&lt;Ingredient&gt;</tspan>
+        </text>        <text x="1596" y="2198">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Supplier(supplierId : String, name : String)</tspan>
+        </text>        <text x="1596" y="2220">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">addIngredient(ingredient : Ingredient) : void</tspan>
+        </text>        <text x="1596" y="2242">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">supplies(ingredient : Ingredient) : boolean</tspan>
+        </text>    </g>
+
+    <!-- Class Employee -->
+    <g id="class-Employee" filter="url(#shadow)">
+        <rect x="680" y="860" width="480" height="264" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 680 870 Q 680 860 690 860 L 1150 860 Q 1160 860 1160 870 L 1160 916 L 680 916 Z" fill="#e0e7ff"/>
+        <line x1="680" y1="916" x2="1160" y2="916" stroke="#94a3b8" stroke-width="1.5"/>
+
+        <rect x="1065" y="868" width="85" height="20" rx="4" fill="#4f46e5" opacity="0.9"/>
+        <text x="1108" y="882" text-anchor="middle" fill="#ffffff" class="badge-text">Staff Hub</text>
+
+        <text x="698" y="888" class="header-title" fill="#4f46e5">Employee</text>
+        <text x="698" y="908" class="header-thai">พนักงานร้านอาหาร</text>
+
+        <line x1="680" y1="998" x2="1160" y2="998" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="696" y="936">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">employeeId : String</tspan>
+        </text>        <text x="696" y="958">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">name : String</tspan>
+        </text>        <text x="696" y="980">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">role : Role</tspan>
+        </text>        <text x="696" y="1018">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Employee(employeeId, name, role)</tspan>
+        </text>        <text x="696" y="1040">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">authenticateRole(requiredRole : Role) : boolean</tspan>
+        </text>        <text x="696" y="1062">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">assignStationDuty(station : String) : void</tspan>
+        </text>        <text x="696" y="1084">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getEmployeeId() : String</tspan>
+        </text>        <text x="696" y="1106">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getRole() : Role</tspan>
+        </text>    </g>
+
+    <!-- Class Payment -->
+    <g id="class-Payment" filter="url(#shadow)">
+        <rect x="100" y="860" width="420" height="396" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 100 870 Q 100 860 110 860 L 510 860 Q 520 860 520 870 L 520 916 L 100 916 Z" fill="#e0f2fe"/>
+        <line x1="100" y1="916" x2="520" y2="916" stroke="#94a3b8" stroke-width="1.5"/>
+
+        <rect x="425" y="868" width="85" height="20" rx="4" fill="#0284c7" opacity="0.9"/>
+        <text x="468" y="882" text-anchor="middle" fill="#ffffff" class="badge-text">Entity</text>
+
+        <text x="118" y="888" class="header-title" fill="#0284c7">Payment</text>
+        <text x="118" y="908" class="header-thai">การชำระเงินและออกใบเสร็จ</text>
+
+        <line x1="100" y1="1108" x2="520" y2="1108" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="116" y="936">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">paymentId : String</tspan>
+        </text>        <text x="116" y="958">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">method : PayMethod</tspan>
+        </text>        <text x="116" y="980">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">received : double</tspan>
+        </text>        <text x="116" y="1002">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">change : double</tspan>
+        </text>        <text x="116" y="1024">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">discount : double</tspan>
+        </text>        <text x="116" y="1046">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">receiptNo : String</tspan>
+        </text>        <text x="116" y="1068">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">time : LocalDateTime</tspan>
+        </text>        <text x="116" y="1090">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">receivedBy : Employee</tspan>
+        </text>        <text x="116" y="1128">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Payment(id, order : Order, by : Employee)</tspan>
+        </text>        <text x="116" y="1150">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">calculateDiscount(points : int) : double</tspan>
+        </text>        <text x="116" y="1172">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">calculateChange() : double</tspan>
+        </text>        <text x="116" y="1194">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">pay(method, received : double) : void</tspan>
+        </text>        <text x="116" y="1216">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">confirm() : void</tspan>
+        </text>        <text x="116" y="1238">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">printReceipt() : String</tspan>
+        </text>    </g>
+
+    <!-- Class Member -->
+    <g id="class-Member" filter="url(#comp-glow)">
+        <rect x="680" y="1420" width="480" height="374" rx="10" fill="#ffffff" stroke="#0891b2" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 680 1430 Q 680 1420 690 1420 L 1150 1420 Q 1160 1420 1160 1430 L 1160 1476 L 680 1476 Z" fill="#cffafe"/>
+        <line x1="680" y1="1476" x2="1160" y2="1476" stroke="#0891b2" stroke-width="1.5"/>
+
+        <rect x="1065" y="1428" width="85" height="20" rx="4" fill="#0891b2" opacity="0.9"/>
+        <text x="1108" y="1442" text-anchor="middle" fill="#ffffff" class="badge-text">Whole ⑤</text>
+
+        <text x="698" y="1448" class="header-title" fill="#0891b2">Member</text>
+        <text x="698" y="1468" class="header-thai">สมาชิกและกฎแต้ม (Whole ⑤)</text>
+
+        <line x1="680" y1="1668" x2="1160" y2="1668" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="696" y="1496">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">memberId : String</tspan>
+        </text>        <text x="696" y="1518">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">name : String</tspan>
+        </text>        <text x="696" y="1540">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">phone : String</tspan>
+        </text>        <text x="696" y="1562">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">points : int</tspan>
+        </text>        <text x="696" y="1584">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">bahtPerPoint : int {static}</tspan>
+        </text>        <text x="696" y="1606">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">pointValue : double {static}</tspan>
+        </text>        <text x="696" y="1628">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">minRedeem : int {static}</tspan>
+        </text>        <text x="696" y="1650">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">transactions : List&lt;PointTransaction&gt;  [◆ Comp 5]</tspan>
+        </text>        <text x="696" y="1688">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">Member(memberId, name, phone)</tspan>
+        </text>        <text x="696" y="1710">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">earnPoints(amount : double) : int</tspan>
+        </text>        <text x="696" y="1732">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">redeemPoints(points : int) : void</tspan>
+        </text>        <text x="696" y="1754">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">setRule(b, v, m) : void {static}</tspan>
+        </text>        <text x="696" y="1776">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">validateRedeem(points, amount) : boolean {static}</tspan>
+        </text>    </g>
+
+    <!-- Class PointTransaction -->
+    <g id="class-PointTransaction" filter="url(#comp-glow)">
+        <rect x="100" y="1420" width="420" height="308" rx="10" fill="#ffffff" stroke="#0891b2" stroke-width="2.8"/>
+
+        <!-- Header Compartment -->
+        <path d="M 100 1430 Q 100 1420 110 1420 L 510 1420 Q 520 1420 520 1430 L 520 1476 L 100 1476 Z" fill="#cffafe"/>
+        <line x1="100" y1="1476" x2="520" y2="1476" stroke="#0891b2" stroke-width="1.5"/>
+
+        <rect x="425" y="1428" width="85" height="20" rx="4" fill="#0891b2" opacity="0.9"/>
+        <text x="468" y="1442" text-anchor="middle" fill="#ffffff" class="badge-text">Part ⑤</text>
+
+        <text x="118" y="1448" class="header-title" fill="#0891b2">PointTransaction</text>
+        <text x="118" y="1468" class="header-thai">ประวัติแต้มสะสม (Part ⑤)</text>
+
+        <line x1="100" y1="1624" x2="520" y2="1624" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="116" y="1496">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">pointTransactionId : String</tspan>
+        </text>        <text x="116" y="1518">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">date : LocalDateTime</tspan>
+        </text>        <text x="116" y="1540">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">type : PointType</tspan>
+        </text>        <text x="116" y="1562">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">points : int</tspan>
+        </text>        <text x="116" y="1584">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">balance : int</tspan>
+        </text>        <text x="116" y="1606">
+            <tspan class="vis-priv">- </tspan>
+            <tspan class="code-attr">payment : Payment</tspan>
+        </text>        <text x="116" y="1644">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">PointTransaction(id, type, pts, bal)</tspan>
+        </text>        <text x="116" y="1666">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">recordPointTransaction(type, pts, bal, pay) : void</tspan>
+        </text>        <text x="116" y="1688">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getPointTransactionId() : String</tspan>
+        </text>        <text x="116" y="1710">
+            <tspan class="vis-pub">+ </tspan>
+            <tspan class="code-op">getPoints() : int</tspan>
+        </text>    </g>
+</g>
+</svg>
+    </div>
+    <div class="zoom-hud" id="zoomHud">Zoom: 100% | ลากเพื่อเลื่อน (Pan) | หมุนล้อเมาส์เพื่อซูม</div>
+</div>
+
+<script>
+const viewport = document.getElementById('viewport');
+const container = document.getElementById('container');
+const hud = document.getElementById('zoomHud');
+
+let scale = 0.38;
+let pointX = 20;
+let pointY = 20;
+let startX = 0;
+let startY = 0;
+let isPanning = false;
+
+function setTransform() {
+    container.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+    hud.innerText = `Zoom: ${Math.round(scale * 100)}% | ลากเมาส์เลื่อน (Pan) | หมุนล้อเมาส์เพื่อซูม`;
+}
+
+setTransform();
+
+viewport.onmousedown = function (e) {
+    e.preventDefault();
+    startX = e.clientX - pointX;
+    startY = e.clientY - pointY;
+    isPanning = true;
+};
+
+window.onmouseup = function (e) {
+    isPanning = false;
+};
+
+window.onmousemove = function (e) {
+    if (!isPanning) return;
+    pointX = e.clientX - startX;
+    pointY = e.clientY - startY;
+    setTransform();
+};
+
+viewport.onwheel = function (e) {
+    e.preventDefault();
+    const xs = (e.clientX - pointX) / scale;
+    const ys = (e.clientY - pointY) / scale;
+    const delta = -e.deltaY;
+    (delta > 0) ? (scale *= 1.15) : (scale /= 1.15);
+    scale = Math.min(Math.max(0.15, scale), 3.0);
+    pointX = e.clientX - xs * scale;
+    pointY = e.clientY - ys * scale;
+    setTransform();
+};
+
+function resetZoom() {
+    scale = 0.38;
+    pointX = 20;
+    pointY = 20;
+    setTransform();
+}
+
+function filterDomain(domain) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    const classes = document.querySelectorAll('#classes > g');
+    classes.forEach(g => {
+        if (domain === 'all') {
+            g.style.opacity = '1';
+        } else if (domain === 'comp') {
+            const isComp = g.id.includes('Order') || g.id.includes('Menu') || g.id.includes('Recipe') || 
+                           g.id.includes('SOP') || g.id.includes('Ingredient') || g.id.includes('StockMovement') ||
+                           g.id.includes('Member') || g.id.includes('PointTransaction');
+            g.style.opacity = isComp ? '1' : '0.15';
+        }
+    });
+}
+</script>
+</body>
+</html>
