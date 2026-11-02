@@ -23,3 +23,12 @@ backups/
 .aws/
 .codex/
 *.log
+scratch/
+tmp/
+.DS_Store
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+

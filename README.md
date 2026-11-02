@@ -57,9 +57,15 @@ src/
 
 ข้อมูลร้านชุดเดียวกันใช้ต่อเนื่องข้ามเมนู ไม่ได้เริ่มใหม่ทุก UC สมาชิกตัวอย่าง P4 ชื่อ Human มี 46 แต้ม กฎเริ่มต้นคือทุก 50 บาทได้ 1 แต้ม แลกอย่างน้อย 10 แต้ม และ 1 แต้มมีค่า 1 บาท
 
-## สำหรับเตรียมอธิบายโค้ด
+## เอกสารและคู่มืออธิบายโค้ดฉบับสมบูรณ์
 
-เริ่มที่ [EXPLAIN-PROGRAM-STEP-BY-STEP.md](EXPLAIN-PROGRAM-STEP-BY-STEP.md) ซึ่งอธิบายตั้งแต่ `Main.main()` ไปจนถึงงานทั้ง 8 ส่วน พร้อมตัวอย่างคำนวณยอด สต็อก และแต้ม ส่วน [HOW-TO-EXPLAIN.md](HOW-TO-EXPLAIN.md) เป็นสรุปสั้นสำหรับทบทวนก่อนนำเสนอ และ [P7-CODE-ALIGNMENT.md](P7-CODE-ALIGNMENT.md) ใช้เทียบโค้ดกับ 16 คลาสของ P7
+- **[P9-JAVA-OOP-17CLASSES-GUIDE.pdf](P9-JAVA-OOP-17CLASSES-GUIDE.pdf)**: 📖 **คู่มือเจาะลึก 103 หน้า A4 (ฉบับสมบูรณ์)** อธิบายโค้ดทั้ง 16 คลาสโมเดลและ `Main.java` อย่างละเอียด, กฎ Composition ทั้ง 5 คู่, วงจรชีวิตออเดอร์, Two-Pass Stock Check, ผ่าลอจิกทั้ง 8 Use Cases, พร้อมคลัง 15 คำถามปราบเซียนสำหรับเตรียมสอบและนำเสนอ
+- **[P9-JAVA-OOP-17CLASSES-GUIDE.html](P9-JAVA-OOP-17CLASSES-GUIDE.html)**: ฉบับ HTML สำหรับเปิดอ่านผ่านเว็บบราวเซอร์
+- [EXPLAIN-PROGRAM-STEP-BY-STEP.md](EXPLAIN-PROGRAM-STEP-BY-STEP.md): อธิบายตั้งแต่ `Main.main()` ไปจนถึงงานทั้ง 8 ส่วน พร้อมตัวอย่างคำนวณยอด สต็อก และแต้ม
+- [HOW-TO-EXPLAIN.md](HOW-TO-EXPLAIN.md): สรุปสั้นสำหรับทบทวนก่อนนำเสนอ
+- [P7-CODE-ALIGNMENT.md](P7-CODE-ALIGNMENT.md): ใช้เทียบโค้ดกับ 16 คลาสของ P7
+- [ARCHITECTURAL-ALIGNMENT-16CLASSES.md](ARCHITECTURAL-ALIGNMENT-16CLASSES.md): สรุปสถาปัตยกรรมฉบับ Java OOP พื้นฐาน 16 คลาสโมเดล
+
 
 ## ตรวจสอบ
 
