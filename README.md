@@ -61,6 +61,8 @@ P9/                    สคริปต์สร้างคู่มือ PD
 
 ## เอกสารและคู่มืออธิบายโค้ดฉบับสมบูรณ์
 
+- **[P9-PRESENTATION-SCRIPT.pdf](P9-PRESENTATION-SCRIPT.pdf)**: 🎙️ **คู่มือและสคริปต์พูดนำเสนอ P9 (14 หน้า A4)** คำพูดคำต่อคำครบทั้ง 19 สไลด์, เทคนิคชี้จอ (Visual Cues), ทฤษฎี Composition ฉบับเข้าใจง่าย และคลังคำถามปราบเซียนสำหรับตอบอาจารย์
+- **[P9-PRESENTATION-SCRIPT.html](P9-PRESENTATION-SCRIPT.html)**: ฉบับ HTML สำหรับเปิดซ้อมพูดผ่านเว็บบราวเซอร์
 - **[P9-JAVA-OOP-17CLASSES-GUIDE.pdf](P9-JAVA-OOP-17CLASSES-GUIDE.pdf)**: 📖 **คู่มือเจาะลึก 103 หน้า A4 (ฉบับสมบูรณ์)** อธิบายโค้ดทั้ง 16 คลาสโมเดลและ `Main.java` อย่างละเอียด, กฎ Composition ทั้ง 5 คู่, วงจรชีวิตออเดอร์, Two-Pass Stock Check, ผ่าลอจิกทั้ง 8 Use Cases, พร้อมคลัง 15 คำถามปราบเซียนสำหรับเตรียมสอบและนำเสนอ
 - **[P9-JAVA-OOP-17CLASSES-GUIDE.html](P9-JAVA-OOP-17CLASSES-GUIDE.html)**: ฉบับ HTML สำหรับเปิดอ่านผ่านเว็บบราวเซอร์
 - [docs/EXPLAIN-PROGRAM-STEP-BY-STEP.md](docs/EXPLAIN-PROGRAM-STEP-BY-STEP.md): อธิบายตั้งแต่ `Main.main()` ไปจนถึงงานทั้ง 8 ส่วน พร้อมตัวอย่างคำนวณยอด สต็อก และแต้ม

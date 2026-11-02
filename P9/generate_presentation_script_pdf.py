@@ -1,0 +1,1022 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+P9 Presentation Script PDF Generator.
+Generates an elegant, publication-grade PDF and HTML document
+containing the complete page-by-page presentation script, visual cues,
+delivery strategy, and Q&A defense guide for P9.
+"""
+
+import os
+import subprocess
+
+WORKSPACE_DIR = "/run/media/liella/New Volume/SOP/OOAD-ข้าวต้มอารมณ์ดี-ล่าสุด-17คลาส/ชุดไฟล์แก้สไลด์-P1-P8/P9-Code-Java"
+OUTPUT_HTML = os.path.join(WORKSPACE_DIR, "P9-PRESENTATION-SCRIPT.html")
+OUTPUT_PDF = os.path.join(WORKSPACE_DIR, "P9-PRESENTATION-SCRIPT.pdf")
+
+html_content = """<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>สคริปต์พูดนำเสนอ P9: Java OOP & Text Mode Simulator — ร้านข้าวต้มอารมณ์ดี</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@400;500;600&display=swap');
+
+    @page {
+        size: A4 portrait;
+        margin: 16mm 14mm 16mm 14mm;
+        @bottom-right {
+            content: "หน้า " counter(page);
+            font-family: 'Sarabun', sans-serif;
+            font-size: 8pt;
+            color: #64748b;
+        }
+        @bottom-left {
+            content: "P9 Presentation Script · ร้านข้าวต้มอารมณ์ดี (16 Model Classes)";
+            font-family: 'Sarabun', sans-serif;
+            font-size: 8pt;
+            color: #64748b;
+        }
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Sarabun', sans-serif;
+        font-size: 9.8pt;
+        line-height: 1.6;
+        color: #1e293b;
+        background: #ffffff;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: 'Prompt', sans-serif;
+        font-weight: 600;
+        color: #0f172a;
+        margin-top: 0;
+    }
+
+    /* Cover Styling */
+    .cover {
+        min-height: 94vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 40px 32px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0284c7 100%);
+        color: #ffffff;
+        border-radius: 12px;
+        page-break-after: always;
+    }
+
+    .cover h1 {
+        color: #ffffff !important;
+        font-size: 27pt;
+        line-height: 1.25;
+        margin: 18px 0 10px 0;
+        font-weight: 700;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .cover-top .tag {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 10.5pt;
+        font-weight: 600;
+        letter-spacing: 1px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #e0f2fe;
+    }
+
+    .cover-desc {
+        font-size: 13pt;
+        color: #bae6fd;
+        margin-bottom: 24px;
+        line-height: 1.5;
+    }
+
+    .cover-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+    .badge-pill {
+        background: rgba(15, 23, 42, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 9.5pt;
+        font-weight: 500;
+        color: #ffffff;
+    }
+
+    .cover-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        font-size: 9pt;
+        color: #cbd5e1;
+    }
+
+    /* Section Page Break */
+    .page-break {
+        page-break-after: always;
+    }
+
+    /* Strategy & Roadmap Box */
+    .strategy-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-left: 5px solid #2563eb;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+    }
+
+    .strategy-card h3 {
+        color: #1e3a8a;
+        margin-bottom: 8px;
+        font-size: 13pt;
+    }
+
+    /* Slide Card */
+    .slide-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        page-break-inside: avoid;
+    }
+
+    .slide-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1.5px solid #e2e8f0;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+    }
+
+    .slide-badge {
+        background: #0284c7;
+        color: #ffffff;
+        font-family: 'Prompt', sans-serif;
+        font-size: 9pt;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 6px;
+    }
+
+    .slide-canva-num {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 8.5pt;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+    }
+
+    .slide-title {
+        font-size: 14pt;
+        color: #0f172a;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .slide-meta {
+        display: flex;
+        gap: 16px;
+        font-size: 8.5pt;
+        color: #64748b;
+        margin-top: 4px;
+    }
+
+    /* Visual Cue Box */
+    .cue-box {
+        background: #fefce8;
+        border: 1px solid #fef08a;
+        border-left: 4px solid #eab308;
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 8.8pt;
+        color: #854d0e;
+        margin-bottom: 12px;
+        font-weight: 500;
+    }
+
+    /* Speech Quote Box */
+    .speech-box {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-left: 4px solid #16a34a;
+        padding: 14px 18px;
+        border-radius: 6px;
+        font-size: 9.8pt;
+        color: #14532d;
+        line-height: 1.65;
+        margin-bottom: 12px;
+        font-style: normal;
+    }
+
+    .speech-box p {
+        margin: 0 0 8px 0;
+    }
+
+    .speech-box p:last-child {
+        margin-bottom: 0;
+    }
+
+    .speech-box strong {
+        color: #0f172a;
+        font-weight: 600;
+    }
+
+    /* Key Notes */
+    .key-points {
+        background: #f8fafc;
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 8.8pt;
+        color: #334155;
+    }
+
+    .key-points ul {
+        margin: 4px 0 0 16px;
+        padding: 0;
+    }
+
+    /* Theory Revised Box */
+    .theory-box {
+        background: #eff6ff;
+        border: 1.5px dashed #3b82f6;
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin: 12px 0;
+    }
+
+    .theory-box h4 {
+        color: #1d4ed8;
+        margin-bottom: 6px;
+        font-size: 11pt;
+    }
+
+    /* Code Snippet */
+    pre, code {
+        font-family: 'Fira Code', monospace;
+        font-size: 8.5pt;
+    }
+
+    code {
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #0f172a;
+    }
+
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 8.8pt;
+    }
+
+    th, td {
+        border: 1px solid #cbd5e1;
+        padding: 8px 12px;
+        text-align: left;
+    }
+
+    th {
+        background: #f1f5f9;
+        font-weight: 600;
+        color: #0f172a;
+        font-family: 'Prompt', sans-serif;
+    }
+
+    tr:nth-child(even) td {
+        background: #f8fafc;
+    }
+
+    /* Q&A Cards */
+    .qa-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin-bottom: 14px;
+        page-break-inside: avoid;
+    }
+
+    .qa-q {
+        font-family: 'Prompt', sans-serif;
+        font-weight: 600;
+        color: #991b1b;
+        font-size: 10.5pt;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .qa-a {
+        color: #1e293b;
+        font-size: 9.3pt;
+        line-height: 1.55;
+    }
+
+    .qa-a strong {
+        color: #1e3a8a;
+    }
+
+    .act-header {
+        background: #0f172a;
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin: 28px 0 16px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .act-header h2 {
+        color: #ffffff;
+        margin: 0;
+        font-size: 14pt;
+    }
+
+    .act-time {
+        font-size: 9.5pt;
+        background: #334155;
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+    </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+    <div class="cover-top">
+        <span class="tag">P9 PRESENTATION SCRIPT & DEFENSE GUIDE</span>
+        <h1>บทพูดนำเสนอ P9<br>แบบเจาะลึกทีละหน้า (19 สไลด์)</h1>
+        <div class="cover-desc">
+            Java OOP & Text Mode Simulator — ร้านข้าวต้มอารมณ์ดี (16 Model Classes)<br>
+            คู่มือคำพูดคำต่อคำ, เทคนิคการชี้หน้าจอ (Visual Cues), ทฤษฎีปรับปรุงใหม่เข้าใจง่าย และคลังตอบคำถามอาจารย์
+        </div>
+        <div class="cover-badges">
+            <span class="badge-pill">🎙️ คำพูดคำต่อคำ (Verbatim Script)</span>
+            <span class="badge-pill">⏱️ ควบคุมเวลาเป๊ะ 6 – 8 นาที</span>
+            <span class="badge-pill">👁️ จุดชี้หน้าจอ & Visual Cues</span>
+            <span class="badge-pill">💎 พิสูจน์ Composition 5 คู่แท้</span>
+            <span class="badge-pill">🛡️ คลังคำถามปราบเซียน (Q&A Defense)</span>
+        </div>
+    </div>
+    <div class="cover-footer">
+        <div>
+            <strong>วิชา:</strong> Object-Oriented Analysis and Design (OOAD)<br>
+            <strong>ระบบ:</strong> SOP-based Restaurant Management System (ร้านข้าวต้มอารมณ์ดี)<br>
+            <strong>โครงสร้าง:</strong> Main.java + 16 Model Classes (No Framework)
+        </div>
+        <div style="text-align: right;">
+            <strong>ฉบับสมบูรณ์:</strong> พฤศจิกายน 2026<br>
+            <strong>สถานะ:</strong> พร้อมนำเสนอหน้าชั้นเรียน 100%
+        </div>
+    </div>
+</div>
+
+<!-- SECTION 1: TIMELINE & STRATEGY -->
+<div class="strategy-card">
+    <h3>⏱️ แผนผังการคุมเวลาและโครงสร้างการนำเสนอ 3 องค์ (Presentation Roadmap)</h3>
+    <p>การนำเสนอ P9 ถูกแบ่งออกเป็น 3 องค์หลักอย่างเป็นขั้นเป็นตอน เพื่อให้ผู้ฟังและอาจารย์เข้าใจได้ทันทีว่า <em>"ทฤษฎีคืออะไร -> โปรแกรมรันได้จริงอย่างไร -> และโค้ดพิสูจน์ความถูกต้องตามหลักการออกแบบอย่างไร"</em></p>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">องค์ (Act)</th>
+                <th style="width: 25%;">หน้าสไลด์</th>
+                <th style="width: 20%;">เวลาแนะนำ</th>
+                <th style="width: 35%;">เป้าหมายและจุดเน้น</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Act 1: ทฤษฎี OOP & Composition</strong></td>
+                <td>หน้า 1 – 3 (สไลด์ 328–329)</td>
+                <td>1.5 – 2.0 นาที</td>
+                <td>ปูพื้นฐาน Composition vs Association, กฎเหล็ก 4 ข้อ, ยกตัวอย่างโค้ดจริงใน Order.java</td>
+            </tr>
+            <tr>
+                <td><strong>Act 2: สาธิต 8 Use Cases (FR1–FR8)</strong></td>
+                <td>หน้า 4 – 13 (สไลด์ 331–339)</td>
+                <td>3.0 – 3.5 นาที</td>
+                <td>แสดงความสมบูรณ์ของ Text Mode Simulator, Two-Pass Stock Check, KDS, SOP และระบบแต้ม</td>
+            </tr>
+            <tr>
+                <td><strong>Act 3: พิสูจน์ Composition 5 คู่แท้</strong></td>
+                <td>หน้า 14 – 19 (สไลด์ 340–344)</td>
+                <td>2.5 – 3.0 นาที</td>
+                <td>เจาะลึก 5 คู่แท้, การเรียก destroy() และ items.clear(), อธิบายว่าทำไมลูกตายตามแม่</td>
+            </tr>
+            <tr>
+                <td><strong>ช่วงตอบคำถาม (Q&A Defense)</strong></td>
+                <td>-</td>
+                <td>2.0 – 3.0 นาที</td>
+                <td>ใช้คลังคำตอบทางเทคนิคด้านหลังเอกสารเพื่อตอบอาจารย์อย่างมั่นใจ</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="cue-box">
+    <strong>💡 4 กฎทองสำหรับผู้พูด (Golden Rules for Presenter):</strong><br>
+    1. <strong>อย่าอ่านสไลด์ตามตัวหนังสือ:</strong> ให้ใช้สายตามองอาจารย์ แล้วชี้หน้าจอตามจุด <code>[ชี้ที่...]</code> ที่ระบุในสคริปต์<br>
+    2. <strong>เน้นคำว่า "ลูกตายตามแม่":</strong> ทุกครั้งที่พูดถึง Composition ให้ย้ำว่า <em>"เมื่อตัวแม่ถูกทำลาย ตัวลูกต้องหายไปด้วยทันที"</em><br>
+    3. <strong>ย้ำว่า Table และ Customer เป็น Association:</strong> เพื่อแสดงให้อาจารย์เห็นว่าเราแยกแยะความสัมพันธ์ 2 ชนิดนี้ออกจากกันอย่างแม่นยำ<br>
+    4. <strong>ชูจุดเด่น Clean OOP:</strong> ย้ำว่าโปรเจกต์นี้เขียนด้วย Core Java ล้วนๆ ไม่มี Spring Boot หรือ Framework บังสายตา
+</div>
+
+<!-- ========================================== -->
+<!-- ACT 1: THEORY & COMPOSITION FOUNDATION -->
+<!-- ========================================== -->
+<div class="act-header">
+    <h2>ACT 1: ทฤษฎี OOP และการนำ Composition ไปใช้จริง</h2>
+    <span class="act-time">หน้า 1 – 3 | รวมเวลา ~1.5 - 2 นาที</span>
+</div>
+
+<!-- SLIDE 1 -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 1: หน้าปก P9</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~15-20 วินาที</span> • <span>🎯 วัตถุประสงค์: แนะนำตัว เปิดประเด็น และบอกขอบเขตผลงาน</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 1</span>
+            <span class="slide-canva-num">PDF หน้า 1</span>
+        </div>
+    </div>
+    
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ยืนตัวตรง สบตาอาจารย์ ผายมือไปที่หน้าจอ ไม่ต้องก้มอ่านกระดาษ
+    </div>
+
+    <div class="speech-box">
+        <p>"กราบเรียนอาจารย์และสวัสดีเพื่อนๆ ทุกคนครับ วันนี้กลุ่มของพวกเราจะมานำเสนอ <strong>Phase 9: Java OOP Implementation</strong> ของระบบบริหารจัดการร้านข้าวต้มอารมณ์ดีครับ"</p>
+        <p>"ในเฟสนี้ เราได้นำผลการวิเคราะห์และออกแบบจาก Phase 1 ถึง Phase 8 มาแปลงเป็นโปรแกรมที่รันได้จริงบนภาษา Java โดยยึดหลัก <strong>Pure OOP พื้นฐาน</strong> ไม่มีการใช้ Framework หรือ Library เสริม เพื่อแสดงให้เห็นกลไกการทำงานของ Object, Data Encapsulation, และความสัมพันธ์ระหว่างคลาสอย่างแท้จริงครับ"</p>
+    </div>
+
+    <div class="key-points">
+        <strong>คีย์เวิร์ดสำคัญ:</strong> Pure OOP พื้นฐาน, ไม่ใช้ Framework, 16 Model Classes + Main.java
+    </div>
+</div>
+
+<!-- SLIDE 2 (สไลด์ 328) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 2 (สไลด์ 328): ทฤษฎีการเขียน Code แบบ Composition</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~45-50 วินาที</span> • <span>🎯 วัตถุประสงค์: ปูทฤษฎีให้เข้าใจง่าย คมชัด ไม่สับสน</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 2</span>
+            <span class="slide-canva-num">สไลด์ 328 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> 
+        1. ชี้ที่เครื่องหมายข้าวหลามตัดทึบ (◆) <br>
+        2. ชี้ที่การเปรียบเทียบ Composition vs Association <br>
+        3. ชี้ที่ Checklist กฎเหล็ก 4 ข้อ
+    </div>
+
+    <div class="speech-box">
+        <p>"ก่อนที่เราจะไปดูผลการรันโปรแกรม เราขอเริ่มที่หัวใจสำคัญทางทฤษฎีของระบบ นั่นคือ <strong>Composition</strong> ครับ"</p>
+        <p>"หลายคนอาจจะคุ้นชินกับนิยามยาวๆ แต่ถ้าสรุปให้เข้าใจง่ายที่สุดในประโยคเดียว: <strong>Composition คือความสัมพันธ์แบบ 'ความเป็นเจ้าของร่วมตาย' ครับ</strong>"</p>
+        <p>"หมายความว่า: <strong>เมื่อใดก็ตามที่ไม่มีตัวแม่ ตัวลูกที่เป็นส่วนประกอบย่อยก็อยู่ไม่ได้ ต้องหายไปด้วยกันทันที</strong> โดยสัญลักษณ์ข้าวหลามตัดทึบ (◆) จะวางอยู่ฝั่งตัวแม่เสมอ เช่น <code>Order ◆── OrderItem</code>"</p>
+        <p>"ถ้าเทียบให้เห็นภาพในร้านเราเลยครับ: ถ้าเรากดยกเลิกหรือฉีก <strong>ใบออเดอร์ (Order)</strong> ทิ้ง รายการอาหารในบิลนั้น <strong>(OrderItem)</strong> ก็ต้องหายตามไปด้วยทันที นี่คือ Composition แต่ในทางตรงกันข้าม <strong>โต๊ะอาหาร (Table)</strong> จะไม่หายตาม เพราะโต๊ะเป็นแค่ <strong>Association (แค่อ้างถึง)</strong>"</p>
+        <p>"ซึ่งในการเขียนโค้ดภาษา Java เรายึดกฎเหล็ก 4 ข้ออย่างเคร่งครัด ได้แก่: แม่เก็บลูกเป็น <code>private</code>, แม่สั่ง <code>new</code> สร้างลูกเอง, คลาสอื่นห้ามยุ่งกับลูกตรงๆ, และเมื่อแม่ถูกลบ ตัวแม่จะสั่งทำลายลูกทิ้งทั้งหมดครับ"</p>
+    </div>
+
+    <div class="theory-box">
+        <h4>📝 ข้อความฉบับเข้าใจง่าย (คัดลอกไปอัปเดตสไลด์ 328 ใน Canva ได้เลย):</h4>
+        <strong>นิยาม:</strong> Composition คือ "ความเป็นเจ้าของร่วมตาย" (ถ้าไม่มีตัวแม่ ตัวลูกต้องหายไปด้วยกันทันที)<br>
+        <strong>สัญลักษณ์:</strong> ข้าวหลามตัดทึบ (◆) อยู่ฝั่งตัวแม่เสมอ เช่น <code>Order ◆── OrderItem</code><br>
+        <strong>กฎโค้ด 4 ข้อ:</strong> 1. แม่เก็บลูกเป็น private | 2. แม่ new ลูกเอง | 3. คนอื่นห้ามแตะลูกตรงๆ | 4. แม่ตาย ลูกตายด้วย (items.clear())
+    </div>
+</div>
+
+<!-- SLIDE 3 (สไลด์ 329) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 3 (สไลด์ 329): ตัวอย่างของระบบเรา (src/model/Order.java)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~45 วินาที</span> • <span>🎯 วัตถุประสงค์: ชี้ให้เห็นโค้ดจริงว่าบรรทัดไหนคือ Composition บรรทัดไหนคือ Association</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 3</span>
+            <span class="slide-canva-num">สไลด์ 329 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong>
+        1. ชี้บรรทัดที่ 1: <code>private ArrayList&lt;OrderItem&gt; items;</code><br>
+        2. ชี้บรรทัดที่ 2: <code>private Table table;</code><br>
+        3. ชี้ในเมธอด <code>destroy()</code> ตรง <code>item.destroy()</code> และ <code>table = null;</code>
+    </div>
+
+    <div class="speech-box">
+        <p>"สไลด์หน้านี้คือโค้ดจริงในโปรเจกต์ของเราจากคลาส <code>Order.java</code> เพื่อให้เห็นการนำทฤษฎีไปแปลงเป็นโค้ดอย่างชัดเจนครับ:"</p>
+        <p>"สังเกตที่บรรทัดบนสุด: <code>Order</code> ถือ <code>items</code> ซึ่งเป็น <code>OrderItem</code> เป็น <strong>Composition</strong> สังเกตว่าในเมธอด <code>addItem()</code> ตัวแม่จะเป็นคน <code>new OrderItem</code> ขึ้นมาเอง และเมื่อเกิดการยกเลิกในเมธอด <code>destroy()</code> ตัว Order จะวนลูปสั่ง <code>item.destroy()</code> และสั่ง <code>items.clear()</code> ทำให้ OrderItem ทั้งหมดถูกทำลายไปพร้อมกัน"</p>
+        <p>"แต่ในขณะเดียวกัน <code>Order</code> ก็ถือ <code>Table table</code> ซึ่งเป็นเพียง <strong>Association (การอ้างถึง)</strong> เมื่อออเดอร์ถูกลบ เราแค่เซต <code>table = null</code> เพื่อตัดการเชื่อมโยง แต่ตัว Object โต๊ะอาหารยังคงอยู่ในระบบ ไม่ได้ถูกทำลายตาม และพร้อมรับลูกค้ารายถัดไปได้ทันทีครับ"</p>
+    </div>
+
+    <div class="key-points">
+        <strong>เน้นย้ำ:</strong> ชี้ให้เห็นความแตกต่างชัดเจนระหว่าง <code>items.clear()</code> (Composition) กับ <code>table = null</code> (Association)
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- ACT 2: TEXT MODE SIMULATOR (FR1 - FR8) -->
+<!-- ========================================== -->
+<div class="act-header">
+    <h2>ACT 2: สาธิตการทำงาน Text Mode Simulator (FR1 – FR8)</h2>
+    <span class="act-time">หน้า 4 – 13 | รวมเวลา ~3.0 - 3.5 นาที</span>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 4: คั่นหมวด Text Mode Simulator</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~10 วินาที</span> • <span>🎯 วัตถุประสงค์: เกริ่นนำเข้าสู่การรันโปรแกรมจริง</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 4</span>
+            <span class="slide-canva-num">PDF หน้า 4</span>
+        </div>
+    </div>
+
+    <div class="speech-box">
+        <p>"ต่อไปจะเข้าสู่การสาธิตการรันจริงผ่าน **Text Mode Simulator** ซึ่งจำลองการทำงานทั้ง 8 Use Cases ตั้งแต่สั่งอาหาร ปรุง เสิร์ฟ จ่ายเงิน ไปจนถึงออกรายงานยอดขายครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 5 (สไลด์ 331) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 5 (สไลด์ 331): FR1 (1.1 สแกน QR ประจำโต๊ะ & 1.2 เลือกเมนู ปรับแต่งระดับเผ็ด)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~35 วินาที</span> • <span>🎯 วัตถุประสงค์: แสดงการเริ่มออเดอร์ ผูกสมาชิก และตัวเลือกเสริม</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 5</span>
+            <span class="slide-canva-num">สไลด์ 331 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้กล่องซ้ายตรงการผูกเบอร์สมาชิก MBR-0001 แล้วชี้กล่องขวาตรงยอด 168.00 บาท
+    </div>
+
+    <div class="speech-box">
+        <p>"เริ่มต้นที่ **FR1 การสั่งอาหารผ่าน QR Code:**"</p>
+        <p>"**ฝั่งซ้าย (1.1):** จำลองลูกค้าสแกน QR ประจำโต๊ะ 4 กรอกเบอร์โทรศัพท์ 099-999-9999 ระบบจะทำการค้นหาและผูกกับสมาชิกชื่อคุณสมชาย (MBR-0001) และสร้างตะกร้าอาหาร <code>CRT-20261101-0001</code> ให้อัตโนมัติ"</p>
+        <p>"**ฝั่งขวา (1.2):** ลูกค้าเข้าสู่ขั้นตอนการเลือกเมนู เช่น เลือกหมวดผัด เมนูผัดกะเพราปลา 2 จาน สามารถระบุระดับความเผ็ด 'เผ็ดมาก' และเพิ่มท็อปปิ้ง 'ไข่ดาว +15 บาท' ระบบจะคำนวณราคารวมเป็น 168 บาทอย่างแม่นยำครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 6 (สไลด์ 332) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 6 (สไลด์ 332): FR1 (1.3 ตรวจสต็อกตาม Recipe & 1.4 ติดตามสถานะออเดอร์)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~40 วินาที</span> • <span>🎯 วัตถุประสงค์: โชว์ Two-Pass Stock Check และระบบแยกสถานีครัว</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 6</span>
+            <span class="slide-canva-num">สไลด์ 332 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่กล่องซ้ายตรง 'ตรวจสอบสต็อกตามสูตร Recipe' แล้วชี้กล่องขวาตรง 'รอปรุง (ครัวร้อน)'
+    </div>
+
+    <div class="speech-box">
+        <p>"**ฝั่งซ้าย (1.3):** เมื่อลูกค้ากดยืนยันออเดอร์ยอดรวม 233 บาท ระบบจะใช้กลไกสำคัญคือ **Two-Pass Stock Check** ในคลาส <code>Order</code> โดยจะวนลูปตรวจสอบวัตถุดิบทุกชนิดตามสูตร <code>Recipe</code> (เนื้อปลา, ไข่ไก่, หมูยอ) ให้มั่นใจว่าสต็อกมีเพียงพอครบ 100% ก่อน เมื่อผ่านทั้งหมดจึงจะยอมตัดสต็อกจริง ป้องกันปัญหาหักสต็อกไปครึ่งหนึ่งแล้วของหมดครับ"</p>
+        <p>"**ฝั่งขวา (1.4):** หน้าจอติดตามสถานะ แสดงให้เห็นว่าออเดอร์ถูกแยกรายการอาหารส่งไปยังสถานีครัวร้อนและครัวเย็นโดยอัตโนมัติ พร้อมแสดงเวลารวมตาม SOP คือ 8.0 นาทีครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 7 (สไลด์ 333) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 7 (สไลด์ 333): FR2 (2.1 รายการคู่มือ SOP & 2.2 กำหนดขั้นตอนย่อย SOPStep)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~30 วินาที</span> • <span>🎯 วัตถุประสงค์: แสดงการควบคุมมาตรฐานการทำงาน SOP</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 7</span>
+            <span class="slide-canva-num">สไลด์ 333 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่เวลารวมมาตรฐาน 2.0 นาที และปุ่มกดเผยแพร่ (Publish)
+    </div>
+
+    <div class="speech-box">
+        <p>"ต่อมาที่ **FR2 การจัดการคู่มือมาตรฐาน SOP:**"</p>
+        <p>"ผู้จัดการสามารถตรวจสอบและจัดการคู่มือการปรุงอาหารของร้านได้ โดยในฝั่งขวา (2.2) สามารถกำหนดขั้นตอนย่อย <code>SOPStep</code> เช่น เมนูชาใหม่ มีขั้นตอนต้มน้ำร้อน 1.5 นาที ผสมนม 0.5 นาที รวมเป็น 2.0 นาที เมื่อขั้นตอนสมบูรณ์แล้ว ผู้จัดการจึงกด 'เผยแพร่' (Publish) เพื่อส่งต่อให้ครัวนำไปปฏิบัติครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 8 (สไลด์ 334) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 8 (สไลด์ 334): FR3 (3.1 จอครัว KDS ดู SOP & 3.2 บันทึกเวลาจริงเทียบ SOP)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~35 วินาที</span> • <span>🎯 วัตถุประสงค์: แสดงการจับเวลาจริง เทียบเป้าหมาย SOP และการเสิร์ฟ</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 8</span>
+            <span class="slide-canva-num">สไลด์ 334 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่ 'เวลาที่ใช้จริง: 6.0 นาที (เป้าหมาย 7.0 นาที) [ตรงเวลา]'
+    </div>
+
+    <div class="speech-box">
+        <p>"**FR3 ระบบจอครัว KDS และการเสิร์ฟ:**"</p>
+        <p>"**ฝั่งซ้าย (3.1):** คนครัวเปิดดูคิวอาหาร ดูขั้นตอนและเวลามาตรฐาน 7.0 นาที จากนั้นกด 'เริ่มลงมือปรุง' เพื่อให้ระบบเริ่มจับเวลา"</p>
+        <p>"**ฝั่งขวา (3.2):** เมื่อปรุงเสร็จ ระบบบันทึกเวลาจริงได้ 6.0 นาที ซึ่งเร็วกว่าเวลามาตรฐาน SOP ระบบเปลี่ยนสถานะเป็น 'พร้อมเสิร์ฟ' เพื่อให้พนักงานนำไปเสิร์ฟที่โต๊ะ และส่งออเดอร์ไปยังแคชเชียร์เพื่อรอชำระเงินครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 9 (สไลด์ 335) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 9 (สไลด์ 335): FR4 (4.1 ตรวจสอบบิล แลกแต้ม & 4.2 พิมพ์ใบเสร็จและสะสมแต้ม)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~35 วินาที</span> • <span>🎯 วัตถุประสงค์: แสดงการชำระเงิน คำนวณเงินทอน และสะสมแต้ม</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 9</span>
+            <span class="slide-canva-num">สไลด์ 335 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่ยอดสุทธิ 70 บาท, เงินทอน 30 บาท และแต้มสะสมเพิ่ม 1 แต้ม
+    </div>
+
+    <div class="speech-box">
+        <p>"**FR4 การชำระเงินและระบบแต้มสะสม:**"</p>
+        <p>"แคชเชียร์เรียกบิลโต๊ะ 1 ยอดรวม 80 บาท ลูกค้าขอแลกแต้มสะสม 10 แต้ม ได้ส่วนลด 10 บาท ยอดสุทธิจึงเหลือ 70 บาท ลูกค้าจ่ายด้วยเงินสด 100 บาท ระบบคำนวณเงินทอน 30 บาท พร้อมออกใบเสร็จ <code>RCT-PAY-20261101-0001</code> และทำการคำนวณสะสมแต้มใหม่เพิ่ม 1 แต้มเข้าบัญชีสมาชิกทันทีครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 10 (สไลด์ 336) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 10 (สไลด์ 336): FR5 (5.1 ตรวจสอบสต็อก ออกใบ PO & 5.2 ตรวจรับเข้าคลังและ Audit Log)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~35 วินาที</span> • <span>🎯 วัตถุประสงค์: โชว์การออกใบสั่งซื้อ และการบันทึกประวัติสต็อก</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 10</span>
+            <span class="slide-canva-num">สไลด์ 336 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่การแจ้งเตือนสต็อกต่ำกว่าเกณฑ์ และประวัติ StockMovement (RECEIVE, ADJUST)
+    </div>
+
+    <div class="speech-box">
+        <p>"**FR5 การจัดการสต็อกและใบสั่งซื้อ PO:**"</p>
+        <p>"ระบบตรวจพบเนื้อปลาเหลือ 1.3 กก. ต่ำกว่าเกณฑ์สั่งซื้อ 2.0 กก. ระบบจึงแจ้งเตือน ผู้จัดการจึงออกใบสั่งซื้อ <code>PO-21</code> จำนวน 2.0 กก. เมื่อของมาส่ง ระบบตรวจรับสินค้า ยอดสต็อกเพิ่มเป็น 7.3 กก. และบันทึกประวัติ <code>StockMovement</code> (RECEIVE) และเมื่อผู้จัดการตรวจนับจริงพบของเสีย จึงปรับยอดเหลือ 6.0 กก. โดยบันทึกประวัติแบบ ADJUST เป็น Audit Log ย้อนหลังได้สมบูรณ์ครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 11 (สไลด์ 337 / 339) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 11 (สไลด์ 337 / 339): FR6 (6.1 สรุปยอดขายรวม & 6.2 รายงานอันดับขายดีและสถิติ SOP)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~30 วินาที</span> • <span>🎯 วัตถุประสงค์: แสดงรายงานเชิงลึกสำหรับผู้บริหาร</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 11</span>
+            <span class="slide-canva-num">สไลด์ 337 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่การแยกช่องทางเงินสด 70 บาท และสถิติเสิร์ฟตรงเวลา 100%
+    </div>
+
+    <div class="speech-box">
+        <p>"**FR6 รายงานและแผงควบคุมภาพรวมร้าน:**"</p>
+        <p>"ผู้จัดการสามารถดูสรุปยอดขายประจำวันแบบเรียลไทม์ แยกช่องทางเงินสดและ QR และดูอันดับอาหารขายดี พร้อมสถิติประสิทธิภาพการปรุงอาหารตาม SOP ซึ่งพบว่าเสิร์ฟตรงเวลา 100% และความเร็วการปรุงเร็วกว่ามาตรฐาน 1.0 นาที ประเมินผลระดับดีเยี่ยมครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 12 (สไลด์ 338) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 12 (สไลด์ 338): FR7 & FR8 (7.1 จัดการเมนูและสูตร & 8.1 ระบบสมาชิกและกฎแต้ม)</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~35 วินาที</span> • <span>🎯 วัตถุประสงค์: แสดงการควบคุมเวอร์ชันสูตร และกฎแต้มกลางร้าน</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 12</span>
+            <span class="slide-canva-num">สไลด์ 338 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่ Recipe Version 2 และเมธอด setRule() กำหนดเงื่อนไขแต้มใหม่
+    </div>
+
+    <div class="speech-box">
+        <p>"และสองข้อกำหนดสุดท้าย **FR7 และ FR8:**"</p>
+        <p>"**ฝั่งซ้าย (7.1):** การจัดการเมนูและสูตร รองรับการสร้างสูตรอาหารหลายเวอร์ชัน เช่น Recipe Version 2 โดยออเดอร์เก่าที่เคยสั่งไปแล้วจะยังคงผูกกับ Version 1 เดิม ป้องกันปัญหาข้อมูลในอดีตคลาดเคลื่อน"</p>
+        <p>"**ฝั่งขวา (8.1):** ระบบสมาชิก ผู้จัดการสามารถเปลี่ยนกฎการคำนวณแต้มกลางร้านผ่านเมธอด <code>setRule()</code> เช่น เปลี่ยนเป็นทุก 100 บาทได้ 1 แต้ม มีผลกับการชำระเงินครั้งถัดไปทันทีครับ"</p>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- ACT 3: PROOF OF 5 COMPOSITION PAIRS -->
+<!-- ========================================== -->
+<div class="act-header">
+    <h2>ACT 3: การพิสูจน์ Composition 5 คู่แท้เชิงประจักษ์</h2>
+    <span class="act-time">หน้า 14 – 19 | รวมเวลา ~2.5 - 3 นาที</span>
+</div>
+
+<!-- SLIDE 14 -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 14: คั่นหมวดตัวอย่าง Composition 5 คู่แท้</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~10 วินาที</span> • <span>🎯 วัตถุประสงค์: ดึงความสนใจเข้าสู่การพิสูจน์เชิงลึก</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">สไลด์ที่ 14</span>
+            <span class="slide-canva-num">PDF หน้า 14</span>
+        </div>
+    </div>
+
+    <div class="speech-box">
+        <p>"ในส่วนสุดท้ายนี้ เราจะมาพิสูจน์ความสัมพันธ์แบบ **Composition ครบทั้ง 5 คู่แท้** ที่เกิดขึ้นจริงในระบบ เพื่อยืนยันว่าการออกแบบคลาสของเราสอดคล้องตามหลักการ OOP 100% ครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 15 (สไลด์ 340) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 15 (สไลด์ 340): Composition ① Order ◆ OrderItem</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~40 วินาที</span> • <span>🎯 วัตถุประสงค์: พิสูจน์ว่า OrderItem ถูกลบหายตาม Order</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">คู่ที่ 1</span>
+            <span class="slide-canva-num">สไลด์ 340 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่กล่อง Terminal ตรง '2 -> 0 รายการ' และชี้โค้ด <code>items.clear()</code>
+    </div>
+
+    <div class="speech-box">
+        <p>"**คู่ที่ 1: <code>Order</code> เป็นเจ้าของ <code>OrderItem</code>**"</p>
+        <p>"เริ่มต้นออเดอร์ <code>ORD-001</code> ถือรายการอาหาร <code>OrderItem</code> อยู่จำนวน 2 รายการ"</p>
+        <p>"เมื่อมีการเรียกคำสั่งยกเลิกออเดอร์ผ่าน <code>order.destroy()</code> ในโค้ดจริง เมธอดจะทำการวนลูปสั่ง <code>item.destroy()</code> ของลูกทุกตัว และสั่ง <code>items.clear()</code>"</p>
+        <p>"**ผลลัพธ์เชิงประจักษ์คือ:** รายการอาหารในออเดอร์ลดลงจาก 2 รายการเหลือ 0 รายการทันที พิสูจน์ว่าส่วนประกอบย่อยตายตามเจ้าของ ในขณะที่ Table และ Customer ยังคงอยู่ในระบบ เพราะเป็นเพียง Association ครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 16 (สไลด์ 341) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 16 (สไลด์ 341): Composition ② Menu ◆ Recipe</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~30 วินาที</span> • <span>🎯 วัตถุประสงค์: พิสูจน์ว่าสูตรอาหารตายตามเมนู</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">คู่ที่ 2</span>
+            <span class="slide-canva-num">สไลด์ 341 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่ Recipe 2 เวอร์ชัน ลดเหลือ 0 สูตร และเน้นว่า Ingredient ยังอยู่
+    </div>
+
+    <div class="speech-box">
+        <p>"**คู่ที่ 2: <code>Menu</code> เป็นเจ้าของ <code>Recipe</code> (สูตรอาหาร)**"</p>
+        <p>"เมนูข้าวต้มปลาถือสูตรอาหารอยู่ 2 เวอร์ชัน เมื่อผู้จัดการสั่งลบเมนูผ่าน <code>menu.destroy()</code> เมธอดจะสั่ง <code>recipes.clear()</code> ทำให้สูตรอาหารทั้งสองเวอร์ชันถูกทำลายตามเมนูไปทันที เหลือ 0 สูตร ส่วนวัตถุดิบเนื้อปลาในคลังยังคงอยู่ตามปกติ เพราะ Recipe แค่อ้างถึงวัตถุดิบแบบ Association ครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 17 (สไลด์ 342) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 17 (สไลด์ 342): Composition ③ SOP ◆ SOPStep</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~30 วินาที</span> • <span>🎯 วัตถุประสงค์: พิสูจน์ว่าขั้นตอนย่อยตายตามคู่มือ SOP</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">คู่ที่ 3</span>
+            <span class="slide-canva-num">สไลด์ 342 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ที่ขั้นตอนย่อย 2 ขั้นตอน ลดเหลือ 0 ขั้นตอน
+    </div>
+
+    <div class="speech-box">
+        <p>"**คู่ที่ 3: <code>SOP</code> เป็นเจ้าของ <code>SOPStep</code> (ขั้นตอนย่อยมาตรฐาน)**"</p>
+        <p>"คู่มือ SOP ข้าวต้มปลามีขั้นตอนย่อย 2 ขั้นตอน เมื่อคู่มือถูกทำลายใน <code>sop.destroy()</code> จะมีการสั่ง <code>steps.clear()</code> ทำให้ขั้นตอนย่อยทั้งสองขั้นตอนหายไปพร้อมคู่มือทันที เหลือ 0 ขั้นตอนครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 18 (สไลด์ 343) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 18 (สไลด์ 343): Composition ④ Ingredient ◆ StockMovement</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~30 วินาที</span> • <span>🎯 วัตถุประสงค์: พิสูจน์ว่าประวัติสต็อกเฉพาะตายตามวัตถุดิบ</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">คู่ที่ 4</span>
+            <span class="slide-canva-num">สไลด์ 343 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ประวัติสต็อก 3 รายการ ลดเหลือ 0 บันทึก
+    </div>
+
+    <div class="speech-box">
+        <p>"**คู่ที่ 4: <code>Ingredient</code> เป็นเจ้าของ <code>StockMovement</code> (ประวัติความเคลื่อนไหวสต็อก)**"</p>
+        <p>"วัตถุดิบเนื้อปลามีประวัติความเคลื่อนไหวสต็อก 3 รายการ เมื่อวัตถุดิบถูกลบออกจากระบบ <code>ingredient.destroy()</code> จะทำการล้าง <code>movements.clear()</code> ทำให้ประวัติการเคลื่อนไหวเฉพาะของวัตถุดิบนั้นถูกทำลายตามไปด้วย เหลือ 0 รายการครับ"</p>
+    </div>
+</div>
+
+<!-- SLIDE 19 (สไลด์ 344) -->
+<div class="slide-card">
+    <div class="slide-header">
+        <div>
+            <h3 class="slide-title">หน้า 19 (สไลด์ 344): Composition ⑤ Member ◆ PointTransaction</h3>
+            <div class="slide-meta">
+                <span>⏱️ เวลาพูด: ~40 วินาที</span> • <span>🎯 วัตถุประสงค์: พิสูจน์คู่สุดท้าย และกล่าวสรุปจบอย่างน่าประทับใจ</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <span class="slide-badge">คู่ที่ 5</span>
+            <span class="slide-canva-num">สไลด์ 344 (Canva)</span>
+        </div>
+    </div>
+
+    <div class="cue-box">
+        <strong>👁️ ท่าทางและการชี้จอ:</strong> ชี้ประวัติแต้ม 3 รายการ เหลือ 0 บันทึก แล้วสบตาอาจารย์เพื่อกล่าวปิด
+    </div>
+
+    <div class="speech-box">
+        <p>"และ **คู่ที่ 5: <code>Member</code> เป็นเจ้าของ <code>PointTransaction</code> (ประวัติแต้มสะสม)**"</p>
+        <p>"สมาชิกคุณสมชายมีประวัติแต้ม 3 รายการ เมื่อมีการลบบัญชีสมาชิก <code>member.destroy()</code> จะทำการสั่ง <code>transactions.clear()</code> และรีเซตแต้มเป็น 0 ทำให้ประวัติแต้มของผู้ใช้รายนั้นหายไปพร้อมกับบัญชีสมาชิกทันทีครับ"</p>
+        <p>"การพิสูจน์ทั้ง 5 คู่นี้ แสดงให้เห็นว่าโครงสร้างโค้ด Java ของเราตอบโจทย์ทั้งการใช้งานจริงตามข้อกำหนด และเป็นไปตามหลักการออกแบบ Object-Oriented Analysis and Design อย่างสมบูรณ์แบบครับ"</p>
+        <p>"กลุ่มของพวกเราขอจบการนำเสนอ Phase 9 เพียงเท่านี้ อาจารย์และเพื่อนๆ มีข้อเสนอแนะหรือคำถามเพิ่มเติมไหมครับ ขอบคุณครับ"</p>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- Q&A DEFENSE GUIDE -->
+<!-- ========================================== -->
+<div class="act-header">
+    <h2>🛡️ คลังคำถาม-คำตอบปราบเซียน (Q&A Defense Guide)</h2>
+    <span class="act-time">เตรียมพร้อมรับมือทุกคำถามจากอาจารย์</span>
+</div>
+
+<div class="qa-card">
+    <div class="qa-q">❓ คำถาม 1: ใน Java ไม่มีคำสั่ง delete เหมือนภาษา C++ แล้วเราทำ Composition อย่างไร?</div>
+    <div class="qa-a">
+        <strong>แนวทางการตอบ:</strong> "ในภาษา Java การจัดการหน่วยความจำอยู่ภายใต้การดูแลของ <strong>Garbage Collector</strong> ครับ เราจึงพิสูจน์ความเป็น Composition ผ่าน <strong>Life-cycle Method</strong> นั่นคือเมธอด <code>destroy()</code> โดยเมื่อ Object ตัวแม่ถูกทำลาย ตัวแม่จะเป็นคนสั่ง <code>clear()</code> และตัดการอ้างอิง Object ลูกทั้งหมด ส่งผลให้ Object ลูกกลายเป็น Unreachable Object และถูก Garbage Collector เก็บกวาดทำลายหน่วยความจำตามไปทันทีครับ"
+    </div>
+</div>
+
+<div class="qa-card">
+    <div class="qa-q">❓ คำถาม 2: Two-Pass Stock Check ใน FR1 คืออะไร ทำไมต้องทำสองรอบ?</div>
+    <div class="qa-a">
+        <strong>แนวทางการตอบ:</strong> "Two-Pass Check คือการแยกกระบวนการตรวจสอบและตัดสต็อกออกเป็น 2 ลูปครับ: <strong>รอบที่ 1 (Validation Pass):</strong> วนลูปตรวจสอบวัตถุดิบทุกชนิดที่ต้องใช้ในออเดอร์นั้นให้ครบ 100% ก่อนว่าพอหรือไม่ และ <strong>รอบที่ 2 (Deduction Pass):</strong> เมื่อผ่านรอบแรกครบทั้งหมดแล้ว จึงจะทำการตัดสต็อกจริง เพื่อป้องกันปัญหาตัดสต็อกชิ้นแรกไปแล้ว แต่ของชิ้นถัดไปหมด ทำให้ระบบค้างและสต็อกเสียหายครับ"
+    </div>
+</div>
+
+<div class="qa-card">
+    <div class="qa-q">❓ คำถาม 3: ทำไม OrderItem ต้องเก็บสำเนาของราคาและสูตรเป็นของตัวเอง ทั้งที่มี Menu อยู่แล้ว?</div>
+    <div class="qa-a">
+        <strong>แนวทางการตอบ:</strong> "เพื่อป้องกันปัญหา <strong>Historical Data Drift</strong> ครับ ในชีวิตจริง ถ้าร้านค้าปรับราคาเมนูผัดกะเพราจาก 69 บาทเป็น 79 บาทในวันพรุ่งนี้ บิลย้อนหลังที่ลูกค้าเคยสั่งไปเมื่อวานจะต้องแสดงราคา 69 บาทเท่าเดิม ไม่ควรเปลี่ยนตาม ดังนั้น <code>OrderItem</code> จึงต้องทำ Snapshot ราคาและสูตร ณ เวลาที่สั่งเก็บไว้ในตัวเองครับ"
+    </div>
+</div>
+
+<div class="qa-card">
+    <div class="qa-q">❓ คำถาม 4: ทำไมความสัมพันธ์ระหว่าง Order กับ Table หรือ Customer ถึงเป็นแค่ Association ไม่ใช่ Composition?</div>
+    <div class="qa-a">
+        <strong>แนวทางการตอบ:</strong> "เพราะเรื่อง <strong>Lifecycle และ Ownership</strong> ครับ โต๊ะอาหาร (Table) และ ลูกค้า (Customer) มีตัวตนอยู่จริงในร้านค้ามาก่อนที่ออเดอร์จะเกิด และเมื่อออเดอร์นั้นถูกชำระเงินหรือยกเลิกทิ้งไป โต๊ะก็ยังคงตั้งอยู่ที่ร้าน และลูกค้าก็ยังคงเป็นสมาชิกของร้าน ไม่ได้พังหรือหายไปตามออเดอร์ ดังนั้นความสัมพันธ์จึงเป็นแค่ Association (การอ้างถึง) ครับ"
+    </div>
+</div>
+
+<div class="qa-card">
+    <div class="qa-q">❓ คำถาม 5: ทำไมโปรเจกต์นี้ถึงไม่มีการใช้ Framework เช่น Spring Boot หรือ Lombok?</div>
+    <div class="qa-a">
+        <strong>แนวทางการตอบ:</strong> "เพราะเป้าหมายของวิชา OOAD คือการศึกษาและพิสูจน์ความเข้าใจในกลไกพื้นฐานของ <strong>Object-Oriented Programming</strong> ครับ การใช้ Framework หรือ Annotation สำเร็จรูปจะบดบังกลไกของ Constructor, Encapsulation, Reference, และ Garbage Collection การเขียนด้วย Core Java ล้วนๆ ทำให้เราสามารถอธิบายการทำงานได้ครบทุกบรรทัดอย่างโปร่งใสครับ"
+    </div>
+</div>
+
+</body>
+</html>
+"""
+
+with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print(f"HTML presentation script saved: {OUTPUT_HTML}")
+
+print("Rendering PDF via headless Chrome...")
+chrome_cmd = [
+    "google-chrome-stable",
+    "--headless",
+    "--disable-gpu",
+    "--no-pdf-header-footer",
+    f"--print-to-pdf={OUTPUT_PDF}",
+    OUTPUT_HTML
+]
+
+res = subprocess.run(chrome_cmd, capture_output=True, text=True)
+if res.returncode == 0:
+    print(f"SUCCESS: PDF generated successfully at: {OUTPUT_PDF}")
+    file_size_mb = os.path.getsize(OUTPUT_PDF) / (1024 * 1024)
+    print(f"File size: {file_size_mb:.2f} MB")
+else:
+    print(f"ERROR generating PDF: {res.stderr}")
